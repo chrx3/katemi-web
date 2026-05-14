@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  pocketbase:
+    image: ghcr.io/muchobien/pocketbase:latest
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./pb_data:/pb/pb_data
+      - ./pb_public:/pb/pb_public
+    restart: unless-stopped
+    command: >
+      /pocketbase/pocketbase serve 
+      --http=0.0.0.0:8090 
+      --https=0.0.0.0:443 
+      --dir=/pb/pb_data 
+      --encryptionkey=$(openssl rand -base64 32)

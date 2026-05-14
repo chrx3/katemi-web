@@ -1,0 +1,157 @@
+{
+  "services": [
+    {
+      "slug": "transmision-electrica",
+      "title": "Transmisión Eléctrica",
+      "shortDescription": "Diseño y construcción de líneas de transmisión de alta tensión hasta 500kV.",
+      "fullDescription": "En PRE&CON ofrecemos servicios integrales de transmisión eléctrica, desde estudios de prefactibilidad hasta la construcción y puesta en servicio de líneas de transmisión de alta tensión. Nuestro equipo de ingenieros especializados garantiza proyectos seguros, eficientes y dentro de los plazos establecidos.",
+      "features": ["Líneas de transmisión hasta 500kV", "Torres de transmisión y subestaciones", "Estudios de impacto ambiental", "Gestión de servidumbres", "Puesta en servicio y commissioning"],
+      "icon": "Zap",
+      "order": 1,
+      "isActive": true
+    },
+    {
+      "slug": "distribucion-electrica",
+      "title": "Distribución Eléctrica",
+      "shortDescription": "Infraestructura de distribución para zonas urbanas, industriales y rurales.",
+      "fullDescription": "Desarrollamos redes de distribución eléctrica adaptadas a las necesidades de cada proyecto. Contamos con experiencia en redes de media y baja tensión, sistemas de iluminación pública y obras de extensión y ampliación de redes existentes.",
+      "features": ["Redes de media tensión", "Subestaciones de distribución", "Alumbrado público inteligente", "Extensión y ampliación de redes", "Automatización de redes"],
+      "icon": "Building2",
+      "order": 2,
+      "isActive": true
+    },
+    {
+      "slug": "energias-renovables",
+      "title": "Energías Renovables",
+      "shortDescription": "Proyectos fotovoltaicos, eólicos y de almacenamiento de energía.",
+      "fullDescription": "Somos parte de la transición energética con proyectos de generación renovable. Desde plantas solares fotovoltaicas hasta sistemas de almacenamiento con baterías, ayudamos a nuestros clientes a implementar soluciones sostenibles y económicamente viables.",
+      "features": ["Plantas solares fotovoltaicas", "Sistemas de almacenamiento BESS", "Parques eólicos", "Microrredes", "Certificación LEED y green building"],
+      "icon": "Sun",
+      "order": 3,
+      "isActive": true
+    },
+    {
+      "slug": "estudios-y-certificaciones",
+      "title": "Estudios y Certificaciones",
+      "shortDescription": "Estudios técnicos, certificaciones y asesorías especializadas.",
+      "fullDescription": "Nuestro equipo de profesionales ofrece servicios de estudios técnicos eléctricos, certificación SEC, auditorías de seguridad,due diligence técnica y asesoría especializada para proyectos de generación, transmisión y distribución.",
+      "features": ["Certificación SEC", "Estudios de cargabilidad", "Auditorías técnicas", "Due diligence para inversiones", "Asesorías especializadas"],
+      "icon": "FileCheck",
+      "order": 4,
+      "isActive": true
+    }
+  ],
+
+  "projects": [
+    {
+      "slug": "linea-transmision-220kv-atacama",
+      "clientName": "CGE",
+      "title": "Línea de Transmisión 220kV Atacama",
+      "location": "Región de Atacama, Chile",
+      "description": "Diseño y construcción de una línea de transmisión de 220kV протяженностью 120km, conectando la subestación Copiapó con el SIC. El proyecto incluyó estudios de prefactibilidad, diseño de ingeniería básica y detalle, gestión de servidumbres y construcción de torres.",
+      "servicesProvided": ["transmision-electrica"],
+      "images": [],
+      "category": "transmission",
+      "year": 2023,
+      "isFeatured": true,
+      "isActive": true
+    },
+    {
+      "slug": "subestacion-electrica-patagonia",
+      "clientName": "Transelec",
+      "title": "Subestación Eléctrica Patagonia",
+      "location": "Región de Aysén, Chile",
+      "description": "Construcción de una subestación de 220/66kV con capacidad de 250MVA. El proyecto contempló el desarrollo de ingeniería, suministro de equipos principales, obras civiles y montaje electromecánico.",
+      "servicesProvided": ["distribucion-electrica"],
+      "images": [],
+      "category": "distribution",
+      "year": 2023,
+      "isFeatured": true,
+      "isActive": true
+    },
+    {
+      "slug": "planta-solar-atacama",
+      "clientName": "Enel",
+      "title": "Planta Solar Fotovoltaica Atacama",
+      "location": "Calama, Región de Antofagasta, Chile",
+      "description": "Desarrollo de una planta solar fotovoltaica de 150MWp en el desierto de Atacama. El proyecto incluyó diseño de ingeniería, suministro e instalación de paneles bifaciales, inversores y sistemas de monitoreo.",
+      "servicesProvided": ["energias-renovables"],
+      "images": [],
+      "category": "photovoltaic",
+      "year": 2024,
+      "isFeatured": true,
+      "isActive": true
+    },
+    {
+      "slug": "red-distribucion-industrial-minera",
+      "clientName": "Pacific Energy",
+      "title": "Red de Distribución Industrial Minera",
+      "location": "Región de Valparaíso, Chile",
+      "description": "Diseño y construcción de una red de distribución eléctrica para complejo industrial minero. Incluye subestación de 23kV, red de alimentación a naves industriales y sistemas de emergencia.",
+      "servicesProvided": ["distribucion-electrica", "estudios-y-certificaciones"],
+      "images": [],
+      "category": "industrial",
+      "year": 2024,
+      "isFeatured": false,
+      "isActive": true
+    },
+    {
+      "slug": "proyecto-residencial-verde",
+      "clientName": "Grupo Saesa",
+      "title": "Proyecto Residencial Verde",
+      "location": "Puerto Montt, Región de Los Lagos, Chile",
+      "description": "Desarrollo de un proyecto residencial con integración de sistemas solares fotovoltaicos y domótica. Incluye red de distribución convencional más sistemas de generación distribuida para 500 viviendas.",
+      "servicesProvided": ["energias-renovables", "distribucion-electrica"],
+      "images": [],
+      "category": "residential",
+      "year": 2024,
+      "isFeatured": false,
+      "isActive": true
+    },
+    {
+      "slug": "sistema-fotovoltaico-corporativo",
+      "clientName": "AES Chile",
+      "title": "Sistema Fotovoltaico Corporativo",
+      "location": "Santiago, Chile",
+      "description": "Instalación de un sistema fotovoltaico de 500kWp sobre techo de centro comercial. Incluye diseño, ingeniería, suministro e instalación de paneles y microinversores, con sistema de monitoreo remoto.",
+      "servicesProvided": ["energias-renovables", "estudios-y-certificaciones"],
+      "images": [],
+      "category": "photovoltaic",
+      "year": 2025,
+      "isFeatured": false,
+      "isActive": true
+    }
+  ],
+
+  "clients": [
+    { "name": "CGE", "logo": "", "website": "https://www.cge.cl", "order": 1, "isActive": true },
+    { "name": "Transelec", "logo": "", "website": "https://www.transelec.cl", "order": 2, "isActive": true },
+    { "name": "Enel", "logo": "", "website": "https://www.enel.cl", "order": 3, "isActive": true },
+    { "name": "AES Chile", "logo": "", "website": "https://www.aes.com", "order": 4, "isActive": true },
+    { "name": "Colbún", "logo": "", "website": "https://www.colbun.cl", "order": 5, "isActive": true },
+    { "name": "Pacific Energy", "logo": "", "website": "https://www.pacificenergy.cl", "order": 6, "isActive": true },
+    { "name": "Grupo Saesa", "logo": "", "website": "https://www.grupo-saesa.cl", "order": 7, "isActive": true },
+    { "name": "Engie", "logo": "", "website": "https://www.engie.cl", "order": 8, "isActive": true }
+  ],
+
+  "stats": [
+    { "label": "Años de Experiencia", "value": "15", "prefix": "", "suffix": "+", "order": 1, "isActive": true },
+    { "label": "Proyectos Completados", "value": "200", "prefix": "", "suffix": "+", "order": 2, "isActive": true },
+    { "label": "Clientes Satisfechos", "value": "150", "prefix": "", "suffix": "+", "order": 3, "isActive": true },
+    { "label": "MW Instalados", "value": "500", "prefix": "", "suffix": "+", "order": 4, "isActive": true }
+  ],
+
+  "siteConfig": [
+    { "key": "companyName", "value": "PRE&CON", "group": "general" },
+    { "key": "companyTagline", "value": "Ingeniería Eléctrica de Alta Tensión", "group": "general" },
+    { "key": "contactEmail", "value": "contacto@precon.cl", "group": "contact" },
+    { "key": "contactPhone", "value": "+56 2 2345 6789", "group": "contact" },
+    { "key": "contactAddress", "value": "Av. Libertador Bernardo O'Higgins 1449", "group": "contact" },
+    { "key": "contactCity", "value": "Santiago, Chile", "group": "contact" },
+    { "key": "facebookUrl", "value": "https://www.facebook.com/precon", "group": "social" },
+    { "key": "linkedinUrl", "value": "https://www.linkedin.com/company/precon", "group": "social" },
+    { "key": "instagramUrl", "value": "https://www.instagram.com/precon", "group": "social" },
+    { "key": "defaultMetaTitle", "value": "PRE&CON - Ingeniería Eléctrica de Alta Tensión", "group": "seo" },
+    { "key": "defaultMetaDescription", "value": "PRE&CON es una empresa chilena líder en ingeniería eléctrica de alta tensión. Servicios de transmisión, distribución, energías renovables y certificaciones.", "group": "seo" }
+  ]
+}
