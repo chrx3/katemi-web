@@ -36,22 +36,12 @@ export default function StatCounter({
             </span>
           )}
           <CountUp
-            start={0}
+            start={isInView ? 0 : undefined}
             end={numericValue}
             duration={2}
             separator=","
             useEasing={true}
-            startWhenOnScreen={true}
-          >
-            {({ countUpRef }) => (
-              <span
-                ref={countUpRef as React.Ref<HTMLSpanElement>}
-                className="text-6xl md:text-7xl text-[#00D4FF] font-bold tracking-tight"
-              >
-                0
-              </span>
-            )}
-          </CountUp>
+          />
           {suffix && (
             <span className="text-3xl md:text-4xl text-[#00D4FF] font-bold">
               {suffix}

@@ -24,7 +24,7 @@ export default function ServiceCard({
   const [isHovered, setIsHovered] = useState(false);
 
   // Dynamically get the Lucide icon
-  const IconComponent = (LucideIcons as Record<string, React.ComponentType<{ size?: number; className?: string }>>)[icon] || LucideIcons.Box;
+  const IconComponent = ((LucideIcons as unknown) as Record<string, React.ComponentType<{ size?: number; className?: string }>>)[icon] || LucideIcons.Box;
 
   return (
     <motion.div
