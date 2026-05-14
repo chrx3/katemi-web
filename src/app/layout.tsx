@@ -3,6 +3,7 @@ import { Space_Grotesk } from 'next/font/google';
 import { Toaster } from '~/components/ui/sonner';
 import Navbar from '~/components/layout/Navbar';
 import Footer from '~/components/layout/Footer';
+import LenisProvider from '~/components/providers/LenisProvider';
 import './globals.css';
 
 const spaceGrotesk = Space_Grotesk({
@@ -12,9 +13,9 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: 'PRE&CON Ingenieria',
-  description: 'Ingeniería de proyectos industriales y construcción en Chile',
-  keywords: ['ingeniería', 'construcción', 'Chile', 'proyectos industriales'],
+  title: 'PRE&CON — Ingeniería y Proyectos Eléctricos',
+  description: 'Soluciones integrales en ingeniería eléctrica, instalaciones, automatización y certificaciones para la industria y infraestructura en Chile.',
+  keywords: ['ingeniería eléctrica', 'proyectos industriales', 'Chile', 'instalaciones eléctricas', 'automatización'],
 };
 
 export default function RootLayout({
@@ -25,9 +26,11 @@ export default function RootLayout({
   return (
     <html lang="es-CL" className={spaceGrotesk.variable}>
       <body className="antialiased min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <LenisProvider>
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </LenisProvider>
         <Toaster position="top-right" richColors />
       </body>
     </html>
