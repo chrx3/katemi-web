@@ -102,7 +102,7 @@ export default function ContactoPage() {
               <ScrollReveal direction="left">
                 <div>
                   <h2 className="text-2xl font-bold text-[#0B1D3A] uppercase tracking-tight mb-4">
-                    Conoce más sobre PRE&CON
+                    Conoce más sobre Katemi
                   </h2>
                   <p className="text-gray-600 leading-relaxed">
                     Estamos ubicados en Santiago y prestamos servicios en todo Chile. 
@@ -177,7 +177,7 @@ export default function ContactoPage() {
                     allowFullScreen
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
-                    title="PRE&CON Ubicación"
+                    title="Katemi Ubicación"
                   />
                 </div>
               </ScrollReveal>

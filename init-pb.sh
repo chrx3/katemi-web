@@ -3,7 +3,7 @@
 # Usage: ./init-pb.sh [--dry-run]
 #
 # Required env vars:
-#   POCKETBASE_URL   - e.g. http://localhost:8090 or http://pb.preicon.cl
+#   POCKETBASE_URL   - e.g. http://localhost:8090 or http://pb.katemi.cl
 #   POCKETBASE_ADMIN_EMAIL
 #   POCKETBASE_ADMIN_PASSWORD
 

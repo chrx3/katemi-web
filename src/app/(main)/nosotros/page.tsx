@@ -65,7 +65,7 @@ export default function NosotrosPage() {
     <div className="flex flex-col">
       <PageHeader
         title="Nosotros"
-        subtitle="Conoce a PRE&CON"
+        subtitle="Conoce a Katemi"
         eyebrow="Nuestra Empresa"
       />
 
@@ -79,7 +79,7 @@ export default function NosotrosPage() {
                 <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-[#0B1D3A]">
                   <img
                     src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80"
-                    alt="Equipo PRE&CON en terreno"
+                    alt="Equipo Katemi en terreno"
                     className="w-full h-full object-cover opacity-90"
                   />
                 </div>
@@ -100,7 +100,7 @@ export default function NosotrosPage() {
                 </h2>
                 <div className="space-y-4 text-gray-600 leading-relaxed">
                   <p>
-                    PRE&CON nació en 2009 con una visión clara: convertirse en una empresa líder en 
+                    Katemi nació en 2009 con una visión clara: convertirse en una empresa líder en 
                     ingeniería y proyectos eléctricos, comprometida con la calidad, la seguridad y 
                     el desarrollo sostenible de Chile.
                   </p>

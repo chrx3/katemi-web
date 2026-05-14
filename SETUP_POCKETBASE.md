@@ -1,6 +1,6 @@
-# PRE&CON PocketBase Setup Guide
+# Katemi PocketBase Setup Guide
 
-This document contains the complete collection schemas to set up PocketBase for the PRE&CON website.
+This document contains the complete collection schemas to set up PocketBase for the Katemi website.
 
 ## Collections Overview
 

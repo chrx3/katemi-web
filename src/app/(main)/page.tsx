@@ -9,9 +9,9 @@ import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
 
 export const metadata: Metadata = {
-  title: 'PRE&CON — Ingeniería y Proyectos Eléctricos',
+  title: 'Katemi — Ingeniería y Proyectos Eléctricos',
   description:
-    'PRE&CON es una empresa líder en ingeniería y proyectos eléctricos en Chile. Más de 12 años ejecutando proyectos en media y alta tensión para las principales empresas del sector.',
+    'Katemi es una empresa líder en ingeniería y proyectos eléctricos en Chile. Más de 12 años ejecutando proyectos en media y alta tensión para las principales empresas del sector.',
 };
 
 export default function HomePage() {

@@ -211,7 +211,7 @@ export default function Footer() {
             style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}
           >
             <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
-              © {currentYear} PRE&CON · Todos los derechos reservados
+              © {currentYear} Katemi · Todos los derechos reservados
             </p>
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 rounded-full bg-[#00A896]" />

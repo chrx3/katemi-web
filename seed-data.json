@@ -4,7 +4,7 @@
       "slug": "transmision-electrica",
       "title": "Transmisión Eléctrica",
       "shortDescription": "Diseño y construcción de líneas de transmisión de alta tensión hasta 500kV.",
-      "fullDescription": "En PRE&CON ofrecemos servicios integrales de transmisión eléctrica, desde estudios de prefactibilidad hasta la construcción y puesta en servicio de líneas de transmisión de alta tensión. Nuestro equipo de ingenieros especializados garantiza proyectos seguros, eficientes y dentro de los plazos establecidos.",
+      "fullDescription": "En Katemi ofrecemos servicios integrales de transmisión eléctrica, desde estudios de prefactibilidad hasta la construcción y puesta en servicio de líneas de transmisión de alta tensión. Nuestro equipo de ingenieros especializados garantiza proyectos seguros, eficientes y dentro de los plazos establecidos.",
       "features": ["Líneas de transmisión hasta 500kV", "Torres de transmisión y subestaciones", "Estudios de impacto ambiental", "Gestión de servidumbres", "Puesta en servicio y commissioning"],
       "icon": "Zap",
       "order": 1,
@@ -142,7 +142,7 @@
   ],
 
   "siteConfig": [
-    { "key": "companyName", "value": "PRE&CON", "group": "general" },
+    { "key": "companyName", "value": "Katemi", "group": "general" },
     { "key": "companyTagline", "value": "Ingeniería Eléctrica de Alta Tensión", "group": "general" },
     { "key": "contactEmail", "value": "contacto@precon.cl", "group": "contact" },
     { "key": "contactPhone", "value": "+56 2 2345 6789", "group": "contact" },
@@ -151,7 +151,7 @@
     { "key": "facebookUrl", "value": "https://www.facebook.com/precon", "group": "social" },
     { "key": "linkedinUrl", "value": "https://www.linkedin.com/company/precon", "group": "social" },
     { "key": "instagramUrl", "value": "https://www.instagram.com/precon", "group": "social" },
-    { "key": "defaultMetaTitle", "value": "PRE&CON - Ingeniería Eléctrica de Alta Tensión", "group": "seo" },
-    { "key": "defaultMetaDescription", "value": "PRE&CON es una empresa chilena líder en ingeniería eléctrica de alta tensión. Servicios de transmisión, distribución, energías renovables y certificaciones.", "group": "seo" }
+    { "key": "defaultMetaTitle", "value": "Katemi - Ingeniería Eléctrica de Alta Tensión", "group": "seo" },
+    { "key": "defaultMetaDescription", "value": "Katemi es una empresa chilena líder en ingeniería eléctrica de alta tensión. Servicios de transmisión, distribución, energías renovables y certificaciones.", "group": "seo" }
   ]
 }

@@ -13,7 +13,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: 'PRE&CON — Ingeniería y Proyectos Eléctricos',
+  title: 'Katemi — Ingeniería y Proyectos Eléctricos',
   description: 'Soluciones integrales en ingeniería eléctrica, instalaciones, automatización y certificaciones para la industria y infraestructura en Chile.',
   keywords: ['ingeniería eléctrica', 'proyectos industriales', 'Chile', 'instalaciones eléctricas', 'automatización'],
 };
