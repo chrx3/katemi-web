@@ -24,7 +24,7 @@ export default function HomePage() {
                 </Button>
               </Link>
               <Link href="/proyectos">
-                <Button variant="outline" className="border-white/50 text-white hover:bg-white hover:text-[#0B1D3A]">
+                <Button className="border border-white/40 bg-transparent text-white hover:bg-white hover:text-[#0B1D3A] transition-all">
                   Ver Proyectos
                 </Button>
               </Link>
