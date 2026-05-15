@@ -83,7 +83,7 @@ export default function Footer() {
                   <Zap className="w-5 h-5 text-white" strokeWidth={2.5} />
                 </div>
                 <span className="text-xl font-bold text-white tracking-tight">
-                  PRE<span className="text-[#00A896]">&</span>CON
+                  Katemi
                 </span>
               </div>
               <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
@@ -100,12 +100,12 @@ export default function Footer() {
                   +56 9 1234 5678
                 </a>
                 <a
-                  href="mailto:contacto@precon.cl"
+                  href="mailto:contacto@katemi.chrsx3.com"
                   className="flex items-center gap-2.5 text-sm hover:text-[#00D4FF] transition-colors"
                   style={{ color: 'rgba(255,255,255,0.65)' }}
                 >
                   <Mail className="w-4 h-4 flex-shrink-0" />
-                  contacto@precon.cl
+                  contacto@katemi.chrsx3.com
                 </a>
               </div>
             </div>
@@ -180,7 +180,7 @@ export default function Footer() {
               {/* Social Icons */}
               <div className="flex items-center gap-3 mt-3">
                 <a
-                  href="https://linkedin.com/company/precon"
+                  href="https://linkedin.com/company/katemi"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center w-10 h-10 rounded-lg border hover:border-[#00A896] hover:bg-[#00A896]/10 transition-all duration-200"
@@ -190,7 +190,7 @@ export default function Footer() {
                   <LinkedinIcon className="w-4 h-4" />
                 </a>
                 <a
-                  href="https://instagram.com/precon"
+                  href="https://instagram.com/katemi"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center w-10 h-10 rounded-lg border hover:border-[#00A896] hover:bg-[#00A896]/10 transition-all duration-200"

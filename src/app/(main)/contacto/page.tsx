@@ -123,8 +123,8 @@ export default function ContactoPage() {
                   {
                     icon: Mail,
                     label: 'Correo electrónico',
-                    value: 'contacto@precon.cl',
-                    href: 'mailto:contacto@precon.cl',
+                    value: 'contacto@katemi.chrsx3.com',
+                    href: 'mailto:contacto@katemi.chrsx3.com',
                   },
                   {
                     icon: MapPin,

@@ -92,7 +92,7 @@ export default function Navbar() {
                 <Zap className="w-5 h-5 text-white" strokeWidth={2.5} />
               </div>
               <span className="text-xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
-                PRE<span className="text-[#00A896]">&</span>CON
+                Katemi
               </span>
             </Link>
 
@@ -170,7 +170,7 @@ export default function Navbar() {
             <div className="flex flex-col h-full">
               {/* Mobile Header */}
               <div className="flex items-center justify-between px-6 h-16 border-b">
-                <span className="text-lg font-bold tracking-tight">PRE<span className="text-[#00A896]">&</span>CON</span>
+                <span className="text-lg font-bold tracking-tight">Katemi</span>
                 <button
                   onClick={() => setMobileOpen(false)}
                   className="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-[#F5F5F5] transition-colors"
