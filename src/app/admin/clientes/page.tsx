@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import Header from '@/components/admin/Header';
 import { getClients, createClient, updateClient, deleteClient } from '@/lib/pb-admin';
 import { Button } from '@/components/ui/button';
@@ -91,7 +92,10 @@ export default function ClientesPage() {
   };
 
   const handleSave = async () => {
-    if (!formValues.name.trim()) return;
+    if (!formValues.name.trim()) {
+      toast.error('El nombre es requerido');
+      return;
+    }
     setSaving(true);
     try {
       const formData = new FormData();

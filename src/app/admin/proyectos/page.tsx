@@ -123,6 +123,14 @@ export default function AdminProyectosPage() {
       showToast('Título y cliente son requeridos', 'error');
       return;
     }
+    if (!formData.description.trim()) {
+      showToast('La descripción es requerida', 'error');
+      return;
+    }
+    if (!formData.slug.trim()) {
+      showToast('El slug es requerido', 'error');
+      return;
+    }
 
     setSaving(true);
     try {

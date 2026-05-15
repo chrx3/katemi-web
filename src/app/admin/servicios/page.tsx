@@ -123,6 +123,10 @@ export default function ServiciosPage() {
       toast.error('El slug es requerido');
       return;
     }
+    if (!formData.shortDescription.trim()) {
+      toast.error('La descripción corta es requerida');
+      return;
+    }
 
     setSubmitting(true);
     try {
