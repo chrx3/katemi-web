@@ -23,7 +23,15 @@ export async function getServices() {
   return pb.collection('services').getFullList({ sort: 'order' });
 }
 export async function createService(data: any) {
-  return pb.collection('services').create({ id: generateId('svc'), ...data });
+  const payload = { ...data };
+  if (payload.features && typeof payload.features === 'string') {
+    try {
+      payload.features = JSON.parse(payload.features);
+    } catch {
+      payload.features = [];
+    }
+  }
+  return pb.collection('services').create({ id: generateId('svc'), ...payload });
 }
 export async function updateService(id: string, data: any) {
   return pb.collection('services').update(id, data);
@@ -37,7 +45,15 @@ export async function getProjects() {
   return pb.collection('projects').getFullList({ sort: '-year' });
 }
 export async function createProject(data: any) {
-  return pb.collection('projects').create({ id: generateId('prj'), ...data });
+  const payload = { ...data };
+  if (payload.servicesProvided && typeof payload.servicesProvided === 'string') {
+    try {
+      payload.servicesProvided = JSON.parse(payload.servicesProvided);
+    } catch {
+      payload.servicesProvided = [];
+    }
+  }
+  return pb.collection('projects').create({ id: generateId('prj'), ...payload });
 }
 export async function updateProject(id: string, data: any) {
   return pb.collection('projects').update(id, data);
