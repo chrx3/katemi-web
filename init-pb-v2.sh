@@ -8,7 +8,7 @@ set -euo pipefail
 # ── Config ────────────────────────────────────────────────────────────────────
 PB_CONTAINER="${PB_CONTAINER:-pocketbase-fk88xolvxfxq5jziugw4qcu5}"
 PB_URL="${POCKETBASE_URL:-http://localhost:8090}"
-ADMIN_EMAIL="${POCKETBASE_ADMIN_EMAIL:-admin@precon.cl}"
+ADMIN_EMAIL="${POCKETBASE_ADMIN_EMAIL:-admin@katemi.cl}"
 ADMIN_PASS="${POCKETBASE_ADMIN_PASSWORD:-changeme}"
 SEED_FILE="${SEED_FILE:-./seed-data.json}"
 PB_CLI="/app/pocketbase"
@@ -348,7 +348,7 @@ main() {
   echo
   echo "  Admin UI  : ${PB_URL}/_/"
   echo "  API       : ${PB_URL}/api/"
-  echo "  Default   : admin@precon.cl / changeme"
+  echo "  Default   : admin@katemi.cl / changeme"
   echo "  ⚠  Remember to change the admin password!"
 }
 

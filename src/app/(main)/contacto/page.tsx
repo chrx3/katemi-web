@@ -305,7 +305,7 @@ export default function ContactoPage() {
                         Asunto <span className="text-red-500">*</span>
                       </Label>
                       <Select
-                        onValueChange={(val) => setValue('subject', val)}
+                        onValueChange={(val) => setValue('subject', val as string)}
                       >
                         <SelectTrigger
                           id="subject"

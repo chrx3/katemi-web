@@ -44,7 +44,7 @@ function RevealItem({ children, delay = 0 }: { children: React.ReactNode; delay?
       ref={ref}
       initial={{ opacity: 0, y: 24 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-      transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94], delay }}
+      transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number], delay }}
     >
       {children}
     </motion.div>

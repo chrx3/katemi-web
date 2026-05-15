@@ -6,7 +6,7 @@ import { useRef } from 'react';
 import Link from 'next/link';
 import PageHeader from '~/components/shared/PageHeader';
 import ScrollReveal from '~/components/shared/ScrollReveal';
-import { Target, Eye, Heart, Users, Phone, Linkedin } from 'lucide-react';
+import { Target, Eye, Heart, Users, Phone, ExternalLink } from 'lucide-react';
 
 // Static data - in production this would come from PocketBase
 const staticTeam = [
@@ -257,7 +257,7 @@ export default function NosotrosPage() {
                     </div>
                     {/* LinkedIn icon on hover */}
                     <div className="absolute -bottom-1 -right-1 w-9 h-9 rounded-full bg-[#0B1D3A] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md">
-                      <Linkedin className="w-4 h-4 text-white" />
+                      <ExternalLink className="w-4 h-4 text-white" />
                     </div>
                   </div>
                   <h3 className="font-bold text-[#0B1D3A] text-lg uppercase tracking-tight">

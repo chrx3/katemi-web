@@ -384,6 +384,3 @@ export default function ProyectoDetailPage() {
   );
 }
 
-export async function generateStaticParams() {
-  return allSlugs.map((slug) => ({ slug }));
-}

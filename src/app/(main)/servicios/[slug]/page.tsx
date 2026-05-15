@@ -351,11 +351,3 @@ export default function ServicioDetailPage() {
   );
 }
 
-export async function generateStaticParams() {
-  return [
-    { slug: 'ingenieria-y-diseno' },
-    { slug: 'instalaciones-electricas' },
-    { slug: 'automatizacion-y-control' },
-    { slug: 'mediciones-y-certificaciones' },
-  ];
-}
