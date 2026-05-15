@@ -2,6 +2,16 @@ import PocketBase from 'pocketbase';
 
 const pb = new PocketBase(process.env.NEXT_PUBLIC_POCKETBASE_URL || 'http://localhost:8090');
 
+// Generate unique IDs for PocketBase records
+function generateId(prefix: string = ''): string {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let id = prefix;
+  for (let i = 0; i < 15; i++) {
+    id += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return id;
+}
+
 // Auth
 export async function adminLogin(email: string, password: string) {
   const auth = await pb.collection('_superusers').authWithPassword(email, password);
@@ -13,7 +23,7 @@ export async function getServices() {
   return pb.collection('services').getFullList({ sort: 'order' });
 }
 export async function createService(data: any) {
-  return pb.collection('services').create(data);
+  return pb.collection('services').create({ id: generateId('svc'), ...data });
 }
 export async function updateService(id: string, data: any) {
   return pb.collection('services').update(id, data);
@@ -27,7 +37,7 @@ export async function getProjects() {
   return pb.collection('projects').getFullList({ sort: '-year' });
 }
 export async function createProject(data: any) {
-  return pb.collection('projects').create(data);
+  return pb.collection('projects').create({ id: generateId('prj'), ...data });
 }
 export async function updateProject(id: string, data: any) {
   return pb.collection('projects').update(id, data);
@@ -41,7 +51,7 @@ export async function getClients() {
   return pb.collection('clients').getFullList({ sort: 'order' });
 }
 export async function createClient(data: any) {
-  return pb.collection('clients').create(data);
+  return pb.collection('clients').create({ id: generateId('cli'), ...data });
 }
 export async function updateClient(id: string, data: any) {
   return pb.collection('clients').update(id, data);
@@ -59,7 +69,7 @@ export async function setSiteConfig(key: string, value: string) {
     const existing = await pb.collection('siteConfig').getFirstListItem(`key="${key}"`);
     return pb.collection('siteConfig').update(existing.id, { value });
   } catch {
-    return pb.collection('siteConfig').create({ key, value });
+    return pb.collection('siteConfig').create({ id: generateId('cfg'), key, value });
   }
 }
 
