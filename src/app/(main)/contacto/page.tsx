@@ -64,13 +64,11 @@ export default function ContactoPage() {
     setIsSubmitting(true);
     try {
       await pb.collection('contacts').create({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        phone: data.phone,
-        company: data.company || '',
+        nombre: `${data.firstName} ${data.lastName}`,
+        telefono: data.phone,
         email: data.email,
-        subject: data.subject,
-        message: data.message,
+        asunto: data.subject,
+        mensaje: data.message,
       });
       toast.success('Mensaje enviado correctamente', {
         description: 'Nos pondremos en contacto contigo a la brevedad.',
