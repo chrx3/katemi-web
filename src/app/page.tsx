@@ -1,5 +1,6 @@
 import { Button } from '~/components/ui/button';
 import { Card, CardContent } from '~/components/ui/card';
+import Link from 'next/link';
 
 export default function HomePage() {
   return (
@@ -17,12 +18,16 @@ export default function HomePage() {
               proyectos industriales, construcción y desarrollo de infraestructura.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Button className="bg-[#00A896] hover:bg-[#008f7f] text-white">
-                Nuestros Servicios
-              </Button>
-              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-[#0B1D3A]">
-                Ver Proyectos
-              </Button>
+              <Link href="/servicios">
+                <Button className="bg-[#00A896] hover:bg-[#008f7f] text-white">
+                  Nuestros Servicios
+                </Button>
+              </Link>
+              <Link href="/proyectos">
+                <Button variant="outline" className="border-white/50 text-white hover:bg-white hover:text-[#0B1D3A]">
+                  Ver Proyectos
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
