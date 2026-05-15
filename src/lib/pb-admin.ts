@@ -67,6 +67,16 @@ export async function getClients() {
   return pb.collection('clients').getFullList({ sort: 'order' });
 }
 export async function createClient(data: any) {
+  // Handle FormData from the admin form - extract fields properly
+  if (data instanceof FormData) {
+    const payload: Record<string, any> = { id: generateId('cli') };
+    data.forEach((value, key) => {
+      if (!(value instanceof File)) {
+        payload[key] = value;
+      }
+    });
+    return pb.collection('clients').create(payload);
+  }
   return pb.collection('clients').create({ id: generateId('cli'), ...data });
 }
 export async function updateClient(id: string, data: any) {
