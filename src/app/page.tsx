@@ -13,7 +13,7 @@ export default function HomePage() {
               <span className="text-[#00A896]">construye futuro</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-300 mb-8">
-              PRO&CON es una empresa de ingeniería líder en Chile, especializada en 
+              Katemi es una empresa líder en ingeniería y proyectos eléctricos en Chile, especializada en 
               proyectos industriales, construcción y desarrollo de infraestructura.
             </p>
             <div className="flex flex-wrap gap-4">
