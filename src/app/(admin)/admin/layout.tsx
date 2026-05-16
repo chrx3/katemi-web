@@ -2,6 +2,7 @@
 
 import { SidebarProvider, useSidebar } from '@/context/SidebarContext';
 import Sidebar from '@/components/admin/Sidebar';
+import { Toaster } from '~/components/ui/sonner';
 
 function AdminContent({ children }: { children: React.ReactNode }) {
   const { collapsed } = useSidebar();
@@ -16,6 +17,7 @@ function AdminContent({ children }: { children: React.ReactNode }) {
       >
         {children}
       </div>
+      <Toaster position="top-right" richColors />
     </div>
   );
 }
