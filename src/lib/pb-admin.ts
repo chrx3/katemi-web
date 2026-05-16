@@ -2,6 +2,9 @@ import PocketBase from 'pocketbase';
 
 const pb = new PocketBase(process.env.NEXT_PUBLIC_POCKETBASE_URL || 'http://localhost:8090');
 
+// Use static token for server-side operations
+pb.autoCancellation(false);
+
 // Generate unique IDs for PocketBase records
 function generateId(prefix: string = ''): string {
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
