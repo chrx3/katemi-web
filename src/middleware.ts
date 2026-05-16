@@ -7,6 +7,7 @@ export function middleware(request: NextRequest) {
   // Allow access to /admin/login and /api/admin/* without auth check
   if (
     pathname === "/admin/login" ||
+    pathname.startsWith("/admin/login/") ||
     pathname.startsWith("/api/admin/")
   ) {
     return NextResponse.next();

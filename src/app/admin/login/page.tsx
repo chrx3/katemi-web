@@ -25,7 +25,9 @@ export default function AdminLoginPage() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        router.push("/admin");
+        // Wait for cookie to be set by the response before redirecting
+        await new Promise(resolve => setTimeout(resolve, 100));
+        window.location.href = "/admin";
       } else {
         setError(data.error || "Password incorrecto");
         setPassword("");
