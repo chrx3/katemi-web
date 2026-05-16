@@ -104,5 +104,5 @@ export async function setSiteConfig(key: string, value: string) {
 
 // Contacts
 export async function getContacts() {
-  return pb.collection('contacts').getFullList({ sort: '-created' });
+  return pb.collection('contacts').getList(1, 100, { sort: '-created' });
 }
