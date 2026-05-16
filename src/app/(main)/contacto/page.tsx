@@ -10,6 +10,15 @@ import { Send, Phone, Mail, MapPin, Clock } from 'lucide-react';
 import PageHeader from '~/components/shared/PageHeader';
 import ScrollReveal from '~/components/shared/ScrollReveal';
 import { pb } from '~/lib/pocketbase';
+
+function generateId(prefix: string = ''): string {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let id = prefix;
+  for (let i = 0; i < 15; i++) {
+    id += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return id;
+}
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Textarea } from '~/components/ui/textarea';
@@ -64,6 +73,7 @@ export default function ContactoPage() {
     setIsSubmitting(true);
     try {
       await pb.collection('contacts').create({
+        id: generateId('cnt'),
         nombre: `${data.firstName} ${data.lastName}`,
         telefono: data.phone,
         email: data.email,
