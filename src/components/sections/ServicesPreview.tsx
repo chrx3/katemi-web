@@ -1,100 +1,155 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import SectionHeader from '../shared/SectionHeader';
-import ServiceCard from '../shared/ServiceCard';
-import ScrollReveal from '../shared/ScrollReveal';
-import pb from '@/lib/pocketbase';
+import Link from "next/link";
+import SectionHeader from "../shared/SectionHeader";
+import ServiceCard from "../shared/ServiceCard";
+import ScrollReveal from "../shared/ScrollReveal";
+import type { LandingTemplateConfig } from "@/lib/template-config";
+import InlineEditableText from "@/components/template/InlineEditableText";
 
-const staticServices = [
-  {
-    slug: 'ingenieria-electrica',
-    title: 'Ingeniería Eléctrica',
-    shortDescription:
-      'Diseño y desarrollo de proyectos eléctricos de media y alta tensión, desde la conceptualización hasta la puesta en servicio.',
-    icon: 'Zap',
-    imageUrl: '',
-  },
-  {
-    slug: 'instalaciones',
-    title: 'Instalaciones Eléctricas',
-    shortDescription:
-      'Ejecución profesional de instalaciones eléctricas industriales y comerciales, con los más altos estándares de seguridad.',
-    icon: 'Wrench',
-    imageUrl: '',
-  },
-  {
-    slug: 'automatizacion',
-    title: 'Automatización y Control',
-    shortDescription:
-      'Sistemas de automatización, control SCADA y tableros de distribución para optimizar procesos industriales.',
-    icon: 'Settings',
-    imageUrl: '',
-  },
-  {
-    slug: 'mediciones',
-    title: 'Mediciones y Certificaciones',
-    shortDescription:
-      'Ensayos de puesta en servicio, mediciones de tierra, termografías y certificaciones según normativa chilena.',
-    icon: 'FileCheck',
-    imageUrl: '',
-  },
-];
+type ServicesContent = Pick<
+  LandingTemplateConfig,
+  | "servicesEyebrow"
+  | "servicesTitle"
+  | "servicesSubtitle"
+  | "servicesDescription"
+  | "servicesLinkLabel"
+  | "servicesItems"
+>;
 
-export default function ServicesPreview() {
+interface ServicesPreviewProps {
+  content: ServicesContent;
+  editable?: boolean;
+  onFieldChange?: (key: keyof ServicesContent, value: string) => void;
+  onServiceChange?: (
+    index: number,
+    field: keyof LandingTemplateConfig["servicesItems"][number],
+    value: string,
+  ) => void;
+}
+
+export default function ServicesPreview({
+  content,
+  editable = false,
+  onFieldChange,
+  onServiceChange,
+}: ServicesPreviewProps) {
   return (
     <section className="py-24 bg-white">
       <div className="container-max">
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-start">
-          {/* Left: Header + text */}
           <div className="lg:w-5/12 lg:pt-4">
-            <SectionHeader
-              title="Nuestros Servicios"
-              subtitle="Soluciones integrales en ingeniería eléctrica para la industria y infraestructura en Chile."
-              eyebrow="Qué hacemos"
-              centered={false}
-            />
-            <ScrollReveal delay={0.3}>
-              <p className="mt-6 text-gray-600 leading-relaxed">
-                Contamos con un equipo multidisciplinario de ingenieros y técnicos
-                especializados en cada área de la ingeniería eléctrica, aportando
-                soluciones seguras, eficientes y normativas a cada proyecto.
-              </p>
-            </ScrollReveal>
-            <ScrollReveal delay={0.4}>
-              <Link
-                href="/servicios"
-                className="mt-8 inline-flex items-center gap-2 text-[#00A896] font-semibold hover:text-[#0B1D3A] transition-colors"
-              >
-                Ver Todos los Servicios
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 8l4 4m0 0l-4 4m4-4H3"
+            {editable && onFieldChange ? (
+              <div className="space-y-2">
+                <InlineEditableText
+                  value={content.servicesEyebrow}
+                  onChange={(v) => onFieldChange("servicesEyebrow", v)}
+                  className="text-xs font-medium uppercase tracking-widest text-[#00A896]"
+                />
+                <InlineEditableText
+                  value={content.servicesTitle}
+                  onChange={(v) => onFieldChange("servicesTitle", v)}
+                  className="text-3xl md:text-4xl lg:text-5xl font-bold uppercase text-[#0B1D3A]"
+                />
+                <InlineEditableText
+                  value={content.servicesSubtitle}
+                  onChange={(v) => onFieldChange("servicesSubtitle", v)}
+                  multiline
+                  className="text-lg text-gray-500"
+                />
+                <InlineEditableText
+                  value={content.servicesDescription}
+                  onChange={(v) => onFieldChange("servicesDescription", v)}
+                  multiline
+                  className="mt-6 text-gray-600 leading-relaxed"
+                />
+                <div className="mt-8 inline-flex items-center gap-2 text-[#00A896] font-semibold">
+                  <InlineEditableText
+                    value={content.servicesLinkLabel}
+                    onChange={(v) => onFieldChange("servicesLinkLabel", v)}
+                    className="text-[#00A896] font-semibold"
                   />
-                </svg>
-              </Link>
-            </ScrollReveal>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    />
+                  </svg>
+                </div>
+              </div>
+            ) : (
+              <>
+                <SectionHeader
+                  title={content.servicesTitle}
+                  subtitle={content.servicesSubtitle}
+                  eyebrow={content.servicesEyebrow}
+                  centered={false}
+                />
+                <ScrollReveal delay={0.3}>
+                  <p className="mt-6 text-gray-600 leading-relaxed">
+                    {content.servicesDescription}
+                  </p>
+                </ScrollReveal>
+                <ScrollReveal delay={0.4}>
+                  <Link
+                    href="/servicios"
+                    className="mt-8 inline-flex items-center gap-2 text-[#00A896] font-semibold hover:text-[#0B1D3A] transition-colors"
+                  >
+                    {content.servicesLinkLabel}
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                      />
+                    </svg>
+                  </Link>
+                </ScrollReveal>
+              </>
+            )}
           </div>
 
-          {/* Right: 2x2 grid of ServiceCards */}
           <div className="lg:w-7/12 grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {staticServices.map((service, i) => (
-              <ScrollReveal key={service.slug} delay={i * 0.1}>
-                <ServiceCard
-                  slug={service.slug}
-                  title={service.title}
-                  shortDescription={service.shortDescription}
-                  icon={service.icon}
-                  imageUrl={service.imageUrl}
-                />
+            {content.servicesItems.map((service, i) => (
+              <ScrollReveal key={`${service.slug}-${i}`} delay={i * 0.1}>
+                {editable && onServiceChange ? (
+                  <div className="rounded-2xl border border-[#00A896]/30 bg-white p-5 shadow-sm">
+                    <InlineEditableText
+                      value={service.title}
+                      onChange={(v) => onServiceChange(i, "title", v)}
+                      className="font-bold text-lg uppercase tracking-tight text-[#0B1D3A]"
+                    />
+                    <InlineEditableText
+                      value={service.shortDescription}
+                      onChange={(v) =>
+                        onServiceChange(i, "shortDescription", v)
+                      }
+                      multiline
+                      className="text-sm text-gray-600 mt-3"
+                    />
+                  </div>
+                ) : (
+                  <ServiceCard
+                    slug={service.slug}
+                    title={service.title}
+                    shortDescription={service.shortDescription}
+                    icon={service.icon}
+                    imageUrl={service.imageUrl}
+                  />
+                )}
               </ScrollReveal>
             ))}
           </div>

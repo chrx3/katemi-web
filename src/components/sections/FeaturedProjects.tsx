@@ -1,57 +1,70 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import SectionHeader from '../shared/SectionHeader';
-import ProjectCard from '../shared/ProjectCard';
-import ScrollReveal from '../shared/ScrollReveal';
+import Link from "next/link";
+import SectionHeader from "../shared/SectionHeader";
+import ProjectCard from "../shared/ProjectCard";
+import ScrollReveal from "../shared/ScrollReveal";
+import type { LandingTemplateConfig } from "@/lib/template-config";
 
 const staticProjects = [
   {
-    slug: 'subestacion-cge-central',
-    title: 'Subestación 110kV Central',
-    clientName: 'CGE',
-    location: 'Región Metropolitana',
+    slug: "subestacion-cge-central",
+    title: "Subestación 110kV Central",
+    clientName: "CGE",
+    location: "Región Metropolitana",
     description:
-      'Diseño y construcción de subestación de transformación 110/23kV con capacidad de 40 MVA para suministro industrial.',
-    category: 'Media Tensión',
-    year: '2024',
+      "Diseño y construcción de subestación de transformación 110/23kV con capacidad de 40 MVA para suministro industrial.",
+    category: "Media Tensión",
+    year: "2024",
     imageUrl:
-      'https://images.unsplash.com/photo-1621905251189-08b45d6a65e9?w=800&q=80',
+      "https://images.unsplash.com/photo-1621905251189-08b45d6a65e9?w=800&q=80",
   },
   {
-    slug: 'linea-aerea-220kv',
-    title: 'Línea Aérea 220kV',
-    clientName: 'Transelec',
-    location: 'Región del Biobío',
+    slug: "linea-aerea-220kv",
+    title: "Línea Aérea 220kV",
+    clientName: "Transelec",
+    location: "Región del Biobío",
     description:
-      'Instalación de 28 km de línea aérea en 220kV con towers de acero galvanizado, incluyendo tendido de conductores.',
-    category: 'Alta Tensión',
-    year: '2023',
+      "Instalación de 28 km de línea aérea en 220kV con towers de acero galvanizado, incluyendo tendido de conductores.",
+    category: "Alta Tensión",
+    year: "2023",
     imageUrl:
-      'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&q=80',
+      "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&q=80",
   },
   {
-    slug: 'sistema-automatizacion-enel',
-    title: 'Sistema SCADA Enel',
-    clientName: 'Enel',
-    location: 'Región de Valparaíso',
+    slug: "sistema-automatizacion-enel",
+    title: "Sistema SCADA Enel",
+    clientName: "Enel",
+    location: "Región de Valparaíso",
     description:
-      'Implementación de sistema SCADA para control y monitoreo de redes de distribución en media tensión.',
-    category: 'Automatización',
-    year: '2023',
+      "Implementación de sistema SCADA para control y monitoreo de redes de distribución en media tensión.",
+    category: "Automatización",
+    year: "2023",
     imageUrl:
-      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
   },
 ];
 
-export default function FeaturedProjects() {
+type FeaturedProjectsContent = Pick<
+  LandingTemplateConfig,
+  | "featuredProjectsEyebrow"
+  | "featuredProjectsTitle"
+  | "featuredProjectsSubtitle"
+  | "featuredProjectsLinkLabel"
+>;
+
+interface FeaturedProjectsProps {
+  content: FeaturedProjectsContent;
+}
+
+export default function FeaturedProjects({ content }: FeaturedProjectsProps) {
   return (
     <section className="py-24 bg-[#2A3F5F]">
       <div className="container-max">
         <SectionHeader
-          title="Proyectos Destacados"
-          subtitle="Conoce algunos de nuestros proyectos más relevantes ejecutados para las principales empresas del sector."
-          eyebrow="Portafolio"
+          title={content.featuredProjectsTitle}
+          subtitle={content.featuredProjectsSubtitle}
+          eyebrow={content.featuredProjectsEyebrow}
           light
         />
 
@@ -78,7 +91,7 @@ export default function FeaturedProjects() {
               href="/proyectos"
               className="inline-flex items-center gap-2 text-white font-semibold hover:text-[#00D4FF] transition-colors"
             >
-              Ver Todos los Proyectos
+              {content.featuredProjectsLinkLabel}
               <svg
                 className="w-4 h-4"
                 fill="none"

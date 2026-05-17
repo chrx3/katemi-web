@@ -1,32 +1,22 @@
-import type { Metadata } from 'next';
-import HeroSection from '@/components/sections/HeroSection';
-import StatsBar from '@/components/sections/StatsBar';
-import ServicesPreview from '@/components/sections/ServicesPreview';
-import FeaturedProjects from '@/components/sections/FeaturedProjects';
-import ClientsMarquee from '@/components/sections/ClientsMarquee';
-import CTABanner from '@/components/sections/CTABanner';
-import Footer from '@/components/layout/Footer';
-import Navbar from '@/components/layout/Navbar';
+import type { Metadata } from "next";
+import LandingTemplatePreview from "@/components/template/LandingTemplatePreview";
+import { getLandingTemplateConfig } from "@/lib/pb-admin";
+import { landingTemplateDefaults } from "@/lib/template-config";
 
 export const metadata: Metadata = {
-  title: 'Katemi — Ingeniería y Proyectos Eléctricos',
+  title: "Katemi — Ingeniería y Proyectos Eléctricos",
   description:
-    'Katemi es una empresa líder en ingeniería y proyectos eléctricos en Chile. Más de 12 años ejecutando proyectos en media y alta tensión para las principales empresas del sector.',
+    "Katemi es una empresa líder en ingeniería y proyectos eléctricos en Chile. Más de 12 años ejecutando proyectos en media y alta tensión para las principales empresas del sector.",
 };
 
-export default function HomePage() {
-  return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar />
-      <main>
-        <HeroSection />
-        <StatsBar />
-        <ServicesPreview />
-        <FeaturedProjects />
-        <ClientsMarquee />
-        <CTABanner />
-      </main>
-      <Footer />
-    </div>
-  );
+export default async function HomePage() {
+  let template = landingTemplateDefaults;
+
+  try {
+    template = await getLandingTemplateConfig();
+  } catch (error) {
+    console.error("Error loading landing template config:", error);
+  }
+
+  return <LandingTemplatePreview template={template} includeChrome={false} />;
 }

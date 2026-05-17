@@ -1,63 +1,109 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
-import { Send, Phone, Mail, MapPin, Clock } from 'lucide-react';
-import PageHeader from '~/components/shared/PageHeader';
-import ScrollReveal from '~/components/shared/ScrollReveal';
-import { pb } from '~/lib/pocketbase';
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import { Send, Phone, Mail, MapPin, Clock } from "lucide-react";
+import PageHeader from "~/components/shared/PageHeader";
+import ScrollReveal from "~/components/shared/ScrollReveal";
+import { pb } from "~/lib/pocketbase";
+import { landingTemplateDefaults } from "~/lib/template-config";
 
-function generateId(prefix: string = ''): string {
-  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+function generateId(prefix: string = ""): string {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
   let id = prefix;
   for (let i = 0; i < 15; i++) {
     id += chars[Math.floor(Math.random() * chars.length)];
   }
   return id;
 }
-import { Button } from '~/components/ui/button';
-import { Input } from '~/components/ui/input';
-import { Textarea } from '~/components/ui/textarea';
-import { Label } from '~/components/ui/label';
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Textarea } from "~/components/ui/textarea";
+import { Label } from "~/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '~/components/ui/select';
+} from "~/components/ui/select";
 
 const contactSchema = z.object({
-  firstName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-  lastName: z.string().min(2, 'El apellido debe tener al menos 2 caracteres'),
-  phone: z.string().min(6, 'Ingresa un número de teléfono válido'),
+  firstName: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+  lastName: z.string().min(2, "El apellido debe tener al menos 2 caracteres"),
+  phone: z.string().min(6, "Ingresa un número de teléfono válido"),
   company: z.string().optional(),
-  email: z.string().email('Ingresa un correo electrónico válido'),
-  subject: z.string().min(1, 'Selecciona un assunto'),
+  email: z.string().email("Ingresa un correo electrónico válido"),
+  subject: z.string().min(1, "Selecciona un assunto"),
   message: z
     .string()
-    .min(10, 'El mensaje debe tener al menos 10 caracteres')
-    .max(1000, 'El mensaje no puede exceder los 1000 caracteres'),
+    .min(10, "El mensaje debe tener al menos 10 caracteres")
+    .max(1000, "El mensaje no puede exceder los 1000 caracteres"),
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
 const SUBJECTS = [
-  'Proyecto de ingeniería',
-  'Instalación eléctrica',
-  'Automatización y control',
-  'Certificación SEC',
-  'Consulta general',
-  'Cotización',
-  'Otro',
+  "Proyecto de ingeniería",
+  "Instalación eléctrica",
+  "Automatización y control",
+  "Certificación SEC",
+  "Consulta general",
+  "Cotización",
+  "Otro",
 ];
+
+const defaultContactContent = {
+  contactInfoTitle: landingTemplateDefaults.contactInfoTitle,
+  contactInfoDescription: landingTemplateDefaults.contactInfoDescription,
+  contactPhone: landingTemplateDefaults.contactPhone,
+  contactEmail: landingTemplateDefaults.contactEmail,
+  contactAddress: landingTemplateDefaults.contactAddress,
+  contactHours: landingTemplateDefaults.contactHours,
+};
+
+const contactConfigKeys = new Set(Object.keys(defaultContactContent));
+
+const buildTelHref = (value: string) =>
+  `tel:${value.replace(/\s+/g, "").replace(/[^+\d]/g, "")}`;
+
+const buildMailHref = (value: string) => `mailto:${value.trim()}`;
 
 export default function ContactoPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [contactContent, setContactContent] = useState(defaultContactContent);
+
+  useEffect(() => {
+    const fetchContactContent = async () => {
+      try {
+        const records = await pb.collection("siteConfig").getFullList();
+        const next = { ...defaultContactContent };
+
+        records.forEach((item: unknown) => {
+          if (typeof item !== "object" || item === null) return;
+          const record = item as { key?: unknown; value?: unknown };
+          if (
+            typeof record.key !== "string" ||
+            typeof record.value !== "string"
+          )
+            return;
+          if (!contactConfigKeys.has(record.key)) return;
+
+          const targetKey = record.key as keyof typeof defaultContactContent;
+          next[targetKey] = record.value;
+        });
+
+        setContactContent(next);
+      } catch (error) {
+        console.error("Error loading contact content config:", error);
+      }
+    };
+
+    fetchContactContent();
+  }, []);
 
   const {
     register,
@@ -72,21 +118,21 @@ export default function ContactoPage() {
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
     try {
-      await pb.collection('contacts').create({
-        id: generateId('cnt'),
+      await pb.collection("contacts").create({
+        id: generateId("cnt"),
         nombre: `${data.firstName} ${data.lastName}`,
         telefono: data.phone,
         email: data.email,
         asunto: data.subject,
         mensaje: data.message,
       });
-      toast.success('Mensaje enviado correctamente', {
-        description: 'Nos pondremos en contacto contigo a la brevedad.',
+      toast.success("Mensaje enviado correctamente", {
+        description: "Nos pondremos en contacto contigo a la brevedad.",
       });
       reset();
     } catch {
-      toast.error('Error al enviar el mensaje', {
-        description: 'Por favor intenta nuevamente o contáctanos por teléfono.',
+      toast.error("Error al enviar el mensaje", {
+        description: "Por favor intenta nuevamente o contáctanos por teléfono.",
       });
     } finally {
       setIsSubmitting(false);
@@ -110,11 +156,10 @@ export default function ContactoPage() {
               <ScrollReveal direction="left">
                 <div>
                   <h2 className="text-2xl font-bold text-[#0B1D3A] uppercase tracking-tight mb-4">
-                    Conoce más sobre Katemi
+                    {contactContent.contactInfoTitle}
                   </h2>
-                  <p className="text-gray-600 leading-relaxed">
-                    Estamos ubicados en Santiago y prestamos servicios en todo Chile. 
-                    Contáctanos para discutir tu próximo proyecto eléctrico.
+                  <p className="text-gray-600 leading-relaxed whitespace-pre-line">
+                    {contactContent.contactInfoDescription}
                   </p>
                 </div>
               </ScrollReveal>
@@ -124,26 +169,26 @@ export default function ContactoPage() {
                 {[
                   {
                     icon: Phone,
-                    label: 'Teléfono',
-                    value: '+56 9 1234 5678',
-                    href: 'tel:+56912345678',
+                    label: "Teléfono",
+                    value: contactContent.contactPhone,
+                    href: buildTelHref(contactContent.contactPhone),
                   },
                   {
                     icon: Mail,
-                    label: 'Correo electrónico',
-                    value: 'contacto@katemi.chrsx3.com',
-                    href: 'mailto:contacto@katemi.chrsx3.com',
+                    label: "Correo electrónico",
+                    value: contactContent.contactEmail,
+                    href: buildMailHref(contactContent.contactEmail),
                   },
                   {
                     icon: MapPin,
-                    label: 'Dirección',
-                    value: 'Av. Providencia 1650, Of. 501\nSantiago, Chile',
+                    label: "Dirección",
+                    value: contactContent.contactAddress,
                     href: null,
                   },
                   {
                     icon: Clock,
-                    label: 'Horario de atención',
-                    value: 'Lunes a Viernes: 8:30 – 18:30',
+                    label: "Horario de atención",
+                    value: contactContent.contactHours,
                     href: null,
                   },
                 ].map((item, i) => (
@@ -199,7 +244,8 @@ export default function ContactoPage() {
                     Envíanos un mensaje
                   </h2>
                   <p className="text-gray-500 text-sm mb-8">
-                    Completa el formulario y te responderemos dentro de 24 horas hábiles.
+                    Completa el formulario y te responderemos dentro de 24 horas
+                    hábiles.
                   </p>
 
                   <form
@@ -216,11 +262,11 @@ export default function ContactoPage() {
                         <Input
                           id="firstName"
                           placeholder="Juan"
-                          {...register('firstName')}
+                          {...register("firstName")}
                           className={
                             errors.firstName
-                              ? 'border-red-400 focus:border-red-400'
-                              : ''
+                              ? "border-red-400 focus:border-red-400"
+                              : ""
                           }
                         />
                         {errors.firstName && (
@@ -236,11 +282,11 @@ export default function ContactoPage() {
                         <Input
                           id="lastName"
                           placeholder="Pérez"
-                          {...register('lastName')}
+                          {...register("lastName")}
                           className={
                             errors.lastName
-                              ? 'border-red-400 focus:border-red-400'
-                              : ''
+                              ? "border-red-400 focus:border-red-400"
+                              : ""
                           }
                         />
                         {errors.lastName && (
@@ -261,11 +307,11 @@ export default function ContactoPage() {
                           id="phone"
                           type="tel"
                           placeholder="+56 9 1234 5678"
-                          {...register('phone')}
+                          {...register("phone")}
                           className={
                             errors.phone
-                              ? 'border-red-400 focus:border-red-400'
-                              : ''
+                              ? "border-red-400 focus:border-red-400"
+                              : ""
                           }
                         />
                         {errors.phone && (
@@ -279,7 +325,7 @@ export default function ContactoPage() {
                         <Input
                           id="company"
                           placeholder="Nombre de tu empresa (opcional)"
-                          {...register('company')}
+                          {...register("company")}
                         />
                       </div>
                     </div>
@@ -287,17 +333,18 @@ export default function ContactoPage() {
                     {/* Email */}
                     <div className="space-y-1.5">
                       <Label htmlFor="email">
-                        Correo electrónico <span className="text-red-500">*</span>
+                        Correo electrónico{" "}
+                        <span className="text-red-500">*</span>
                       </Label>
                       <Input
                         id="email"
                         type="email"
                         placeholder="juan@empresa.cl"
-                        {...register('email')}
+                        {...register("email")}
                         className={
                           errors.email
-                            ? 'border-red-400 focus:border-red-400'
-                            : ''
+                            ? "border-red-400 focus:border-red-400"
+                            : ""
                         }
                       />
                       {errors.email && (
@@ -313,13 +360,13 @@ export default function ContactoPage() {
                         Asunto <span className="text-red-500">*</span>
                       </Label>
                       <Select
-                        onValueChange={(val) => setValue('subject', val as string)}
+                        onValueChange={(val) =>
+                          setValue("subject", val as string)
+                        }
                       >
                         <SelectTrigger
                           id="subject"
-                          className={
-                            errors.subject ? 'border-red-400' : ''
-                          }
+                          className={errors.subject ? "border-red-400" : ""}
                         >
                           <SelectValue placeholder="Selecciona un assunto" />
                         </SelectTrigger>
@@ -347,11 +394,11 @@ export default function ContactoPage() {
                         id="message"
                         rows={5}
                         placeholder="Cuéntanos sobre tu proyecto o consulta..."
-                        {...register('message')}
+                        {...register("message")}
                         className={
                           errors.message
-                            ? 'border-red-400 focus:border-red-400 resize-none'
-                            : 'resize-none'
+                            ? "border-red-400 focus:border-red-400 resize-none"
+                            : "resize-none"
                         }
                       />
                       {errors.message && (

@@ -1,28 +1,28 @@
-'use client';
+"use client";
 
-import { SidebarProvider, useSidebar } from '@/context/SidebarContext';
-import Sidebar from '@/components/admin/Sidebar';
-import { Toaster } from '~/components/ui/sonner';
+import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
+import Sidebar from "@/components/admin/Sidebar";
 
 function AdminContent({ children }: { children: React.ReactNode }) {
   const { collapsed } = useSidebar();
-  
+
   return (
-    <div className="flex h-screen bg-[#F5F5F5]">
+    <div className="min-h-screen bg-[#F5F5F5]">
       <Sidebar />
-      <div 
-        className={`flex-1 overflow-auto transition-all duration-300 ease-in-out ${
-          collapsed ? 'ml-20' : 'ml-64'
-        }`}
+      <div
+        className={`transition-all duration-300 ease-in-out ${collapsed ? "ml-20" : "ml-60"}`}
       >
-        {children}
+        <div className="min-h-screen px-4 lg:px-6 pt-4 pb-12">{children}</div>
       </div>
-      <Toaster position="top-right" richColors />
     </div>
   );
 }
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <SidebarProvider>
       <AdminContent>{children}</AdminContent>

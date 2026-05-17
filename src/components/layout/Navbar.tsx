@@ -1,20 +1,28 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Zap } from 'lucide-react';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X, Zap } from "lucide-react";
 
 const navLinks = [
-  { href: '/', label: 'Inicio' },
-  { href: '/nosotros', label: 'Nosotros' },
-  { href: '/servicios', label: 'Servicios' },
-  { href: '/proyectos', label: 'Proyectos' },
-  { href: '/contacto', label: 'Contacto' },
+  { href: "/", label: "Inicio" },
+  { href: "/nosotros", label: "Nosotros" },
+  { href: "/servicios", label: "Servicios" },
+  { href: "/proyectos", label: "Proyectos" },
+  { href: "/contacto", label: "Contacto" },
 ];
 
-export default function Navbar() {
+interface NavbarProps {
+  editorMode?: boolean;
+  onEditorNavigate?: (href: string) => void;
+}
+
+export default function Navbar({
+  editorMode = false,
+  onEditorNavigate,
+}: NavbarProps) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -24,18 +32,22 @@ export default function Navbar() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Init Lenis smooth scroll
   useEffect(() => {
-    let lenis: { raf: (time: number) => void; destroy: () => void } | null = null;
+    let lenis: { raf: (time: number) => void; destroy: () => void } | null =
+      null;
 
     const initLenis = async () => {
       try {
-        const Lenis = (await import('lenis')).default;
-        lenis = new Lenis({ duration: 1.2, easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+        const Lenis = (await import("lenis")).default;
+        lenis = new Lenis({
+          duration: 1.2,
+          easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        });
         lenisRef.current = lenis;
 
         function raf(time: number) {
@@ -54,23 +66,31 @@ export default function Navbar() {
     };
   }, []);
 
-  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const scrollToSection = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string,
+  ) => {
     // Close mobile menu
     setMobileOpen(false);
 
-    // If it's a hash link
-    if (href.startsWith('/#') || href === '/') {
+    // Smooth-scroll only when already in home route
+    const isHome = pathname === "/";
+    if (isHome && (href.startsWith("/#") || href === "/")) {
       e.preventDefault();
-      const hash = href.replace('/', '') || '';
+      const hash = href.replace("/", "") || "";
 
       if (lenisRef.current) {
-        (lenisRef.current as { scrollTo: (opts: { hash: string; duration: number }) => void }).scrollTo({
-          hash: hash || 'body',
+        (
+          lenisRef.current as {
+            scrollTo: (opts: { hash: string; duration: number }) => void;
+          }
+        ).scrollTo({
+          hash: hash || "body",
           duration: 1.5,
         });
       } else {
-        const target = document.querySelector(hash || 'body');
-        target?.scrollIntoView({ behavior: 'smooth' });
+        const target = document.querySelector(hash || "body");
+        target?.scrollIntoView({ behavior: "smooth" });
       }
     }
   };
@@ -79,9 +99,7 @@ export default function Navbar() {
     <>
       <header
         className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-          scrolled
-            ? 'bg-white/95 backdrop-blur-md shadow-md'
-            : 'bg-transparent'
+          scrolled ? "bg-white/95 backdrop-blur-md shadow-md" : "bg-transparent"
         }`}
       >
         <div className="container-max">
@@ -91,7 +109,10 @@ export default function Navbar() {
               <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-[#0B1D3A] group-hover:bg-[#00A896] transition-colors duration-300">
                 <Zap className="w-5 h-5 text-white" strokeWidth={2.5} />
               </div>
-              <span className="text-xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
+              <span
+                className="text-xl font-bold tracking-tight"
+                style={{ fontFamily: "var(--font-space-grotesk)" }}
+              >
                 Katemi
               </span>
             </Link>
@@ -99,16 +120,25 @@ export default function Navbar() {
             {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-1">
               {navLinks.map((link) => {
-                const isActive = pathname === link.href || (link.href === '/' && pathname === '/');
+                const isActive =
+                  pathname === link.href ||
+                  (link.href === "/" && pathname === "/");
                 return (
                   <Link
                     key={link.href}
                     href={link.href}
-                    onClick={(e) => scrollToSection(e, link.href)}
+                    onClick={(e) => {
+                      if (editorMode && onEditorNavigate) {
+                        e.preventDefault();
+                        onEditorNavigate(link.href);
+                        return;
+                      }
+                      scrollToSection(e, link.href);
+                    }}
                     className={`relative px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-lg ${
                       isActive
-                        ? 'text-[#00D4FF]'
-                        : 'text-[#2A3F5F] hover:text-[#0B1D3A] hover:bg-[#F5F5F5]'
+                        ? "text-[#00D4FF]"
+                        : "text-[#2A3F5F] hover:text-[#0B1D3A] hover:bg-[#F5F5F5]"
                     }`}
                   >
                     {link.label}
@@ -161,10 +191,10 @@ export default function Navbar() {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ x: '100%' }}
+            initial={{ x: "100%" }}
             animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
             className="fixed top-0 right-0 bottom-0 z-50 w-80 bg-white shadow-2xl md:hidden"
           >
             <div className="flex flex-col h-full">
@@ -194,13 +224,19 @@ export default function Navbar() {
                       <Link
                         href={link.href}
                         onClick={(e) => {
+                          if (editorMode && onEditorNavigate) {
+                            e.preventDefault();
+                            onEditorNavigate(link.href);
+                            setMobileOpen(false);
+                            return;
+                          }
                           scrollToSection(e, link.href);
                           setMobileOpen(false);
                         }}
                         className={`flex items-center px-6 py-4 min-h-[56px] text-base font-medium border-b border-gray-100 transition-colors ${
                           isActive
-                            ? 'text-[#00D4FF] bg-[#00D4FF]/5'
-                            : 'text-[#2A3F5F] hover:text-[#0B1D3A] hover:bg-[#F5F5F5]'
+                            ? "text-[#00D4FF] bg-[#00D4FF]/5"
+                            : "text-[#2A3F5F] hover:text-[#0B1D3A] hover:bg-[#F5F5F5]"
                         }`}
                       >
                         {link.label}

@@ -1,18 +1,19 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Header from '@/components/admin/Header';
-import { getContacts } from '@/lib/pb-admin';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import Header from "@/components/admin/Header";
+import { getContacts } from "@/lib/pb-admin";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog';
-import { Eye } from 'lucide-react';
+} from "@/components/ui/dialog";
+import { Eye, PencilRuler } from "lucide-react";
 
 interface Contact {
   id: string;
@@ -35,7 +36,7 @@ export default function ContactosPage() {
         const data = await getContacts();
         setContacts(data as unknown as Contact[]);
       } catch (error) {
-        console.error('Error loading contacts:', error);
+        console.error("Error loading contacts:", error);
       } finally {
         setLoading(false);
       }
@@ -45,12 +46,12 @@ export default function ContactosPage() {
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return date.toLocaleDateString("es-ES", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -59,9 +60,18 @@ export default function ContactosPage() {
       <Header title="Contactos" />
 
       <div className="mt-6">
-        <p className="text-sm text-gray-500 mb-4">
-          Mensajes recibidos desde el formulario de contacto
-        </p>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-gray-500">
+            Mensajes recibidos desde el formulario de contacto
+          </p>
+          <Link
+            href="/admin/contactos/editor"
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-[#0B1D3A] text-white text-sm hover:bg-[#122645] transition-colors"
+          >
+            <PencilRuler size={16} />
+            Editor visual de contacto
+          </Link>
+        </div>
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           {loading ? (
@@ -79,12 +89,24 @@ export default function ContactosPage() {
               <table className="w-full text-sm text-left">
                 <thead>
                   <tr className="border-b border-gray-100 bg-gray-50/50">
-                    <th className="px-4 py-3 font-medium text-gray-600">Nombre</th>
-                    <th className="px-4 py-3 font-medium text-gray-600">Email</th>
-                    <th className="px-4 py-3 font-medium text-gray-600">Teléfono</th>
-                    <th className="px-4 py-3 font-medium text-gray-600">Asunto</th>
-                    <th className="px-4 py-3 font-medium text-gray-600">Fecha</th>
-                    <th className="px-4 py-3 font-medium text-gray-600 text-right">Acciones</th>
+                    <th className="px-4 py-3 font-medium text-gray-600">
+                      Nombre
+                    </th>
+                    <th className="px-4 py-3 font-medium text-gray-600">
+                      Email
+                    </th>
+                    <th className="px-4 py-3 font-medium text-gray-600">
+                      Teléfono
+                    </th>
+                    <th className="px-4 py-3 font-medium text-gray-600">
+                      Asunto
+                    </th>
+                    <th className="px-4 py-3 font-medium text-gray-600">
+                      Fecha
+                    </th>
+                    <th className="px-4 py-3 font-medium text-gray-600 text-right">
+                      Acciones
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -99,7 +121,9 @@ export default function ContactosPage() {
                       <td className="px-4 py-3 text-gray-600 truncate max-w-[180px]">
                         {contact.email}
                       </td>
-                      <td className="px-4 py-3 text-gray-600">{contact.telefono || '—'}</td>
+                      <td className="px-4 py-3 text-gray-600">
+                        {contact.telefono || "—"}
+                      </td>
                       <td className="px-4 py-3 text-gray-600 truncate max-w-[160px]">
                         {contact.asunto}
                       </td>
@@ -127,7 +151,10 @@ export default function ContactosPage() {
       </div>
 
       {/* Detail Modal */}
-      <Dialog open={!!selected} onOpenChange={(open) => !open && setSelected(null)}>
+      <Dialog
+        open={!!selected}
+        onOpenChange={(open) => !open && setSelected(null)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Detalle del mensaje</DialogTitle>
@@ -146,16 +173,24 @@ export default function ContactosPage() {
                 <p className="text-sm text-gray-900">{selected.email}</p>
               </div>
               <div>
-                <p className="text-xs font-medium text-gray-500 mb-1">Teléfono</p>
-                <p className="text-sm text-gray-900">{selected.telefono || '—'}</p>
+                <p className="text-xs font-medium text-gray-500 mb-1">
+                  Teléfono
+                </p>
+                <p className="text-sm text-gray-900">
+                  {selected.telefono || "—"}
+                </p>
               </div>
               <div>
                 <p className="text-xs font-medium text-gray-500 mb-1">Asunto</p>
                 <p className="text-sm text-gray-900">{selected.asunto}</p>
               </div>
               <div>
-                <p className="text-xs font-medium text-gray-500 mb-1">Mensaje</p>
-                <p className="text-sm text-gray-900 whitespace-pre-wrap">{selected.mensaje}</p>
+                <p className="text-xs font-medium text-gray-500 mb-1">
+                  Mensaje
+                </p>
+                <p className="text-sm text-gray-900 whitespace-pre-wrap">
+                  {selected.mensaje}
+                </p>
               </div>
             </div>
           )}
