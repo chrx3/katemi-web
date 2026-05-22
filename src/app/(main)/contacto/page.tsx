@@ -11,14 +11,6 @@ import ScrollReveal from "~/components/shared/ScrollReveal";
 import { pb } from "~/lib/pocketbase";
 import { landingTemplateDefaults } from "~/lib/template-config";
 
-function generateId(prefix: string = ""): string {
-  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-  let id = prefix;
-  for (let i = 0; i < 15; i++) {
-    id += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return id;
-}
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
@@ -119,12 +111,14 @@ export default function ContactoPage() {
     setIsSubmitting(true);
     try {
       await pb.collection("contacts").create({
-        id: generateId("cnt"),
-        nombre: `${data.firstName} ${data.lastName}`,
-        telefono: data.phone,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone,
+        company: data.company || "",
         email: data.email,
-        asunto: data.subject,
-        mensaje: data.message,
+        subject: data.subject,
+        message: data.message,
+        status: "new",
       });
       toast.success("Mensaje enviado correctamente", {
         description: "Nos pondremos en contacto contigo a la brevedad.",

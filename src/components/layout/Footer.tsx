@@ -79,18 +79,23 @@ type FooterEditableKey =
   | "contactInfoDescription"
   | "contactPhone"
   | "contactEmail"
-  | "contactAddress";
+  | "contactAddress"
+  | "linkedinUrl"
+  | "instagramUrl"
+  | "googleMapsUrl";
 
 interface FooterProps {
   template?: LandingTemplateConfig;
   editable?: boolean;
   onFieldChange?: (key: FooterEditableKey, value: string) => void;
+  previewMode?: boolean;
 }
 
 export default function Footer({
   template,
   editable = false,
   onFieldChange,
+  previewMode = false,
 }: FooterProps) {
   const currentYear = new Date().getFullYear();
   const footerDescription =
@@ -99,6 +104,9 @@ export default function Footer({
   const footerPhone = template?.contactPhone || "+56 9 1234 5678";
   const footerEmail = template?.contactEmail || "contacto@katemi.chrsx3.com";
   const footerAddress = template?.contactAddress || "Santiago, Chile";
+  const footerLinkedin = template?.linkedinUrl || "footerLinkedin";
+  const footerInstagram = template?.instagramUrl || "footerInstagram";
+  const footerMapsUrl = template?.googleMapsUrl || "footerMapsUrl";
   const phoneHref = `tel:${footerPhone.replace(/\s+/g, "").replace(/[^+\d]/g, "")}`;
   const emailHref = `mailto:${footerEmail.trim()}`;
 
@@ -214,6 +222,15 @@ export default function Footer({
               <h3 className="text-xs font-bold uppercase tracking-widest text-[#00A896]">
                 Empresa
               </h3>
+              {previewMode ? (
+              <ul className="flex flex-col gap-2">
+                {empresaLinks.map((link) => (
+                  <li key={link.href}>
+                    <span className="text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>{link.label}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
               <ul className="flex flex-col gap-2">
                 {empresaLinks.map((link) => (
                   <li key={link.href}>
@@ -227,6 +244,7 @@ export default function Footer({
                   </li>
                 ))}
               </ul>
+            )}
             </div>
           </RevealItem>
 
@@ -236,6 +254,15 @@ export default function Footer({
               <h3 className="text-xs font-bold uppercase tracking-widest text-[#00A896]">
                 Servicios
               </h3>
+              {previewMode ? (
+              <ul className="flex flex-col gap-2">
+                {serviceLinks.map((link) => (
+                  <li key={link.href}>
+                    <span className="text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>{link.label}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
               <ul className="flex flex-col gap-2">
                 {serviceLinks.map((link) => (
                   <li key={link.href}>
@@ -249,6 +276,7 @@ export default function Footer({
                   </li>
                 ))}
               </ul>
+            )}
             </div>
           </RevealItem>
 
@@ -276,8 +304,14 @@ export default function Footer({
                     <span className="whitespace-pre-line">{footerAddress}</span>
                   )}
                 </div>
+                {previewMode ? (
+                <span className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500">
+                  Ver en Google Maps
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </span>
+              ) : (
                 <a
-                  href="https://maps.google.com/?q=Santiago+Chile"
+                  href={footerMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-sm font-medium text-[#00A896] hover:text-[#00D4FF] transition-colors"
@@ -285,37 +319,30 @@ export default function Footer({
                   Ver en Google Maps
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
+              )}
               </div>
 
               {/* Social Icons */}
               <div className="flex items-center gap-3 mt-3">
-                <a
-                  href="https://linkedin.com/company/katemi"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center w-10 h-10 rounded-lg border hover:border-[#00A896] hover:bg-[#00A896]/10 transition-all duration-200"
-                  style={{
-                    borderColor: "rgba(255,255,255,0.15)",
-                    color: "rgba(255,255,255,0.55)",
-                  }}
-                  aria-label="LinkedIn"
-                >
-                  <LinkedinIcon className="w-4 h-4" />
-                </a>
-                <a
-                  href="https://instagram.com/katemi"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center w-10 h-10 rounded-lg border hover:border-[#00A896] hover:bg-[#00A896]/10 transition-all duration-200"
-                  style={{
-                    borderColor: "rgba(255,255,255,0.15)",
-                    color: "rgba(255,255,255,0.55)",
-                  }}
-                  aria-label="Instagram"
-                >
-                  <InstagramIcon className="w-4 h-4" />
-                </a>
+                {previewMode ? (
+                  <>
+                    <span className="flex items-center justify-center w-10 h-10 rounded-lg border border-white/10 text-white/30" aria-label="LinkedIn"><LinkedinIcon className="w-4 h-4" /></span>
+                    <span className="flex items-center justify-center w-10 h-10 rounded-lg border border-white/10 text-white/30" aria-label="Instagram"><InstagramIcon className="w-4 h-4" /></span>
+                  </>
+                ) : (
+                  <>
+                    <a href={footerLinkedin} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-10 h-10 rounded-lg border hover:border-[#00A896] hover:bg-[#00A896]/10 transition-all duration-200" style={{ borderColor: "rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.55)" }} aria-label="LinkedIn"><LinkedinIcon className="w-4 h-4" /></a>
+                    <a href={footerInstagram} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-10 h-10 rounded-lg border hover:border-[#00A896] hover:bg-[#00A896]/10 transition-all duration-200" style={{ borderColor: "rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.55)" }} aria-label="Instagram"><InstagramIcon className="w-4 h-4" /></a>
+                  </>
+                )}
               </div>
+              {editable && onFieldChange && (
+                <div className="mt-2 space-y-1">
+                  <InlineEditableText value={footerLinkedin} onChange={(v) => onFieldChange("linkedinUrl", v)} className="text-xs text-white/50" editingClassName="bg-white/10 text-white border-b-[#00D4FF] text-xs" />
+                  <InlineEditableText value={footerInstagram} onChange={(v) => onFieldChange("instagramUrl", v)} className="text-xs text-white/50" editingClassName="bg-white/10 text-white border-b-[#00D4FF] text-xs" />
+                  <InlineEditableText value={footerMapsUrl} onChange={(v) => onFieldChange("googleMapsUrl", v)} className="text-xs text-white/50" editingClassName="bg-white/10 text-white border-b-[#00D4FF] text-xs" />
+                </div>
+              )}
             </div>
           </RevealItem>
         </div>

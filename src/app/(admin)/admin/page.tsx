@@ -220,7 +220,7 @@ export default function AdminDashboardPage() {
               {quickActions.map((action) => {
                 const Icon = action.icon;
                 return (
-                  <a
+                  <Link
                     key={action.label}
                     href={action.href}
                     className="flex items-center justify-between px-4 py-3 rounded-xl border border-gray-100 hover:border-[#00A896]/30 hover:bg-[#00A896]/5 transition-all duration-200 group"
@@ -238,7 +238,7 @@ export default function AdminDashboardPage() {
                       size={16}
                       className="text-gray-300 group-hover:text-[#00A896] group-hover:translate-x-1 transition-all duration-200"
                     />
-                  </a>
+                  </Link>
                 );
               })}
             </div>
@@ -290,10 +290,12 @@ export default function AdminDashboardPage() {
                 </div>
                 <p className="text-lg font-bold text-[#0B1D3A]">Ahora</p>
                 <p className="text-xs text-gray-400 mt-1">
-                  {new Date().toLocaleTimeString("es-ES", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                {mounted
+                    ? new Date().toLocaleTimeString("es-ES", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : "--:--"}
                 </p>
               </div>
             </div>

@@ -36,53 +36,38 @@ export default function InlineEditableText({
     setEditing(false);
   };
 
+  const baseEditClass = `text-inherit outline-none bg-transparent border-0 border-b-2 border-[#00A896]/60 caret-[#00A896] ${editingClassName || ""}`;
+
   if (editing) {
     if (multiline) {
       return (
         <textarea
-          ref={(node) => {
-            inputRef.current = node;
-          }}
+          ref={(node) => { inputRef.current = node; }}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onBlur={commit}
           onKeyDown={(e) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-              e.preventDefault();
-              commit();
-            }
-            if (e.key === "Escape") {
-              e.preventDefault();
-              setDraft(value);
-              setEditing(false);
-            }
+            if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); commit(); }
+            if (e.key === "Escape") { e.preventDefault(); setDraft(value); setEditing(false); }
           }}
-          rows={4}
-          className={`w-full border-b-2 border-[#00A896] bg-white/95 p-1 outline-none text-inherit ${editingClassName || ""}`}
+          rows={Math.max(2, draft.split("\n").length + 1)}
+          className={`${className || ""} ${baseEditClass} resize-none`}
         />
       );
     }
 
     return (
       <input
-        ref={(node) => {
-          inputRef.current = node;
-        }}
+        ref={(node) => { inputRef.current = node; }}
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
         onBlur={commit}
         onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            commit();
-          }
-          if (e.key === "Escape") {
-            e.preventDefault();
-            setDraft(value);
-            setEditing(false);
-          }
+          if (e.key === "Enter") { e.preventDefault(); commit(); }
+          if (e.key === "Escape") { e.preventDefault(); setDraft(value); setEditing(false); }
         }}
-        className={`border-b-2 border-[#00A896] bg-transparent p-0 outline-none text-inherit ${editingClassName || ""}`}
+        style={{ width: `${Math.max(20, draft.length + 4)}ch` }}
+        className={`${className || ""} ${baseEditClass}`}
       />
     );
   }
@@ -90,10 +75,7 @@ export default function InlineEditableText({
   return (
     <button
       type="button"
-      onClick={() => {
-        setDraft(value);
-        setEditing(true);
-      }}
+      onClick={() => { setDraft(value); setEditing(true); }}
       title="Click para editar"
       className={`relative text-left rounded-sm outline-none hover:ring-2 hover:ring-[#00A896]/50 focus:ring-2 focus:ring-[#00A896]/60 transition ${className || ""}`}
     >

@@ -14,12 +14,13 @@ interface SiteConfig {
 }
 
 const configFields = [
-  { key: 'emailContacto', label: 'Email de contacto', type: 'text' },
-  { key: 'telefono', label: 'Teléfono', type: 'text' },
+  { key: 'contactEmail', label: 'Email de contacto', type: 'text' },
+  { key: 'contactPhone', label: 'Teléfono', type: 'text' },
+  { key: 'contactAddress', label: 'Dirección', type: 'text' },
   { key: 'linkedinUrl', label: 'LinkedIn URL', type: 'text' },
   { key: 'instagramUrl', label: 'Instagram URL', type: 'text' },
-  { key: 'heroTitulo', label: 'Título del Hero', type: 'text' },
-  { key: 'heroSubtitulo', label: 'Subtítulo del Hero', type: 'textarea' },
+  { key: 'companyName', label: 'Nombre de la empresa', type: 'text' },
+  { key: 'companyTagline', label: 'Tagline', type: 'text' },
 ];
 
 export default function ConfigPage() {
@@ -53,7 +54,8 @@ export default function ConfigPage() {
     setSaving(true);
     try {
       for (const field of configFields) {
-        const value = config[field.key] || '';
+        const value = config[field.key];
+        if (value === undefined || value === null) continue;
         await setSiteConfig(field.key, value);
       }
       toast.success('Configuración guardada correctamente');

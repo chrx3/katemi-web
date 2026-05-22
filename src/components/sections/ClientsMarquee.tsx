@@ -1,15 +1,23 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import ScrollReveal from "../shared/ScrollReveal";
 import ClientLogo from "../shared/ClientLogo";
+import { pb } from "@/lib/pocketbase";
 import type { LandingTemplateConfig } from "@/lib/template-config";
 
 const ReactFastMarquee = dynamic(() => import("react-fast-marquee"), {
   ssr: false,
 });
 
-const staticClients = [
+interface ClientFromPB {
+  name: string;
+  logoUrl: string;
+  website: string;
+}
+
+const staticFallback: ClientFromPB[] = [
   { name: "CGE", logoUrl: "", website: "" },
   { name: "Transelec", logoUrl: "", website: "" },
   { name: "Enel", logoUrl: "", website: "" },
@@ -30,6 +38,32 @@ interface ClientsMarqueeProps {
 }
 
 export default function ClientsMarquee({ content }: ClientsMarqueeProps) {
+  const [clients, setClients] = useState<ClientFromPB[]>(staticFallback);
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const records = await pb.collection("clients").getFullList({
+          sort: "order",
+          filter: "isActive=true",
+        });
+        if (records.length > 0) {
+          const mapped: ClientFromPB[] = records.map(
+            (r: Record<string, unknown>) => ({
+              name: (r.name as string) || "",
+              logoUrl: (r.logoUrl as string) || "",
+              website: (r.website as string) || "",
+            }),
+          );
+          setClients(mapped);
+        }
+      } catch {
+        // Use static fallback
+      }
+    };
+    fetchClients();
+  }, []);
+
   return (
     <section className="py-14 bg-[#F5F5F5] overflow-hidden">
       <div className="container-max">
@@ -52,7 +86,7 @@ export default function ClientsMarquee({ content }: ClientsMarqueeProps) {
         className="mt-6"
       >
         <div className="flex items-center gap-6 pr-6">
-          {staticClients.map((client) => (
+          {clients.map((client) => (
             <div key={client.name} className="flex-shrink-0 w-44">
               <ClientLogo
                 name={client.name}

@@ -27,6 +27,10 @@ type HeroContent = Pick<
   | "heroPrimaryCtaHref"
   | "heroSecondaryCtaLabel"
   | "heroSecondaryCtaHref"
+  | "heroBgImage"
+  | "primaryColor"
+  | "accentColor"
+  | "highlightColor"
 >;
 
 interface HeroSectionProps {

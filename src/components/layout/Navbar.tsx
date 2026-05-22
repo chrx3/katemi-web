@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Zap } from "lucide-react";
+import { useLenis } from "@/components/providers/LenisProvider";
 
 const navLinks = [
   { href: "/", label: "Inicio" },
@@ -17,16 +18,18 @@ const navLinks = [
 interface NavbarProps {
   editorMode?: boolean;
   onEditorNavigate?: (href: string) => void;
+  previewMode?: boolean;
 }
 
 export default function Navbar({
   editorMode = false,
   onEditorNavigate,
+  previewMode = false,
 }: NavbarProps) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const lenisRef = useRef<unknown>(null);
+  const { lenis } = useLenis();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,58 +39,19 @@ export default function Navbar({
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Init Lenis smooth scroll
-  useEffect(() => {
-    let lenis: { raf: (time: number) => void; destroy: () => void } | null =
-      null;
-
-    const initLenis = async () => {
-      try {
-        const Lenis = (await import("lenis")).default;
-        lenis = new Lenis({
-          duration: 1.2,
-          easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        });
-        lenisRef.current = lenis;
-
-        function raf(time: number) {
-          lenis!.raf(time);
-          requestAnimationFrame(raf);
-        }
-        requestAnimationFrame(raf);
-      } catch {
-        // Lenis not available, use native scroll
-      }
-    };
-
-    initLenis();
-    return () => {
-      if (lenis) lenis.destroy();
-    };
-  }, []);
-
   const scrollToSection = (
     e: React.MouseEvent<HTMLAnchorElement>,
     href: string,
   ) => {
-    // Close mobile menu
     setMobileOpen(false);
 
-    // Smooth-scroll only when already in home route
     const isHome = pathname === "/";
     if (isHome && (href.startsWith("/#") || href === "/")) {
       e.preventDefault();
       const hash = href.replace("/", "") || "";
 
-      if (lenisRef.current) {
-        (
-          lenisRef.current as {
-            scrollTo: (opts: { hash: string; duration: number }) => void;
-          }
-        ).scrollTo({
-          hash: hash || "body",
-          duration: 1.5,
-        });
+      if (lenis) {
+        lenis.scrollTo(hash || "body", { duration: 1.5 } as never);
       } else {
         const target = document.querySelector(hash || "body");
         target?.scrollIntoView({ behavior: "smooth" });
@@ -123,6 +87,18 @@ export default function Navbar({
                 const isActive =
                   pathname === link.href ||
                   (link.href === "/" && pathname === "/");
+                if (previewMode) {
+                  return (
+                    <span
+                      key={link.href}
+                      className={`relative px-4 py-2 text-sm font-medium rounded-lg ${
+                        isActive ? "text-[#00D4FF]" : "text-gray-400"
+                      }`}
+                    >
+                      {link.label}
+                    </span>
+                  );
+                }
                 return (
                   <Link
                     key={link.href}
@@ -152,12 +128,18 @@ export default function Navbar({
 
             {/* CTA + Mobile Toggle */}
             <div className="flex items-center gap-3">
-              <Link
-                href="/contacto"
-                className="hidden md:inline-flex items-center px-5 py-2.5 rounded-lg bg-[#00A896] text-white text-sm font-semibold hover:bg-[#008f7f] transition-colors duration-200 shadow-sm"
-              >
-                Cotizar
-              </Link>
+              {previewMode ? (
+                <span className="hidden md:inline-flex items-center px-5 py-2.5 rounded-lg bg-[#00A896]/30 text-white/50 text-sm font-semibold shadow-sm">
+                  Cotizar
+                </span>
+              ) : (
+                <Link
+                  href="/contacto"
+                  className="hidden md:inline-flex items-center px-5 py-2.5 rounded-lg bg-[#00A896] text-white text-sm font-semibold hover:bg-[#008f7f] transition-colors duration-200 shadow-sm"
+                >
+                  Cotizar
+                </Link>
+              )}
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
                 className="md:hidden flex items-center justify-center w-11 h-11 rounded-lg hover:bg-[#F5F5F5] transition-colors"

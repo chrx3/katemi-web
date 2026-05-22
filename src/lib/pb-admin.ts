@@ -11,7 +11,6 @@ function resolvePocketBaseUrl() {
   ).trim();
   const isLocal = raw.includes("localhost") || raw.includes("127.0.0.1");
 
-  // In browsers, non-local HTTP PocketBase endpoints usually fail due mixed-content/CORS redirects.
   if (!isLocal && raw.startsWith("http://")) {
     return raw.replace("http://", "https://");
   }
@@ -20,21 +19,29 @@ function resolvePocketBaseUrl() {
 }
 
 const pb = new PocketBase(resolvePocketBaseUrl());
-
-// Use static token for server-side operations
 pb.autoCancellation(false);
 
-// Generate unique IDs for PocketBase records
-function generateId(prefix: string = ""): string {
-  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-  let id = prefix;
-  for (let i = 0; i < 15; i++) {
-    id += chars[Math.floor(Math.random() * chars.length)];
+let authPromise: Promise<void> | null = null;
+
+function ensureAuth(): Promise<void> {
+  if (pb.authStore.isValid) return Promise.resolve();
+  if (!authPromise) {
+    const email = process.env.POCKETBASE_ADMIN_EMAIL || process.env.NEXT_PUBLIC_POCKETBASE_ADMIN_EMAIL || "";
+    const password = process.env.POCKETBASE_ADMIN_PASSWORD || process.env.NEXT_PUBLIC_POCKETBASE_ADMIN_PASSWORD || "";
+    authPromise = pb
+      .collection("_superusers")
+      .authWithPassword(email, password)
+      .then(() => {
+        authPromise = null;
+      })
+      .catch((err) => {
+        authPromise = null;
+        console.error("PocketBase admin auth failed:", err);
+      });
   }
-  return id;
+  return authPromise;
 }
 
-// Auth
 export async function adminLogin(email: string, password: string) {
   const auth = await pb
     .collection("_superusers")
@@ -47,6 +54,7 @@ export async function getServices() {
   return pb.collection("services").getFullList({ sort: "order" });
 }
 export async function createService(data: any) {
+  await ensureAuth();
   const payload = { ...data };
   if (payload.features && typeof payload.features === "string") {
     try {
@@ -55,14 +63,14 @@ export async function createService(data: any) {
       payload.features = [];
     }
   }
-  return pb
-    .collection("services")
-    .create({ id: generateId("svc"), ...payload });
+  return pb.collection("services").create(payload);
 }
 export async function updateService(id: string, data: any) {
+  await ensureAuth();
   return pb.collection("services").update(id, data);
 }
 export async function deleteService(id: string) {
+  await ensureAuth();
   return pb.collection("services").delete(id);
 }
 
@@ -71,6 +79,7 @@ export async function getProjects() {
   return pb.collection("projects").getFullList({ sort: "-year" });
 }
 export async function createProject(data: any) {
+  await ensureAuth();
   const payload = { ...data };
   if (
     payload.servicesProvided &&
@@ -82,14 +91,14 @@ export async function createProject(data: any) {
       payload.servicesProvided = [];
     }
   }
-  return pb
-    .collection("projects")
-    .create({ id: generateId("prj"), ...payload });
+  return pb.collection("projects").create(payload);
 }
 export async function updateProject(id: string, data: any) {
+  await ensureAuth();
   return pb.collection("projects").update(id, data);
 }
 export async function deleteProject(id: string) {
+  await ensureAuth();
   return pb.collection("projects").delete(id);
 }
 
@@ -98,9 +107,9 @@ export async function getClients() {
   return pb.collection("clients").getFullList({ sort: "order" });
 }
 export async function createClient(data: any) {
-  // Handle FormData from the admin form - extract fields properly
+  await ensureAuth();
   if (data instanceof FormData) {
-    const payload: Record<string, any> = { id: generateId("cli") };
+    const payload: Record<string, any> = {};
     data.forEach((value, key) => {
       if (!(value instanceof File)) {
         payload[key] = value;
@@ -108,12 +117,23 @@ export async function createClient(data: any) {
     });
     return pb.collection("clients").create(payload);
   }
-  return pb.collection("clients").create({ id: generateId("cli"), ...data });
+  return pb.collection("clients").create(data);
 }
 export async function updateClient(id: string, data: any) {
+  await ensureAuth();
+  if (data instanceof FormData) {
+    const payload: Record<string, any> = {};
+    data.forEach((value, key) => {
+      if (!(value instanceof File)) {
+        payload[key] = value;
+      }
+    });
+    return pb.collection("clients").update(id, payload);
+  }
   return pb.collection("clients").update(id, data);
 }
 export async function deleteClient(id: string) {
+  await ensureAuth();
   return pb.collection("clients").delete(id);
 }
 
@@ -142,6 +162,7 @@ export async function getLandingTemplateConfig(): Promise<LandingTemplateConfig>
 }
 
 export async function saveLandingTemplateConfig(config: LandingTemplateConfig) {
+  await ensureAuth();
   const entries = toLandingTemplateEntries(config);
   const current = await getSiteConfigMap();
 
@@ -160,27 +181,30 @@ export async function saveLandingTemplateConfig(config: LandingTemplateConfig) {
 }
 
 export async function setSiteConfig(key: string, value: string) {
+  if (!key || !value) return null;
+  await ensureAuth();
   try {
     const existing = await pb
       .collection("siteConfig")
       .getFirstListItem(`key="${key}"`);
     return pb.collection("siteConfig").update(existing.id, { value });
-  } catch {
-    return pb
-      .collection("siteConfig")
-      .create({ id: generateId("cfg"), key, value });
+  } catch (err: any) {
+    if (err?.status === 404) {
+      return pb.collection("siteConfig").create({ key, value });
+    }
+    throw err;
   }
 }
 
 // Contacts
 export async function getContacts() {
+  await ensureAuth();
   try {
     const result = await pb
       .collection("contacts")
       .getList(1, 100, { sort: "-created" });
     return result.items;
   } catch {
-    // Some PocketBase deployments/view collections reject sorting by system fields.
     const fallback = await pb
       .collection("contacts")
       .getList(1, 100, { sort: "-id" });

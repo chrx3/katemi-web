@@ -16,6 +16,7 @@ import {
   WandSparkles,
 } from "lucide-react";
 import { useSidebar } from "@/context/SidebarContext";
+import { useRealtime } from "@/context/RealtimeContext";
 
 const navItems = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -25,12 +26,12 @@ const navItems = [
   { label: "Config", href: "/admin/config", icon: SlidersHorizontal },
   { label: "Contactos", href: "/admin/contactos", icon: MessageSquare },
   { label: "Editor plantilla", href: "/admin/plantilla", icon: WandSparkles },
-  { label: "Vista sitio", href: "/admin/plantilla", icon: Eye },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const { collapsed, toggleCollapsed } = useSidebar();
+  const { unreadContacts, resetUnreadContacts } = useRealtime();
 
   const handleLogout = async () => {
     await fetch("/api/admin/logout", { method: "POST" });
@@ -90,6 +91,7 @@ export default function Sidebar() {
               <Link
                 key={`${item.href}-${item.label}`}
                 href={item.href}
+                onClick={() => { if (item.label === "Contactos") resetUnreadContacts(); }}
                 className={`
                   group flex items-center gap-3 mx-2 my-1 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
                   hover:bg-white/10
@@ -111,8 +113,13 @@ export default function Sidebar() {
                   }`}
                 />
                 {!collapsed && (
-                  <span className="transition-colors duration-200">
+                  <span className="transition-colors duration-200 flex items-center gap-2">
                     {item.label}
+                    {item.label === "Contactos" && unreadContacts > 0 && (
+                      <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold rounded-full bg-red-500 text-white">
+                        {unreadContacts}
+                      </span>
+                    )}
                   </span>
                 )}
               </Link>
