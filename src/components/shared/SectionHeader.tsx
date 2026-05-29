@@ -2,6 +2,7 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { IN_VIEW_AMOUNT, IN_VIEW_MARGIN } from "@/lib/motion-viewport";
 import ScrollReveal from "./ScrollReveal";
 
 interface SectionHeaderProps {
@@ -20,7 +21,11 @@ export default function SectionHeader({
   eyebrow,
 }: SectionHeaderProps) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const isInView = useInView(ref, {
+    once: true,
+    margin: IN_VIEW_MARGIN,
+    amount: IN_VIEW_AMOUNT,
+  });
 
   const textColor = light ? "text-white" : "text-[#0B1D3A]";
   const subtitleColor = light ? "text-white/70" : "text-gray-500";
@@ -57,7 +62,7 @@ export default function SectionHeader({
           className="h-1 bg-[#00D4FF] mt-6"
           initial={{ width: 0 }}
           animate={isInView ? { width: "4rem" } : { width: 0 }}
-          transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+          transition={{ duration: 0.4, delay: 0.12, ease: "easeOut" }}
         />
       </ScrollReveal>
     </div>

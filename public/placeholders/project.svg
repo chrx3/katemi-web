@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+  <defs>
+    <linearGradient id="sky" x1="400" y1="0" x2="400" y2="600" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B1D3A"/>
+      <stop offset="1" stop-color="#1a3358"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#sky)"/>
+  <rect x="0" y="420" width="800" height="180" fill="#00A896" fill-opacity="0.15"/>
+  <path d="M120 420V260l80-60 80 60v160H120z" fill="#ffffff" fill-opacity="0.12"/>
+  <path d="M280 420V220l100-80 100 80v200H280z" fill="#ffffff" fill-opacity="0.18"/>
+  <path d="M500 420V180l120-90 120 90v240H500z" fill="#00A896" fill-opacity="0.25"/>
+  <rect x="340" y="300" width="36" height="120" fill="#F5A623" fill-opacity="0.55"/>
+  <rect x="560" y="250" width="44" height="170" fill="#F5A623" fill-opacity="0.45"/>
+  <circle cx="620" cy="120" r="36" fill="#F5A623" fill-opacity="0.35"/>
+  <text x="400" y="520" text-anchor="middle" fill="#ffffff" fill-opacity="0.55" font-family="system-ui,sans-serif" font-size="24" font-weight="600" letter-spacing="0.08em">PROYECTO</text>
+</svg>

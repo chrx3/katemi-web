@@ -6,9 +6,12 @@ import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import PageHeader from '~/components/shared/PageHeader';
 import ScrollReveal from '~/components/shared/ScrollReveal';
+import ImageWithFallback from '~/components/shared/ImageWithFallback';
 import ProjectCard from '~/components/shared/ProjectCard';
 import * as LucideIcons from 'lucide-react';
 import { pb } from '~/lib/pocketbase';
+import { companyInfo, getServiceBySlug } from '@/lib/company-content';
+import { normalizeImageList } from '@/lib/image-placeholders';
 
 interface Service {
   id: string;
@@ -35,32 +38,19 @@ interface Project {
   images?: string[];
 }
 
-const staticService: Service = {
-  id: '1',
-  slug: 'ingenieria-y-diseno',
-  title: 'Ingeniería y Diseño',
-  shortDescription:
-    'Diseño de proyectos eléctricos industriales, sistemas de potencia, subestaciones y líneas de transmisión.',
-  description:
-    'Nuestro equipo de ingeniería ofrece servicios de diseño y desarrollo de proyectos eléctricos para todo tipo de instalaciones industriales, comerciales y de infraestructura. Realizamos memorias de cálculo, estudios de cortocircuito y coordinación de protecciones, diseño de sistemas de puesta a tierra, y desarrollo de planos de ejecución conforme a normativa SEC y IEC.\n\nContamos con experiencia en proyectos de media y alta tensión, diseño de subestaciones eléctricas, líneas de transmisión y distribución, sistemas de iluminación industrial y sistemas de respaldo con grupos generadores.',
-  icon: 'Zap',
-  features: [
-    'Diseño de sistemas de potencia en media y alta tensión',
-    'Memoriales de cálculo y estudios técnicos certificados',
-    'Diseño de subestaciones eléctricas hasta 23kV',
-    'Líneas de transmisión y distribución aérea y subterránea',
-    'Coordinación de protecciones y estudio de cortocircuito',
-    'Diseño de sistemas de puesta a tierra',
-    'Planos de ejecución y isometricos',
-    'Gestión y aprobación SEC',
-  ],
-  imageUrl: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=800&q=80',
-  images: [
-    'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=800&q=80',
-    'https://images.unsplash.com/photo-1621905251189-08b45d6a65e9?w=800&q=80',
-    'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&q=80',
-  ],
-};
+function toDetailService(slug: string): Service | null {
+  const service = getServiceBySlug(slug);
+  if (!service) return null;
+  return {
+    id: service.id,
+    slug: service.slug,
+    title: service.title,
+    shortDescription: service.shortDescription,
+    description: service.fullDescription,
+    icon: service.icon,
+    features: service.features,
+  };
+}
 
 export default function ServicioDetailPage() {
   const params = useParams();
@@ -86,7 +76,7 @@ export default function ServicioDetailPage() {
           icon: (s.icon as string) || 'Box',
           features: s.features as string[] || [],
           imageUrl: s.imageUrl as string | undefined,
-          images: s.images as string[] | undefined,
+          images: normalizeImageList(s.images),
         });
 
         // Fetch related projects
@@ -94,7 +84,7 @@ export default function ServicioDetailPage() {
           .collection('projects')
           .getFullList({
             sort: '-year',
-            filter: `isActive=true && servicesProvided~"${s.title as string}"`,
+            filter: `isActive=true && servicesProvided~"${slug}"`,
           });
         setRelatedProjects(
           projects.map((p: Record<string, unknown>) => ({
@@ -107,13 +97,13 @@ export default function ServicioDetailPage() {
             category: p.category as string,
             year: p.year as string,
             imageUrl: p.imageUrl as string | undefined,
-            images: p.images as string[] | undefined,
+            images: normalizeImageList(p.images),
           }))
         );
       } catch {
-        // Use static data as fallback
-        if (slug === staticService.slug) {
-          setService(staticService);
+        const fallback = toDetailService(slug);
+        if (fallback) {
+          setService(fallback);
         } else {
           setNotFound(true);
         }
@@ -252,9 +242,10 @@ export default function ServicioDetailPage() {
                           key={i}
                           className="aspect-[4/3] rounded-xl overflow-hidden bg-gray-100"
                         >
-                          <img
+                          <ImageWithFallback
                             src={img}
                             alt={`${service.title} - imagen ${i + 1}`}
+                            fallbackKind="service"
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                           />
                         </div>
@@ -285,11 +276,11 @@ export default function ServicioDetailPage() {
                   <div className="mt-6 pt-6 border-t border-white/10 space-y-3">
                     <div className="flex items-center gap-2 text-sm text-white/60">
                       <LucideIcons.Phone className="w-4 h-4" />
-                      +56 9 1234 5678
+                      {companyInfo.phone}
                     </div>
                     <div className="flex items-center gap-2 text-sm text-white/60">
                       <LucideIcons.Mail className="w-4 h-4" />
-                      contacto@katemi.chrsx3.com
+                      {companyInfo.email}
                     </div>
                   </div>
                 </div>

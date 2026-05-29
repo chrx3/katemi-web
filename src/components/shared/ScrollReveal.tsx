@@ -2,6 +2,13 @@
 
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
+import {
+  cappedRevealDelay,
+  IN_VIEW_AMOUNT,
+  IN_VIEW_MARGIN,
+  REVEAL_DURATION,
+  REVEAL_EASE,
+} from '@/lib/motion-viewport';
 
 interface ScrollRevealProps {
   children: React.ReactNode;
@@ -11,37 +18,41 @@ interface ScrollRevealProps {
   threshold?: number;
 }
 
+const OFFSET = 20;
+
 export default function ScrollReveal({
   children,
   delay = 0,
   direction = 'up',
   className,
-  threshold = 0.15,
+  threshold = IN_VIEW_AMOUNT,
 }: ScrollRevealProps) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-60px' });
+  const isInView = useInView(ref, {
+    once: true,
+    margin: IN_VIEW_MARGIN,
+    amount: threshold,
+  });
 
-  const initial = {
+  const effectiveDelay = cappedRevealDelay(delay);
+
+  const hidden = {
     opacity: 0,
-    y: direction === 'up' ? delay * 40 : 0,
-    x: direction === 'left' ? -delay * 40 : direction === 'right' ? delay * 40 : 0,
+    y: direction === 'up' ? OFFSET : 0,
+    x: direction === 'left' ? -OFFSET : direction === 'right' ? OFFSET : 0,
   };
 
-  const animate = {
-    opacity: isInView ? 1 : 0,
-    y: isInView ? 0 : direction === 'up' ? delay * 40 : 0,
-    x: isInView ? 0 : direction === 'left' ? -delay * 40 : direction === 'right' ? delay * 40 : 0,
-  };
+  const visible = { opacity: 1, y: 0, x: 0 };
 
   return (
     <motion.div
       ref={ref}
-      initial={initial}
-      animate={animate}
+      initial={hidden}
+      animate={isInView ? visible : hidden}
       transition={{
-        duration: 0.8,
-        ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number],
-        delay,
+        duration: REVEAL_DURATION,
+        ease: REVEAL_EASE,
+        delay: effectiveDelay,
       }}
       className={className}
     >

@@ -9,6 +9,8 @@ import FeaturedProjects from "@/components/sections/FeaturedProjects";
 import ClientsMarquee from "@/components/sections/ClientsMarquee";
 import CTABanner from "@/components/sections/CTABanner";
 import InlineEditableText from "@/components/template/InlineEditableText";
+import ImageWithFallback from "@/components/shared/ImageWithFallback";
+import { resolveAboutImage } from "@/lib/image-placeholders";
 import type { LandingTemplateConfig, LandingStat } from "@/lib/template-config";
 import { Plus, Trash2 } from "lucide-react";
 
@@ -58,15 +60,14 @@ function AboutPreview({ template, editable, showGuides, onFieldChange }: { templ
         <div className="container-max">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="relative">
-              {template.aboutHistoryImage ? (
-                <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-[#0B1D3A]">
-                  <img src={template.aboutHistoryImage} alt="Equipo Katemi" className="w-full h-full object-cover opacity-90" />
-                </div>
-              ) : (
-                <div className="aspect-[4/3] rounded-2xl bg-[#0B1D3A]/10 flex items-center justify-center">
-                  <span className="text-gray-400 text-sm">Sin imagen</span>
-                </div>
-              )}
+              <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-[#0B1D3A]">
+                <ImageWithFallback
+                  src={resolveAboutImage(template.aboutHistoryImage)}
+                  alt="Equipo Katemi"
+                  fallbackKind="about"
+                  className="w-full h-full object-cover opacity-90"
+                />
+              </div>
               {e && (
                 <div className="mt-2">
                   <label className="text-xs text-gray-400">URL de imagen</label>

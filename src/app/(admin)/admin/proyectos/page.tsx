@@ -478,7 +478,7 @@ export default function AdminProyectosPage() {
                           alt={`Preview ${i + 1}`}
                           className="w-16 h-16 object-cover rounded-lg border border-gray-200"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/64x64?text=Error';
+                            (e.target as HTMLImageElement).src = '/placeholders/generic.svg';
                           }}
                         />
                         <button

@@ -7,6 +7,8 @@ import ProjectCard from "../shared/ProjectCard";
 import ScrollReveal from "../shared/ScrollReveal";
 import { pb } from "@/lib/pocketbase";
 import type { LandingTemplateConfig } from "@/lib/template-config";
+import { toFeaturedProjectFallback } from "@/lib/company-content";
+import { normalizeImageList } from "@/lib/image-placeholders";
 
 interface ProjectFromPB {
   slug: string;
@@ -20,41 +22,7 @@ interface ProjectFromPB {
   images?: string[];
 }
 
-const staticFallback: ProjectFromPB[] = [
-  {
-    slug: "subestacion-cge-central",
-    title: "Subestación 110kV Central",
-    clientName: "CGE",
-    location: "Región Metropolitana",
-    description:
-      "Diseño y construcción de subestación de transformación 110/23kV con capacidad de 40 MVA para suministro industrial.",
-    category: "Media Tensión",
-    year: "2024",
-    imageUrl: "https://images.unsplash.com/photo-1621905251189-08b45d6a65e9?w=800&q=80",
-  },
-  {
-    slug: "linea-aerea-220kv",
-    title: "Línea Aérea 220kV",
-    clientName: "Transelec",
-    location: "Región del Biobío",
-    description:
-      "Instalación de 28 km de línea aérea en 220kV con towers de acero galvanizado, incluyendo tendido de conductores.",
-    category: "Alta Tensión",
-    year: "2023",
-    imageUrl: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&q=80",
-  },
-  {
-    slug: "sistema-automatizacion-enel",
-    title: "Sistema SCADA Enel",
-    clientName: "Enel",
-    location: "Región de Valparaíso",
-    description:
-      "Implementación de sistema SCADA para control y monitoreo de redes de distribución en media tensión.",
-    category: "Automatización",
-    year: "2023",
-    imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
-  },
-];
+const staticFallback: ProjectFromPB[] = toFeaturedProjectFallback();
 
 type FeaturedProjectsContent = Pick<
   LandingTemplateConfig,
@@ -86,7 +54,7 @@ export default function FeaturedProjects({ content, previewMode = false }: Featu
             category: r.category as string,
             year: String(r.year ?? ""),
             imageUrl: r.imageUrl as string | undefined,
-            images: r.images as string[] | undefined,
+            images: normalizeImageList(r.images),
           }));
           setProjects(mapped);
         }
@@ -120,6 +88,7 @@ export default function FeaturedProjects({ content, previewMode = false }: Featu
                   category={project.category}
                   year={project.year}
                   imageUrl={project.imageUrl}
+                  images={project.images}
                 />
               </div>
             </ScrollReveal>

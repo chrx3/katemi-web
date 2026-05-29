@@ -122,11 +122,11 @@ export default function ServicesPreview({
             )}
           </div>
 
-          <div className="lg:w-7/12 grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:w-7/12">
             {content.servicesItems.map((service, i) => (
-              <ScrollReveal key={`${service.slug}-${i}`} delay={i * 0.1}>
+              <ScrollReveal key={`${service.slug}-${i}`} delay={i * 0.1} className="h-full">
                 {editable && onServiceChange ? (
-                  <div className="rounded-2xl border border-[#00A896]/30 bg-white p-5 shadow-sm">
+                  <div className="flex h-full min-h-[220px] flex-col rounded-2xl border border-[#00A896]/30 bg-white p-5 shadow-sm">
                     <InlineEditableText
                       value={service.title}
                       onChange={(v) => onServiceChange(i, "title", v)}

@@ -13,6 +13,16 @@ interface Particle {
   vx: number;
   vy: number;
   radius: number;
+  phase: number;
+  driftSpeed: number;
+}
+
+interface Ripple {
+  x: number;
+  y: number;
+  radius: number;
+  maxRadius: number;
+  strength: number;
 }
 
 type HeroContent = Pick<
@@ -45,15 +55,26 @@ export default function HeroSection({
   onFieldChange,
 }: HeroSectionProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const pointerRef = useRef({ x: 0, y: 0, active: false });
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const section = sectionRef.current;
+    if (!canvas || !section) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     let animationId: number;
     let particles: Particle[] = [];
+    let ripples: Ripple[] = [];
+
+    const POINTER_RADIUS = 150;
+    const POINTER_LINE_RADIUS = 200;
+    const REPEL_STRENGTH = 0.55;
+    const MIN_SPEED = 0.06;
+    const MAX_SPEED = 0.9;
+    const FRICTION = 0.986;
 
     const resize = () => {
       canvas.width = canvas.offsetWidth;
@@ -70,27 +91,187 @@ export default function HeroSection({
         particles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.4,
-          vy: (Math.random() - 0.5) * 0.4,
-          radius: Math.random() * 2 + 1,
+          vx: (Math.random() - 0.5) * 0.25,
+          vy: (Math.random() - 0.5) * 0.25,
+          radius: Math.random() * 2.5 + 2.5,
+          phase: Math.random() * Math.PI * 2,
+          driftSpeed: 0.12 + Math.random() * 0.22,
         });
+      }
+    };
+
+    const getCanvasPoint = (clientX: number, clientY: number) => {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top,
+      };
+    };
+
+    const updatePointer = (clientX: number, clientY: number) => {
+      const point = getCanvasPoint(clientX, clientY);
+      pointerRef.current = { ...point, active: true };
+    };
+
+    const addRipple = (clientX: number, clientY: number) => {
+      const point = getCanvasPoint(clientX, clientY);
+      ripples.push({
+        x: point.x,
+        y: point.y,
+        radius: 0,
+        maxRadius: 180,
+        strength: 0.85,
+      });
+    };
+
+    const handleMouseMove = (event: MouseEvent) => {
+      updatePointer(event.clientX, event.clientY);
+    };
+
+    const handleMouseEnter = (event: MouseEvent) => {
+      updatePointer(event.clientX, event.clientY);
+    };
+
+    const handleTouchStart = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (!touch) return;
+      updatePointer(touch.clientX, touch.clientY);
+      addRipple(touch.clientX, touch.clientY);
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (!touch) return;
+      updatePointer(touch.clientX, touch.clientY);
+    };
+
+    const handlePointerLeave = () => {
+      pointerRef.current.active = false;
+    };
+
+    const applyAutonomousMotion = (p: Particle, time: number) => {
+      p.vx += Math.sin(time * p.driftSpeed + p.phase) * 0.007;
+      p.vy += Math.cos(time * p.driftSpeed * 0.85 + p.phase) * 0.007;
+
+      const speed = Math.hypot(p.vx, p.vy);
+      if (speed < MIN_SPEED) {
+        const angle = p.phase + time * 0.14;
+        p.vx += Math.cos(angle) * 0.01;
+        p.vy += Math.sin(angle) * 0.01;
+      } else if (speed > MAX_SPEED) {
+        p.vx = (p.vx / speed) * MAX_SPEED;
+        p.vy = (p.vy / speed) * MAX_SPEED;
+      }
+    };
+
+    const applyPointerForce = (
+      p: Particle,
+      px: number,
+      py: number,
+      radius: number,
+      strength: number,
+    ) => {
+      const dx = p.x - px;
+      const dy = p.y - py;
+      const dist = Math.hypot(dx, dy) || 1;
+
+      if (dist < radius) {
+        const force = (1 - dist / radius) * strength;
+        p.vx += (dx / dist) * force;
+        p.vy += (dy / dist) * force;
       }
     };
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      const pointer = pointerRef.current;
+      const time = Date.now() / 1000;
+
+      ripples = ripples.filter((ripple) => {
+        ripple.radius += 1.6;
+        const band = 28;
+        particles.forEach((p) => {
+          const dx = p.x - ripple.x;
+          const dy = p.y - ripple.y;
+          const dist = Math.hypot(dx, dy);
+          if (
+            dist < ripple.radius &&
+            dist > ripple.radius - band &&
+            ripple.radius < ripple.maxRadius
+          ) {
+            const force =
+              ripple.strength * (1 - ripple.radius / ripple.maxRadius);
+            p.vx += (dx / (dist || 1)) * force * 0.2;
+            p.vy += (dy / (dist || 1)) * force * 0.2;
+          }
+        });
+
+        const alpha = (1 - ripple.radius / ripple.maxRadius) * 0.35;
+        if (alpha > 0.02) {
+          ctx.beginPath();
+          ctx.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(0, 212, 255, ${alpha})`;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        }
+
+        return ripple.radius < ripple.maxRadius;
+      });
+
       particles.forEach((p, i) => {
+        applyAutonomousMotion(p, time);
+
+        if (pointer.active) {
+          applyPointerForce(
+            p,
+            pointer.x,
+            pointer.y,
+            POINTER_RADIUS,
+            REPEL_STRENGTH,
+          );
+        }
+
+        p.vx *= FRICTION;
+        p.vy *= FRICTION;
         p.x += p.vx;
         p.y += p.vy;
 
         if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
         if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
 
+        p.x = Math.max(0, Math.min(canvas.width, p.x));
+        p.y = Math.max(0, Math.min(canvas.height, p.y));
+
+        let particleAlpha = 0.6;
+        let particleRadius = p.radius;
+
+        if (pointer.active) {
+          const pointerDist = Math.hypot(p.x - pointer.x, p.y - pointer.y);
+          if (pointerDist < POINTER_LINE_RADIUS) {
+            const proximity = 1 - pointerDist / POINTER_LINE_RADIUS;
+            particleAlpha = 0.6 + proximity * 0.35;
+            particleRadius = p.radius + proximity * 1.8;
+          }
+        }
+
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(0, 212, 255, 0.6)";
+        ctx.arc(p.x, p.y, particleRadius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0, 212, 255, ${particleAlpha})`;
         ctx.fill();
+
+        if (pointer.active) {
+          const pointerDist = Math.hypot(p.x - pointer.x, p.y - pointer.y);
+          if (pointerDist < POINTER_LINE_RADIUS) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(pointer.x, pointer.y);
+            const alpha = (1 - pointerDist / POINTER_LINE_RADIUS) * 0.45;
+            ctx.strokeStyle = `rgba(0, 212, 255, ${alpha})`;
+            ctx.lineWidth = 2.2;
+            ctx.stroke();
+          }
+        }
 
         particles.slice(i + 1).forEach((p2) => {
           const dx = p.x - p2.x;
@@ -104,11 +285,25 @@ export default function HeroSection({
             ctx.lineTo(p2.x, p2.y);
             const alpha = (1 - dist / maxDist) * 0.25;
             ctx.strokeStyle = `rgba(0, 212, 255, ${alpha})`;
-            ctx.lineWidth = 0.8;
+            ctx.lineWidth = 2;
             ctx.stroke();
           }
         });
       });
+
+      if (pointer.active) {
+        const pulse = 6 + Math.sin(Date.now() / 220) * 1.5;
+        ctx.beginPath();
+        ctx.arc(pointer.x, pointer.y, pulse, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(0, 212, 255, 0.35)";
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(pointer.x, pointer.y, 3, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(0, 212, 255, 0.85)";
+        ctx.fill();
+      }
 
       animationId = requestAnimationFrame(draw);
     };
@@ -122,10 +317,24 @@ export default function HeroSection({
       createParticles();
     };
 
+    section.addEventListener("mousemove", handleMouseMove);
+    section.addEventListener("mouseenter", handleMouseEnter);
+    section.addEventListener("mouseleave", handlePointerLeave);
+    section.addEventListener("touchstart", handleTouchStart, { passive: true });
+    section.addEventListener("touchmove", handleTouchMove, { passive: true });
+    section.addEventListener("touchend", handlePointerLeave);
+    section.addEventListener("touchcancel", handlePointerLeave);
     window.addEventListener("resize", handleResize);
 
     return () => {
       cancelAnimationFrame(animationId);
+      section.removeEventListener("mousemove", handleMouseMove);
+      section.removeEventListener("mouseenter", handleMouseEnter);
+      section.removeEventListener("mouseleave", handlePointerLeave);
+      section.removeEventListener("touchstart", handleTouchStart);
+      section.removeEventListener("touchmove", handleTouchMove);
+      section.removeEventListener("touchend", handlePointerLeave);
+      section.removeEventListener("touchcancel", handlePointerLeave);
       window.removeEventListener("resize", handleResize);
     };
   }, []);
@@ -151,7 +360,10 @@ export default function HeroSection({
   };
 
   return (
-    <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-[#0B1D3A]">
+    <section
+      ref={sectionRef}
+      className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-[#0B1D3A]"
+    >
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full"
@@ -166,7 +378,9 @@ export default function HeroSection({
         }}
       />
 
-      <div className="container-max relative z-10 py-32 text-center">
+      <div
+        className={`container-max relative z-10 py-32 text-center ${editable ? "" : "pointer-events-none"}`}
+      >
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -284,13 +498,13 @@ export default function HeroSection({
               <>
                 <Link
                   href={content.heroPrimaryCtaHref}
-                  className="inline-flex items-center justify-center bg-[#00A896] text-white font-semibold px-8 py-4 rounded-xl hover:bg-[#008f7f] hover:shadow-lg hover:shadow-[#00A896]/30 transition-all duration-300 text-base"
+                  className="pointer-events-auto inline-flex items-center justify-center bg-[#00A896] text-white font-semibold px-8 py-4 rounded-xl hover:bg-[#008f7f] hover:shadow-lg hover:shadow-[#00A896]/30 transition-all duration-300 text-base"
                 >
                   {content.heroPrimaryCtaLabel}
                 </Link>
                 <Link
                   href={content.heroSecondaryCtaHref}
-                  className="inline-flex items-center justify-center border-2 border-white/30 text-white font-semibold px-8 py-4 rounded-xl hover:bg-white/10 hover:border-white/50 transition-all duration-300 text-base"
+                  className="pointer-events-auto inline-flex items-center justify-center border-2 border-white/30 text-white font-semibold px-8 py-4 rounded-xl hover:bg-white/10 hover:border-white/50 transition-all duration-300 text-base"
                 >
                   {content.heroSecondaryCtaLabel}
                 </Link>

@@ -1,3 +1,13 @@
+import {
+  companyDescription,
+  companyInfo,
+  companyMission,
+  companyStats,
+  companyValues,
+  companyVision,
+  toLandingServiceItems,
+} from "@/lib/company-content";
+
 export interface LandingStat {
   value: string;
   label: string;
@@ -76,13 +86,12 @@ export interface LandingTemplateConfig {
 }
 
 export const landingTemplateDefaults: LandingTemplateConfig = {
-  heroEyebrow: "Ingeniería y Proyectos Eléctricos",
-  heroTitleStart: "Potencia tu proyecto con",
-  heroTitleHighlightOne: "precisión",
+  heroEyebrow: companyInfo.tagline,
+  heroTitleStart: "Soluciones integrales en",
+  heroTitleHighlightOne: "ingeniería",
   heroTitleConnector: "y",
-  heroTitleHighlightTwo: "experiencia",
-  heroSubtitle:
-    "Más de 12 años ejecutando proyectos eléctricos en media y alta tensión para las principales empresas de Chile",
+  heroTitleHighlightTwo: "construcción",
+  heroSubtitle: companyDescription.intro,
   heroPrimaryCtaLabel: "Cotizar Proyecto",
   heroPrimaryCtaHref: "/contacto",
   heroSecondaryCtaLabel: "Ver Nuestros Proyectos",
@@ -93,98 +102,53 @@ export const landingTemplateDefaults: LandingTemplateConfig = {
   accentColor: "#00A896",
   highlightColor: "#00D4FF",
 
-  statsItems: [
-    { value: "150", label: "Proyectos Entregados", suffix: "+" },
-    { value: "12", label: "Años de Experiencia", suffix: "" },
-    { value: "8", label: "Clientes Activos", suffix: "+" },
-    { value: "50", label: "Especialistas", suffix: "+" },
-  ],
+  statsItems: companyStats,
 
   servicesEyebrow: "Qué hacemos",
   servicesTitle: "Nuestros Servicios",
   servicesSubtitle:
-    "Soluciones integrales en ingeniería eléctrica para la industria y infraestructura en Chile.",
-  servicesDescription:
-    "Contamos con un equipo multidisciplinario de ingenieros y técnicos especializados en cada área de la ingeniería eléctrica, aportando soluciones seguras, eficientes y normativas a cada proyecto.",
+    "Desarrollo y ejecución de proyectos de ingeniería, construcción e instalaciones para sectores comercial, industrial y de servicios.",
+  servicesDescription: companyDescription.sectors,
   servicesLinkLabel: "Ver Todos los Servicios",
-  servicesItems: [
-    {
-      slug: "ingenieria-electrica",
-      title: "Ingeniería Eléctrica",
-      shortDescription:
-        "Diseño y desarrollo de proyectos eléctricos de media y alta tensión, desde la conceptualización hasta la puesta en servicio.",
-      icon: "Zap",
-      imageUrl: "",
-    },
-    {
-      slug: "instalaciones",
-      title: "Instalaciones Eléctricas",
-      shortDescription:
-        "Ejecución profesional de instalaciones eléctricas industriales y comerciales, con los más altos estándares de seguridad.",
-      icon: "Wrench",
-      imageUrl: "",
-    },
-    {
-      slug: "automatizacion",
-      title: "Automatización y Control",
-      shortDescription:
-        "Sistemas de automatización, control SCADA y tableros de distribución para optimizar procesos industriales.",
-      icon: "Settings",
-      imageUrl: "",
-    },
-    {
-      slug: "mediciones",
-      title: "Mediciones y Certificaciones",
-      shortDescription:
-        "Ensayos de puesta en servicio, mediciones de tierra, termografías y certificaciones según normativa chilena.",
-      icon: "FileCheck",
-      imageUrl: "",
-    },
-  ],
+  servicesItems: toLandingServiceItems(6),
 
   featuredProjectsEyebrow: "Portafolio",
   featuredProjectsTitle: "Proyectos Destacados",
   featuredProjectsSubtitle:
-    "Conoce algunos de nuestros proyectos más relevantes ejecutados para las principales empresas del sector.",
+    "Experiencia en proyectos para clientes del área comercial e industrial en Chile.",
   featuredProjectsLinkLabel: "Ver Todos los Proyectos",
 
   clientsEyebrow: "Confianza y Trayectoria",
   clientsTitle: "Nuestros Clientes",
 
-  ctaTitle: "¿Listo para tu próximo proyecto?",
-  ctaSubtitle: "Contáctanos hoy y hagamos realidad tu proyecto eléctrico",
+  ctaTitle: "¿Listo para evaluar un nuevo proyecto?",
+  ctaSubtitle:
+    "Quedamos disponibles para evaluar nuevos proyectos y oportunidades de colaboración.",
   ctaPrimaryLabel: "Solicitar Cotización",
   ctaPrimaryHref: "/contacto",
   ctaSecondaryLabel: "Ver Proyectos",
   ctaSecondaryHref: "/proyectos",
 
-  contactInfoTitle: "Conoce más sobre Katemi",
-  contactInfoDescription:
-    "Estamos ubicados en Santiago y prestamos servicios en todo Chile. Contáctanos para discutir tu próximo proyecto eléctrico.",
-  contactPhone: "+56 9 1234 5678",
-  contactEmail: "contacto@katemi.chrsx3.com",
-  contactAddress: "Av. Providencia 1650, Of. 501\nSantiago, Chile",
-  contactHours: "Lunes a Viernes: 8:30 – 18:30",
+  contactInfoTitle: `Conoce más sobre ${companyInfo.legalName}`,
+  contactInfoDescription: companyDescription.closing,
+  contactPhone: companyInfo.phone,
+  contactEmail: companyInfo.email,
+  contactAddress: companyInfo.address,
+  contactHours: companyInfo.hours,
 
   aboutEyebrow: "Nuestra Empresa",
-  aboutTitle: "Más de 15 años construyendo infraestructura eléctrica en Chile",
-  aboutHistoryPart1:
-    "Katemi nació en 2009 con una visión clara: convertirse en una empresa líder en ingeniería y proyectos eléctricos, comprometida con la calidad, la seguridad y el desarrollo sostenible de Chile.",
-  aboutHistoryPart2:
-    "Desde nuestros inicios, hemos participado en proyectos de transmisión y distribución eléctrica, instalaciones industriales, sistemas fotovoltaicos y automatización de procesos, consolidando relaciones de largo plazo con empresas del sector minero, industrial y de servicios.",
-  aboutHistoryPart3:
-    "Hoy, nuestro equipo está conformado por profesionales altamente capacitados y comprometidos, que trabajan día a día para entregar soluciones que contribuyen al desarrollo energético del país.",
+  aboutTitle: `${companyInfo.legalName} — ${companyInfo.tagline}`,
+  aboutHistoryPart1: companyDescription.intro,
+  aboutHistoryPart2: companyDescription.sectors,
+  aboutHistoryPart3: companyDescription.collaboration,
   aboutHistoryImage: "",
-  aboutMission:
-    "Entregar soluciones integrales en ingeniería eléctrica, contribuyendo al desarrollo sostenible de la infraestructura energética de Chile con seguridad, calidad y compromiso ambiental.",
-  aboutVision:
-    "Ser la empresa de referencia en proyectos eléctricos industriales en Chile, reconocida por la excelencia técnica, la innovación y la capacidad de adaptarse a las demandas energéticas del futuro.",
-  aboutValuesList:
-    "Seguridad primero, siempre\nCompromiso con la calidad\nIntegridad en cada proyecto\nTrabajo en equipo",
+  aboutMission: companyMission,
+  aboutVision: companyVision,
+  aboutValuesList: companyValues.join("\n"),
 
   linkedinUrl: "https://linkedin.com/company/katemi",
   instagramUrl: "https://instagram.com/katemi",
-  googleMapsUrl: "https://maps.google.com/?q=Santiago+Chile",
+  googleMapsUrl: companyInfo.googleMapsUrl,
 };
 
 function parseString(raw: string | undefined, fallback: string): string {

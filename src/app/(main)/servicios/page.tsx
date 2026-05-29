@@ -5,6 +5,7 @@ import PageHeader from '~/components/shared/PageHeader';
 import ServiceCard from '~/components/shared/ServiceCard';
 import ScrollReveal from '~/components/shared/ScrollReveal';
 import { pb } from '~/lib/pocketbase';
+import { companyDescription, companyInfo, toStaticServiceList } from '@/lib/company-content';
 
 interface Service {
   id: string;
@@ -16,44 +17,7 @@ interface Service {
   order?: number;
 }
 
-const staticServices: Service[] = [
-  {
-    id: '1',
-    slug: 'ingenieria-y-diseno',
-    title: 'Ingeniería y Diseño',
-    shortDescription:
-      'Diseño de proyectos eléctricos industriales, sistemas de potencia, subestaciones y líneas de transmisión. Estudios técnicos y memorias de cálculo.',
-    icon: 'Zap',
-    imageUrl: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=800&q=80',
-  },
-  {
-    id: '2',
-    slug: 'instalaciones-electricas',
-    title: 'Instalaciones Eléctricas',
-    shortDescription:
-      'Ejecución de instalaciones eléctricas en media y baja tensión, tableros de distribución, cableado estructurado y sistemas de puesta a tierra.',
-    icon: 'Wrench',
-    imageUrl: 'https://images.unsplash.com/photo-1621905251189-08b45d6a65e9?w=800&q=80',
-  },
-  {
-    id: '3',
-    slug: 'automatizacion-y-control',
-    title: 'Automatización y Control',
-    shortDescription:
-      'Sistemas de automatización industrial, PLCs, variadores de frecuencia, control SCADA y supervisión remota de procesos eléctricos.',
-    icon: 'Settings',
-    imageUrl: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&q=80',
-  },
-  {
-    id: '4',
-    slug: 'mediciones-y-certificaciones',
-    title: 'Mediciones y Certificaciones',
-    shortDescription:
-      'Certificaciones SEC, mediciones de tierra, termografías, análisis de calidad de energía y auditorías eléctricas conforme a normativa vigente.',
-    icon: 'ClipboardCheck',
-    imageUrl: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&q=80',
-  },
-];
+const staticServices: Service[] = toStaticServiceList();
 
 export default function ServiciosPage() {
   const [services, setServices] = useState<Service[]>(staticServices);
@@ -90,7 +54,7 @@ export default function ServiciosPage() {
     <div className="flex flex-col">
       <PageHeader
         title="Servicios"
-        subtitle="Soluciones integrales en ingeniería eléctrica"
+        subtitle={companyInfo.tagline}
         eyebrow="Qué hacemos"
       />
 
@@ -100,22 +64,21 @@ export default function ServiciosPage() {
           <ScrollReveal>
             <div className="text-center mb-14">
               <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-                Ofrecemos un portafolio completo de servicios eléctricos para la industria, 
-                infraestructura y el sector energético chileno.
+                {companyDescription.sectors}
               </p>
             </div>
           </ScrollReveal>
 
           {loading ? (
-            <div className="grid md:grid-cols-2 gap-8">
-              {[1, 2, 3, 4].map((i) => (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="h-72 bg-gray-200 rounded-2xl animate-pulse" />
               ))}
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid items-stretch gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {services.map((service, i) => (
-                <ScrollReveal key={service.id} delay={i * 0.1}>
+                <ScrollReveal key={service.id} delay={i * 0.1} className="h-full">
                   <ServiceCard
                     slug={service.slug}
                     title={service.title}
@@ -148,23 +111,23 @@ export default function ServiciosPage() {
             {[
               {
                 icon: 'ShieldCheck',
-                title: 'Certificación SEC',
-                text: 'Técnicos certificados ante la Superintendencia de Electricidad y Combustibles.',
+                title: 'Seguridad y cumplimiento',
+                text: 'Trabajamos bajo los más altos estándares de seguridad y apego a la normativa vigente.',
               },
               {
                 icon: 'Clock',
-                title: 'Entrega en plazo',
-                text: 'Compromiso firme con los cronogramas acordados sin comprometer la calidad.',
+                title: 'Adaptación operacional',
+                text: 'Nos ajustamos a los requerimientos técnicos y operacionales de cada proyecto.',
               },
               {
                 icon: 'Users',
-                title: 'Equipo especializado',
-                text: 'Ingenieros y técnicos con amplia experiencia en terreno.',
+                title: 'Red de especialistas',
+                text: 'Contamos con una red de colaboración con profesionales de distintas áreas.',
               },
               {
                 icon: 'Award',
-                title: 'Alta calidad',
-                text: 'Materiales de primeras marcas y estándares internacionales en cada proyecto.',
+                title: 'Calidad técnica',
+                text: 'Entregamos soluciones confiables, seguras y de alto nivel técnico para cada cliente.',
               },
             ].map((item, i) => (
               <ScrollReveal key={item.title} delay={i * 0.1}>

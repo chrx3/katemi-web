@@ -369,7 +369,7 @@ export default function ServiciosPage() {
                       src={formData.image}
                       alt="Preview"
                       className="w-full h-full object-cover"
-                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      onError={(e) => { (e.target as HTMLImageElement).src = '/placeholders/service.svg'; }}
                     />
                   </div>
                 )}

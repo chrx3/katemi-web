@@ -29,7 +29,7 @@ export default function Navbar({
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { lenis } = useLenis();
+  const { lenisRef } = useLenis();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -50,8 +50,8 @@ export default function Navbar({
       e.preventDefault();
       const hash = href.replace("/", "") || "";
 
-      if (lenis) {
-        lenis.scrollTo(hash || "body", { duration: 1.5 } as never);
+      if (lenisRef.current) {
+        lenisRef.current.scrollTo(hash || "body", { duration: 1.5 } as never);
       } else {
         const target = document.querySelector(hash || "body");
         target?.scrollIntoView({ behavior: "smooth" });

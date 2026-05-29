@@ -10,6 +10,7 @@ import PageHeader from "~/components/shared/PageHeader";
 import ScrollReveal from "~/components/shared/ScrollReveal";
 import { pb } from "~/lib/pocketbase";
 import { landingTemplateDefaults } from "~/lib/template-config";
+import { companyInfo, contactFormSubjects } from "@/lib/company-content";
 
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -38,15 +39,7 @@ const contactSchema = z.object({
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
-const SUBJECTS = [
-  "Proyecto de ingeniería",
-  "Instalación eléctrica",
-  "Automatización y control",
-  "Certificación SEC",
-  "Consulta general",
-  "Cotización",
-  "Otro",
-];
+const SUBJECTS = contactFormSubjects;
 
 const defaultContactContent = {
   contactInfoTitle: landingTemplateDefaults.contactInfoTitle,
@@ -300,7 +293,7 @@ export default function ContactoPage() {
                         <Input
                           id="phone"
                           type="tel"
-                          placeholder="+56 9 1234 5678"
+                          placeholder={companyInfo.phone}
                           {...register("phone")}
                           className={
                             errors.phone

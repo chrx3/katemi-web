@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:pocketbase": "tsx scripts/seed-pocketbase.ts",
+    "seed:pocketbase:dry": "tsx scripts/seed-pocketbase.ts --dry-run"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
@@ -39,6 +41,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }

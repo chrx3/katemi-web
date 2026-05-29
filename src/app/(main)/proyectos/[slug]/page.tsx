@@ -8,6 +8,9 @@ import PageHeader from '~/components/shared/PageHeader';
 import ScrollReveal from '~/components/shared/ScrollReveal';
 import * as LucideIcons from 'lucide-react';
 import { pb } from '~/lib/pocketbase';
+import ImageWithFallback from "~/components/shared/ImageWithFallback";
+import { resolveProjectImage, normalizeImageList } from "@/lib/image-placeholders";
+import { companyInfo, getProjectBySlug } from '@/lib/company-content';
 
 interface Project {
   id: string;
@@ -28,39 +31,21 @@ interface AllProjectsResult {
   slug: string;
 }
 
-const staticProject: Project = {
-  id: '1',
-  slug: 'se-pampa-norte',
-  title: 'Subestación Eléctrica Pampa Norte',
-  clientName: 'Minera Spence',
-  location: 'Antofagasta, Chile',
-  description:
-    'El proyecto consistió en el diseño y construcción de una subestación eléctrica de 23kV para alimentar las operaciones mineras de Spence en la Región de Antofagasta. El proyecto incluyó el diseño de la ingeniería de detalle, suministro de equipos, construcción de la obra civil, montaje electromecánico y puesta en servicio.\n\nLa subestación cuenta con transformadores de potencia, celdas de media tensión, sistemas de protección y control, y una sala de control equipada con sistemas SCADA para supervisión remota. El proyecto fue executed bajo estrictos protocolos de seguridad y calidad, cumpliendo con todas las normativas SEC aplicables.',
-  category: 'Subestación',
-  year: '2023',
-  servicesProvided: [
-    'Ingeniería y Diseño',
-    'Instalaciones Eléctricas',
-    'Automatización y Control',
-    'Mediciones y Certificaciones',
-  ],
-  imageUrl: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=800&q=80',
-  images: [
-    'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=800&q=80',
-    'https://images.unsplash.com/photo-1621905251189-08b45d6a65e9?w=800&q=80',
-    'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&q=80',
-    'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&q=80',
-  ],
-};
-
-const allSlugs = [
-  'se-pampa-norte',
-  'lts-norte-grande',
-  'sf-planta-solar',
-  'ind-codelco-radomiro',
-  'dist-sector-industrial',
-  'residencial-torres-sur',
-];
+function toDetailProject(slug: string): Project | null {
+  const project = getProjectBySlug(slug);
+  if (!project) return null;
+  return {
+    id: project.id,
+    slug: project.slug,
+    title: project.title,
+    clientName: project.clientName,
+    location: project.location,
+    description: project.description,
+    category: project.category,
+    year: project.year,
+    servicesProvided: project.servicesProvided,
+  };
+}
 
 export default function ProyectoDetailPage() {
   const params = useParams();
@@ -87,81 +72,14 @@ export default function ProyectoDetailPage() {
           year: p.year as string,
           servicesProvided: p.servicesProvided as string[] | undefined,
           imageUrl: p.imageUrl as string | undefined,
-          images: p.images as string[] | undefined,
+          images: normalizeImageList(p.images),
         });
       } catch {
-        // Try static fallback
-        const fallback = allSlugs.includes(slug)
-          ? { ...staticProject, slug }
-          : null;
-        if (!fallback) {
-          setNotFound(true);
+        const fallback = toDetailProject(slug);
+        if (fallback) {
+          setProject(fallback);
         } else {
-          // Map static slug to correct data
-          const staticMap: Record<string, Project> = {
-            'se-pampa-norte': {
-              ...staticProject,
-              id: '1',
-              slug: 'se-pampa-norte',
-              title: 'Subestación Eléctrica Pampa Norte',
-              clientName: 'Minera Spence',
-              location: 'Antofagasta, Chile',
-              category: 'Subestación',
-              year: '2023',
-            },
-            'lts-norte-grande': {
-              ...staticProject,
-              id: '2',
-              slug: 'lts-norte-grande',
-              title: 'Línea de Transmisión Norte Grande',
-              clientName: 'ENGIE Chile',
-              location: 'Tarapacá, Chile',
-              category: 'Transmisión',
-              year: '2022',
-            },
-            'sf-planta-solar': {
-              ...staticProject,
-              id: '3',
-              slug: 'sf-planta-solar',
-              title: 'Planta Solar Fotovoltaica Los Andes',
-              clientName: 'Enel Green Power',
-              location: 'Valparaíso, Chile',
-              category: 'Fotovoltaico',
-              year: '2023',
-            },
-            'ind-codelco-radomiro': {
-              ...staticProject,
-              id: '4',
-              slug: 'ind-codelco-radomiro',
-              title: 'Sistema Eléctrico Industrial Radomiro Tomic',
-              clientName: 'Codelco',
-              location: 'Antofagasta, Chile',
-              category: 'Industrial',
-              year: '2021',
-            },
-            'dist-sector-industrial': {
-              ...staticProject,
-              id: '5',
-              slug: 'dist-sector-industrial',
-              title: 'Red de Distribución Sector Industrial',
-              clientName: 'Grupo Dreyfus',
-              location: 'Biobío, Chile',
-              category: 'Distribución',
-              year: '2022',
-            },
-            'residencial-torres-sur': {
-              ...staticProject,
-              id: '6',
-              slug: 'residencial-torres-sur',
-              title: 'Instalación Residencial Torres del Sur',
-              clientName: 'Inmobiliaria Sur',
-              location: 'Santiago, Chile',
-              category: 'Residencial',
-              year: '2023',
-            },
-          };
-          setProject(staticMap[slug] || null);
-          if (!staticMap[slug]) setNotFound(true);
+          setNotFound(true);
         }
       } finally {
         setLoading(false);
@@ -208,10 +126,7 @@ export default function ProyectoDetailPage() {
     );
   }
 
-  const heroImage =
-    project.imageUrl ||
-    project.images?.[0] ||
-    'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=1600&q=80';
+  const heroImage = resolveProjectImage(project.imageUrl, project.images);
 
   return (
     <div className="flex flex-col">
@@ -322,9 +237,10 @@ export default function ProyectoDetailPage() {
                           key={i}
                           className="aspect-[4/3] rounded-xl overflow-hidden bg-gray-100"
                         >
-                          <img
+                          <ImageWithFallback
                             src={img}
                             alt={`${project.title} - imagen ${i + 1}`}
+                            fallbackKind="project"
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                           />
                         </div>
@@ -354,11 +270,11 @@ export default function ProyectoDetailPage() {
                   <div className="mt-6 pt-6 border-t border-white/10 space-y-3">
                     <div className="flex items-center gap-2 text-sm text-white/60">
                       <Phone className="w-4 h-4" />
-                      +56 9 1234 5678
+                      {companyInfo.phone}
                     </div>
                     <div className="flex items-center gap-2 text-sm text-white/60">
                       <Mail className="w-4 h-4" />
-                      contacto@katemi.chrsx3.com
+                      {companyInfo.email}
                     </div>
                   </div>
                 </div>

@@ -1,18 +1,30 @@
 import Navbar from '~/components/layout/Navbar';
 import Footer from '~/components/layout/Footer';
+import ScrollToTop from '~/components/layout/ScrollToTop';
 import LenisProvider from '~/components/providers/LenisProvider';
+import { getLandingTemplateConfig } from '@/lib/pb-admin';
+import { landingTemplateDefaults } from '@/lib/template-config';
 
-export default function MainLayout({
+export default async function MainLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let template = landingTemplateDefaults;
+
+  try {
+    template = await getLandingTemplateConfig();
+  } catch (error) {
+    console.error('Error loading landing template config for layout:', error);
+  }
+
   return (
     <LenisProvider>
       <div className="flex min-h-screen flex-col">
         <Navbar />
         <main className="flex-1">{children}</main>
-        <Footer />
+        <Footer template={template} />
+        <ScrollToTop />
       </div>
     </LenisProvider>
   );

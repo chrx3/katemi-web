@@ -3,9 +3,17 @@
 import Link from "next/link";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import {
+  cappedRevealDelay,
+  IN_VIEW_AMOUNT,
+  IN_VIEW_MARGIN,
+  REVEAL_DURATION,
+  REVEAL_EASE,
+} from "@/lib/motion-viewport";
 import { Zap, Phone, Mail, MapPin, ExternalLink } from "lucide-react";
 import type { LandingTemplateConfig } from "@/lib/template-config";
 import InlineEditableText from "@/components/template/InlineEditableText";
+import { companyDescription, companyInfo, toFooterServiceLinks } from "@/lib/company-content";
 
 function LinkedinIcon({ className }: { className?: string }) {
   return (
@@ -35,12 +43,7 @@ function InstagramIcon({ className }: { className?: string }) {
   );
 }
 
-const serviceLinks = [
-  { href: "/servicios#ingenieria", label: "Ingeniería Eléctrica" },
-  { href: "/servicios#instalaciones", label: "Instalaciones" },
-  { href: "/servicios#control", label: "Automatización y Control" },
-  { href: "/servicios#mediciones", label: "Mediciones y Certificaciones" },
-];
+const serviceLinks = toFooterServiceLinks(6);
 
 const empresaLinks = [
   { href: "/nosotros", label: "Nosotros" },
@@ -57,17 +60,21 @@ function RevealItem({
   delay?: number;
 }) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const isInView = useInView(ref, {
+    once: true,
+    margin: IN_VIEW_MARGIN,
+    amount: IN_VIEW_AMOUNT,
+  });
 
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 24 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
       transition={{
-        duration: 0.7,
-        ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number],
-        delay,
+        duration: REVEAL_DURATION,
+        ease: REVEAL_EASE,
+        delay: cappedRevealDelay(delay),
       }}
     >
       {children}
@@ -99,11 +106,10 @@ export default function Footer({
 }: FooterProps) {
   const currentYear = new Date().getFullYear();
   const footerDescription =
-    template?.contactInfoDescription ||
-    "Ingeniería y Proyectos Eléctricos. Soluciones integrales para la industria y infraestructura en Chile.";
-  const footerPhone = template?.contactPhone || "+56 9 1234 5678";
-  const footerEmail = template?.contactEmail || "contacto@katemi.chrsx3.com";
-  const footerAddress = template?.contactAddress || "Santiago, Chile";
+    template?.contactInfoDescription || companyDescription.intro;
+  const footerPhone = template?.contactPhone || companyInfo.phone;
+  const footerEmail = template?.contactEmail || companyInfo.email;
+  const footerAddress = template?.contactAddress || companyInfo.address;
   const footerLinkedin = template?.linkedinUrl || "footerLinkedin";
   const footerInstagram = template?.instagramUrl || "footerInstagram";
   const footerMapsUrl = template?.googleMapsUrl || "footerMapsUrl";
@@ -145,7 +151,7 @@ export default function Footer({
                   <Zap className="w-5 h-5 text-white" strokeWidth={2.5} />
                 </div>
                 <span className="text-xl font-bold text-white tracking-tight">
-                  Katemi
+                  {companyInfo.brandName}
                 </span>
               </div>
               <p
@@ -354,7 +360,7 @@ export default function Footer({
             style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
           >
             <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
-              © {currentYear} Katemi · Todos los derechos reservados
+              © {currentYear} {companyInfo.legalName} · Todos los derechos reservados
             </p>
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 rounded-full bg-[#00A896]" />

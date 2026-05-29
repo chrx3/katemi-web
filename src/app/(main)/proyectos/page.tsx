@@ -6,6 +6,8 @@ import PageHeader from '~/components/shared/PageHeader';
 import ProjectCard from '~/components/shared/ProjectCard';
 import ScrollReveal from '~/components/shared/ScrollReveal';
 import { pb } from '~/lib/pocketbase';
+import { companyDescription, toStaticProjectList } from '@/lib/company-content';
+import { normalizeImageList } from '@/lib/image-placeholders';
 
 interface Project {
   id: string;
@@ -20,82 +22,9 @@ interface Project {
   images?: string[];
 }
 
-const staticProjects: Project[] = [
-  {
-    id: '1',
-    slug: 'se-pampa-norte',
-    title: 'Subestación Eléctrica Pampa Norte',
-    clientName: 'Minera Spence',
-    location: 'Antofagasta, Chile',
-    description:
-      'Diseño y construcción de subestación eléctrica de 23kV para operaciones mineras en el norte de Chile.',
-    category: 'Subestación',
-    year: '2023',
-    imageUrl: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=800&q=80',
-  },
-  {
-    id: '2',
-    slug: 'lts-norte-grande',
-    title: 'Línea de Transmisión Norte Grande',
-    clientName: 'ENGIE Chile',
-    location: 'Tarapacá, Chile',
-    description:
-      'Línea de transmisión de 220kV, 85km de extensión conectando zonas de generación renovable.',
-    category: 'Transmisión',
-    year: '2022',
-    imageUrl: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&q=80',
-  },
-  {
-    id: '3',
-    slug: 'sf-planta-solar',
-    title: 'Planta Solar Fotovoltaica Los Andes',
-    clientName: 'Enel Green Power',
-    location: 'Valparaíso, Chile',
-    description:
-      'Instalación de sistema fotovoltaico de 5MW con inversores de última generación.',
-    category: 'Fotovoltaico',
-    year: '2023',
-    imageUrl: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80',
-  },
-  {
-    id: '4',
-    slug: 'ind-codelco-radomiro',
-    title: 'Sistema Eléctrico Industrial Radomiro Tomic',
-    clientName: 'Codelco',
-    location: 'Antofagasta, Chile',
-    description:
-      'Instalación y puesta en marcha de sistemas de distribución eléctrica para expansiones de planta.',
-    category: 'Industrial',
-    year: '2021',
-    imageUrl: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&q=80',
-  },
-  {
-    id: '5',
-    slug: 'dist-sector-industrial',
-    title: 'Red de Distribución Sector Industrial',
-    clientName: 'Grupo Dreyfus',
-    location: 'Biobío, Chile',
-    description:
-      'Diseño y ejecución de red de distribución en media tensión para parque industrial.',
-    category: 'Distribución',
-    year: '2022',
-    imageUrl: 'https://images.unsplash.com/photo-1621905251189-08b45d6a65e9?w=800&q=80',
-  },
-  {
-    id: '6',
-    slug: 'residencial-torres-sur',
-    title: 'Instalación Residencial Torres del Sur',
-    clientName: 'Inmobiliaria Sur',
-    location: 'Santiago, Chile',
-    description:
-      'Instalación eléctrica completa para complejo residencial de 120 departamentos.',
-    category: 'Residencial',
-    year: '2023',
-    imageUrl: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80',
-  },
-];
+const staticProjects: Project[] = toStaticProjectList();
 
-const CATEGORIES = ['Todos', 'Subestación', 'Transmisión', 'Distribución', 'Fotovoltaico', 'Industrial', 'Residencial'];
+const CATEGORIES = ['Todos', 'Retail', 'Comercial', 'Industrial', 'Servicios'];
 
 function ProyectosContent() {
   const searchParams = useSearchParams();
@@ -122,7 +51,7 @@ function ProyectosContent() {
             category: r.category as string,
             year: r.year as string,
             imageUrl: r.imageUrl as string | undefined,
-            images: r.images as string[] | undefined,
+            images: normalizeImageList(r.images),
           }));
           setProjects(mapped);
         }
@@ -208,7 +137,7 @@ export default function ProyectosPage() {
     <div className="flex flex-col">
       <PageHeader
         title="Proyectos"
-        subtitle="Proyectos ejecutados en todo Chile"
+        subtitle="Experiencia en proyectos comerciales e industriales"
         eyebrow="Nuestro Trabajo"
       />
 
@@ -230,7 +159,7 @@ export default function ProyectosPage() {
               ¿Tienes un proyecto en mente?
             </h2>
             <p className="text-white/80 text-lg mb-8 max-w-xl mx-auto">
-              Conversemos sobre cómo podemos hacer realidad tu próximo proyecto eléctrico.
+              {companyDescription.closing}
             </p>
             <a
               href="/contacto"

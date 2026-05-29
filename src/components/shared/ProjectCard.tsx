@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { resolveProjectImage } from "@/lib/image-placeholders";
 
 interface ProjectCardProps {
   slug: string;
@@ -28,7 +29,7 @@ export default function ProjectCard({
   images,
   previewMode = false,
 }: ProjectCardProps) {
-  const bgImage = imageUrl || images?.[0] || "https://images.unsplash.com/photo-1621905251189-08b45d6a65e9?w=800&q=80";
+  const bgImage = resolveProjectImage(imageUrl, images);
 
   const card = (
     <motion.div

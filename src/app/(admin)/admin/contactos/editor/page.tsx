@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { Phone, Mail, MapPin, Clock, Smartphone, Monitor } from 'lucide-react';
 import Header from '@/components/admin/Header';
 import { getSiteConfig, setSiteConfig } from '@/lib/pb-admin';
+import { landingTemplateDefaults } from '@/lib/template-config';
+import { companyInfo } from '@/lib/company-content';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -20,13 +22,12 @@ type ContactContent = {
 };
 
 const defaults: ContactContent = {
-  contactInfoTitle: 'Conoce más sobre Katemi',
-  contactInfoDescription:
-    'Estamos ubicados en Santiago y prestamos servicios en todo Chile. Contáctanos para discutir tu próximo proyecto eléctrico.',
-  contactPhone: '+56 9 1234 5678',
-  contactEmail: 'contacto@katemi.chrsx3.com',
-  contactAddress: 'Av. Providencia 1650, Of. 501\nSantiago, Chile',
-  contactHours: 'Lunes a Viernes: 8:30 – 18:30',
+  contactInfoTitle: landingTemplateDefaults.contactInfoTitle,
+  contactInfoDescription: landingTemplateDefaults.contactInfoDescription,
+  contactPhone: companyInfo.phone,
+  contactEmail: companyInfo.email,
+  contactAddress: companyInfo.address,
+  contactHours: companyInfo.hours,
 };
 
 const fields: Array<{ key: keyof ContactContent; label: string; multiline?: boolean }> = [

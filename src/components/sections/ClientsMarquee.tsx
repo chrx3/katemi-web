@@ -1,32 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
 import ScrollReveal from "../shared/ScrollReveal";
 import ClientLogo from "../shared/ClientLogo";
 import { pb } from "@/lib/pocketbase";
 import type { LandingTemplateConfig } from "@/lib/template-config";
+import { getClientLogoUrl, toClientFallback } from "@/lib/company-content";
 
-const ReactFastMarquee = dynamic(() => import("react-fast-marquee"), {
-  ssr: false,
-});
-
-interface ClientFromPB {
+interface ClientItem {
   name: string;
   logoUrl: string;
   website: string;
 }
 
-const staticFallback: ClientFromPB[] = [
-  { name: "CGE", logoUrl: "", website: "" },
-  { name: "Transelec", logoUrl: "", website: "" },
-  { name: "Enel", logoUrl: "", website: "" },
-  { name: "AES Chile", logoUrl: "", website: "" },
-  { name: "Colbún", logoUrl: "", website: "" },
-  { name: "Pacific Energy", logoUrl: "", website: "" },
-  { name: "Grupo Saesa", logoUrl: "", website: "" },
-  { name: "Engie", logoUrl: "", website: "" },
-];
+const staticFallback: ClientItem[] = toClientFallback();
 
 type ClientsContent = Pick<
   LandingTemplateConfig,
@@ -38,7 +25,7 @@ interface ClientsMarqueeProps {
 }
 
 export default function ClientsMarquee({ content }: ClientsMarqueeProps) {
-  const [clients, setClients] = useState<ClientFromPB[]>(staticFallback);
+  const [clients, setClients] = useState<ClientItem[]>(staticFallback);
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -48,10 +35,10 @@ export default function ClientsMarquee({ content }: ClientsMarqueeProps) {
           filter: "isActive=true",
         });
         if (records.length > 0) {
-          const mapped: ClientFromPB[] = records.map(
+          const mapped: ClientItem[] = records.map(
             (r: Record<string, unknown>) => ({
               name: (r.name as string) || "",
-              logoUrl: (r.logoUrl as string) || "",
+              logoUrl: getClientLogoUrl((r.name as string) || ""),
               website: (r.website as string) || "",
             }),
           );
@@ -65,7 +52,7 @@ export default function ClientsMarquee({ content }: ClientsMarqueeProps) {
   }, []);
 
   return (
-    <section className="py-14 bg-[#F5F5F5] overflow-hidden">
+    <section className="py-14 bg-[#F5F5F5]">
       <div className="container-max">
         <ScrollReveal>
           <div className="text-center mb-10">
@@ -77,26 +64,21 @@ export default function ClientsMarquee({ content }: ClientsMarqueeProps) {
             </h2>
           </div>
         </ScrollReveal>
-      </div>
 
-      <ReactFastMarquee
-        speed={40}
-        pauseOnHover
-        gradient={false}
-        className="mt-6"
-      >
-        <div className="flex items-center gap-6 pr-6">
-          {clients.map((client) => (
-            <div key={client.name} className="flex-shrink-0 w-44">
-              <ClientLogo
-                name={client.name}
-                logoUrl={client.logoUrl}
-                website={client.website}
-              />
-            </div>
-          ))}
-        </div>
-      </ReactFastMarquee>
+        <ScrollReveal delay={0.1}>
+          <div className="mt-6 flex flex-wrap justify-center items-stretch gap-6">
+            {clients.map((client) => (
+              <div key={client.name} className="w-full sm:w-56 max-w-xs">
+                <ClientLogo
+                  name={client.name}
+                  logoUrl={client.logoUrl}
+                  website={client.website}
+                />
+              </div>
+            ))}
+          </div>
+        </ScrollReveal>
+      </div>
     </section>
   );
 }
