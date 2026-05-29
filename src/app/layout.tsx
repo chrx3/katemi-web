@@ -33,7 +33,7 @@ export default function RootLayout({
       className={spaceGrotesk.variable}
       data-scroll-behavior="smooth"
     >
-      <body className="antialiased min-h-screen">
+      <body className="antialiased min-h-screen w-full overflow-x-hidden">
         {children}
         <Toaster position="top-right" richColors />
       </body>

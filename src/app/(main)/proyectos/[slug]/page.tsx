@@ -129,10 +129,10 @@ export default function ProyectoDetailPage() {
   const heroImage = resolveProjectImage(project.imageUrl, project.images);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex w-full min-w-0 flex-col overflow-x-hidden">
       {/* Hero with bg image */}
       <section
-        className="relative min-h-[60vh] flex items-end overflow-hidden"
+        className="relative flex min-h-[50svh] items-end overflow-hidden sm:min-h-[60svh]"
         style={{
           backgroundImage: `url(${heroImage})`,
           backgroundSize: 'cover',
@@ -146,7 +146,7 @@ export default function ProyectoDetailPage() {
             <span className="inline-block bg-[#F5A623] text-white text-xs font-bold uppercase px-4 py-1.5 rounded-full mb-4">
               {project.category}
             </span>
-            <h1 className="text-4xl md:text-5xl font-bold text-white uppercase tracking-tight leading-tight max-w-3xl">
+            <h1 className="max-w-3xl break-words text-4xl font-bold uppercase leading-tight tracking-tight text-white md:text-5xl">
               {project.title}
             </h1>
           </ScrollReveal>

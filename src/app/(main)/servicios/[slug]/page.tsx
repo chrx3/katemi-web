@@ -159,7 +159,7 @@ export default function ServicioDetailPage() {
     ] || LucideIcons.Box;
 
   return (
-    <div className="flex flex-col">
+    <div className="flex w-full min-w-0 flex-col overflow-x-hidden">
       {/* Hero */}
       <PageHeader
         title={service.title}
@@ -170,9 +170,9 @@ export default function ServicioDetailPage() {
       {/* Content */}
       <section className="py-16 md:py-24 bg-white">
         <div className="container-max">
-          <div className="grid lg:grid-cols-3 gap-12">
+          <div className="grid min-w-0 gap-12 lg:grid-cols-3">
             {/* Main content */}
-            <div className="lg:col-span-2 space-y-10">
+            <div className="min-w-0 space-y-10 lg:col-span-2">
               {/* Icon + Intro */}
               <ScrollReveal>
                 <div className="flex items-start gap-6">

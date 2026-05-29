@@ -19,7 +19,7 @@ export default function PageHeader({
 
   return (
     <section
-      className="relative w-full py-24 lg:py-32 overflow-hidden"
+      className="viewport-below-nav relative flex w-full items-center justify-center overflow-hidden py-12 sm:py-16"
       style={{ backgroundColor: bgColor }}
     >
       {/* Decorative Dot Grid Pattern */}
@@ -41,7 +41,7 @@ export default function PageHeader({
       />
 
       {/* Content */}
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container-max relative z-10 w-full">
         <div className={isDarkBg ? "text-white" : "text-[#0B1D3A]"}>
           <SectionHeader
             title={title}

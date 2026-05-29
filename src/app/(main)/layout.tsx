@@ -20,9 +20,9 @@ export default async function MainLayout({
 
   return (
     <LenisProvider>
-      <div className="flex min-h-screen flex-col">
+      <div className="flex min-h-screen w-full max-w-[100vw] flex-col overflow-x-hidden">
         <Navbar />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 w-full min-w-0 overflow-x-hidden">{children}</main>
         <Footer template={template} />
         <ScrollToTop />
       </div>

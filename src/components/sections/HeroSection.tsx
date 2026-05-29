@@ -362,7 +362,7 @@ export default function HeroSection({
   return (
     <section
       ref={sectionRef}
-      className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-[#0B1D3A]"
+      className="viewport-below-nav relative flex w-full items-center justify-center overflow-hidden bg-[#0B1D3A]"
     >
       <canvas
         ref={canvasRef}
@@ -379,7 +379,7 @@ export default function HeroSection({
       />
 
       <div
-        className={`container-max relative z-10 py-32 text-center ${editable ? "" : "pointer-events-none"}`}
+        className={`container-max relative z-10 py-16 text-center sm:py-24 ${editable ? "" : "pointer-events-none"}`}
       >
         <motion.div
           variants={containerVariants}
@@ -403,7 +403,7 @@ export default function HeroSection({
 
           <motion.h1
             variants={itemVariants}
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold uppercase text-white leading-tight max-w-4xl"
+            className="max-w-4xl break-words text-3xl font-bold uppercase leading-tight text-white sm:text-4xl md:text-5xl lg:text-6xl"
             style={{ fontFamily: "'Space Grotesk', sans-serif" }}
           >
             {editable && onFieldChange ? (

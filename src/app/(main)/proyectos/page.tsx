@@ -134,7 +134,7 @@ function ProyectosContent() {
 
 export default function ProyectosPage() {
   return (
-    <div className="flex flex-col">
+    <div className="flex w-full min-w-0 flex-col overflow-x-hidden">
       <PageHeader
         title="Proyectos"
         subtitle="Experiencia en proyectos comerciales e industriales"

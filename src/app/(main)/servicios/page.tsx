@@ -51,7 +51,7 @@ export default function ServiciosPage() {
   }, []);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex w-full min-w-0 flex-col overflow-x-hidden">
       <PageHeader
         title="Servicios"
         subtitle={companyInfo.tagline}

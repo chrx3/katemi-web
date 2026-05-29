@@ -118,7 +118,7 @@ export default function Footer({
 
   return (
     <footer
-      className="relative overflow-hidden"
+      className="relative w-full min-w-0 overflow-hidden"
       style={{ backgroundColor: "var(--deep-blue, #162B4D)" }}
     >
       {/* Dot grid decoration */}

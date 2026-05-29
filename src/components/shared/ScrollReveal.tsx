@@ -54,7 +54,7 @@ export default function ScrollReveal({
         ease: REVEAL_EASE,
         delay: effectiveDelay,
       }}
-      className={className}
+      className={`min-w-0 ${className ?? ''}`}
     >
       {children}
     </motion.div>

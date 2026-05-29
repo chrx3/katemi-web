@@ -51,7 +51,7 @@ export default function NosotrosPage() {
   useInView(statsRef, { once: true });
 
   return (
-    <div className="flex flex-col">
+    <div className="flex w-full min-w-0 flex-col overflow-x-hidden">
       <PageHeader
         title="Nosotros"
         subtitle={`Conoce a ${companyInfo.legalName}`}
@@ -62,7 +62,7 @@ export default function NosotrosPage() {
         <div className="container-max">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <ScrollReveal direction="left">
-              <div className="relative">
+              <div className="relative overflow-hidden">
                 <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-[#0B1D3A]">
                   <ImageWithFallback
                     src={PLACEHOLDER_IMAGES.about}

@@ -120,7 +120,7 @@ export default function LandingTemplatePreview({
   onAddStat, onRemoveStat, onAddService, onRemoveService,
 }: LandingTemplatePreviewProps) {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen w-full min-w-0 overflow-x-hidden bg-white">
       {includeChrome && <Navbar editorMode={editable} onEditorNavigate={onNavigate} previewMode={editable} />}
       <main>
         {view === "/" && (

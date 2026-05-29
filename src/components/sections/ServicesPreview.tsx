@@ -37,8 +37,8 @@ export default function ServicesPreview({
   return (
     <section className="py-24 bg-white">
       <div className="container-max">
-        <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-start">
-          <div className="lg:w-5/12 lg:pt-4">
+        <div className="flex min-w-0 flex-col items-start gap-12 lg:flex-row lg:gap-16">
+          <div className="min-w-0 lg:w-5/12 lg:pt-4">
             {editable && onFieldChange ? (
               <div className="space-y-2">
                 <InlineEditableText
@@ -122,7 +122,7 @@ export default function ServicesPreview({
             )}
           </div>
 
-          <div className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:w-7/12">
+          <div className="grid min-w-0 grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:w-7/12">
             {content.servicesItems.map((service, i) => (
               <ScrollReveal key={`${service.slug}-${i}`} delay={i * 0.1} className="h-full">
                 {editable && onServiceChange ? (

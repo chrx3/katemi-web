@@ -127,7 +127,7 @@ export default function ContactoPage() {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex w-full min-w-0 flex-col overflow-x-hidden">
       <PageHeader
         title="Contacto"
         subtitle="Estamos listos para ayudarte"
@@ -137,9 +137,9 @@ export default function ContactoPage() {
       {/* Main Content */}
       <section className="py-16 md:py-24 bg-white">
         <div className="container-max">
-          <div className="grid lg:grid-cols-5 gap-12 lg:gap-16">
+          <div className="grid min-w-0 lg:grid-cols-5 gap-12 lg:gap-16">
             {/* Left: Contact Info */}
-            <div className="lg:col-span-2 space-y-10">
+            <div className="min-w-0 space-y-10 lg:col-span-2">
               <ScrollReveal direction="left">
                 <div>
                   <h2 className="text-2xl font-bold text-[#0B1D3A] uppercase tracking-tight mb-4">
@@ -224,7 +224,7 @@ export default function ContactoPage() {
             </div>
 
             {/* Right: Contact Form */}
-            <div className="lg:col-span-3">
+            <div className="min-w-0 lg:col-span-3">
               <ScrollReveal delay={0.15}>
                 <div className="bg-[#F5F5F5] rounded-2xl p-8 md:p-10">
                   <h2 className="text-2xl font-bold text-[#0B1D3A] uppercase tracking-tight mb-2">
