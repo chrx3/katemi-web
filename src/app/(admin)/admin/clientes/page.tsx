@@ -1,12 +1,18 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
-import Header from '@/components/admin/Header';
-import { getClients, createClient, updateClient, deleteClient } from '@/lib/pb-admin';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import Header from "@/components/admin/Header";
+import {
+  getClients,
+  createClient,
+  updateClient,
+  deleteClient,
+} from "@/lib/pb-admin";
+import { resolvePocketBaseFileUrl } from "@/lib/pocketbase";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -14,19 +20,24 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2, Globe, GripVertical } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
+} from "@/components/ui/dialog";
+import { Plus, Pencil, Trash2, Globe, GripVertical } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Client {
   id: string;
+  collectionId?: string;
+  collectionName?: string;
   name: string;
   logo?: string;
   website?: string;
   order?: number;
   isActive: boolean;
   created?: string;
+}
+
+function getClientLogoSrc(client: Client) {
+  return resolvePocketBaseFileUrl(client, client.logo);
 }
 
 export default function ClientesPage() {
@@ -36,7 +47,13 @@ export default function ClientesPage() {
   // Form state
   const [formOpen, setFormOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
-  const [formValues, setFormValues] = useState<{name: string; logo: string | File; website: string; order: number; isActive: boolean}>({ name: '', logo: '', website: '', order: 0, isActive: true });
+  const [formValues, setFormValues] = useState<{
+    name: string;
+    logo: string | File;
+    website: string;
+    order: number;
+    isActive: boolean;
+  }>({ name: "", logo: "", website: "", order: 0, isActive: true });
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -49,19 +66,29 @@ export default function ClientesPage() {
       const data = await getClients();
       setClients(data as unknown as Client[]);
     } catch (error) {
-      console.error('Error fetching clients:', error);
+      console.error("Error fetching clients:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchClients();
+    const timeout = window.setTimeout(() => {
+      void fetchClients();
+    }, 0);
+
+    return () => window.clearTimeout(timeout);
   }, []);
 
   const openNewModal = () => {
     setEditingClient(null);
-    setFormValues({ name: '', logo: '', website: '', order: 0, isActive: true });
+    setFormValues({
+      name: "",
+      logo: "",
+      website: "",
+      order: 0,
+      isActive: true,
+    });
     setLogoPreview(null);
     setFormOpen(true);
   };
@@ -69,13 +96,13 @@ export default function ClientesPage() {
   const openEditModal = (client: Client) => {
     setEditingClient(client);
     setFormValues({
-      name: client.name || '',
-      logo: client.logo || '',
-      website: client.website || '',
+      name: client.name || "",
+      logo: client.logo || "",
+      website: client.website || "",
       order: client.order || 0,
       isActive: client.isActive ?? true,
     });
-    setLogoPreview(client.logo || null);
+    setLogoPreview(getClientLogoSrc(client) || null);
     setFormOpen(true);
   };
 
@@ -93,18 +120,18 @@ export default function ClientesPage() {
 
   const handleSave = async () => {
     if (!formValues.name.trim()) {
-      toast.error('El nombre es requerido');
+      toast.error("El nombre es requerido");
       return;
     }
     setSaving(true);
     try {
       const formData = new FormData();
-      formData.append('name', formValues.name.trim());
-      formData.append('website', formValues.website.trim());
-      formData.append('order', String(formValues.order));
-      formData.append('isActive', String(formValues.isActive));
-      if (formValues.logo && typeof formValues.logo !== 'string') {
-        formData.append('logo', formValues.logo);
+      formData.append("name", formValues.name.trim());
+      formData.append("website", formValues.website.trim());
+      formData.append("order", String(formValues.order));
+      formData.append("isActive", String(formValues.isActive));
+      if (formValues.logo && typeof formValues.logo !== "string") {
+        formData.append("logo", formValues.logo);
       }
 
       if (editingClient) {
@@ -115,7 +142,7 @@ export default function ClientesPage() {
       await fetchClients();
       setFormOpen(false);
     } catch (error) {
-      console.error('Error saving client:', error);
+      console.error("Error saving client:", error);
     } finally {
       setSaving(false);
     }
@@ -129,7 +156,7 @@ export default function ClientesPage() {
       await fetchClients();
       setDeleteTarget(null);
     } catch (error) {
-      console.error('Error deleting client:', error);
+      console.error("Error deleting client:", error);
     } finally {
       setDeleting(false);
     }
@@ -142,7 +169,9 @@ export default function ClientesPage() {
       <div className="mt-6">
         {/* Page header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">Gestión de Clientes</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            Gestión de Clientes
+          </h2>
           <Button onClick={openNewModal} size="sm">
             <Plus size={16} className="mr-1" />
             Nuevo cliente
@@ -160,7 +189,12 @@ export default function ClientesPage() {
           ) : clients.length === 0 ? (
             <div className="p-12 text-center text-gray-400">
               <p className="text-sm">No hay clientes registrados.</p>
-              <Button variant="ghost" size="sm" onClick={openNewModal} className="mt-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={openNewModal}
+                className="mt-2"
+              >
                 <Plus size={14} className="mr-1" />
                 Agregar el primero
               </Button>
@@ -173,30 +207,50 @@ export default function ClientesPage() {
                     <th className="text-left font-medium text-gray-500 px-4 py-3 w-10">
                       <GripVertical size={14} className="text-gray-300" />
                     </th>
-                    <th className="text-left font-medium text-gray-500 px-4 py-3">Nombre</th>
-                    <th className="text-left font-medium text-gray-500 px-4 py-3">Logo</th>
-                    <th className="text-left font-medium text-gray-500 px-4 py-3">Website</th>
-                    <th className="text-left font-medium text-gray-500 px-4 py-3 w-20">Orden</th>
-                    <th className="text-left font-medium text-gray-500 px-4 py-3 w-24">Estado</th>
-                    <th className="text-right font-medium text-gray-500 px-4 py-3 w-24">Acciones</th>
+                    <th className="text-left font-medium text-gray-500 px-4 py-3">
+                      Nombre
+                    </th>
+                    <th className="text-left font-medium text-gray-500 px-4 py-3">
+                      Logo
+                    </th>
+                    <th className="text-left font-medium text-gray-500 px-4 py-3">
+                      Website
+                    </th>
+                    <th className="text-left font-medium text-gray-500 px-4 py-3 w-20">
+                      Orden
+                    </th>
+                    <th className="text-left font-medium text-gray-500 px-4 py-3 w-24">
+                      Estado
+                    </th>
+                    <th className="text-right font-medium text-gray-500 px-4 py-3 w-24">
+                      Acciones
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {clients.map((client) => (
-                    <tr key={client.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors">
+                    <tr
+                      key={client.id}
+                      className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors"
+                    >
                       <td className="px-4 py-3 text-gray-300">
                         <GripVertical size={14} />
                       </td>
-                      <td className="px-4 py-3 font-medium text-gray-900">{client.name}</td>
+                      <td className="px-4 py-3 font-medium text-gray-900">
+                        {client.name}
+                      </td>
                       <td className="px-4 py-3">
                         {client.logo ? (
+                          // eslint-disable-next-line @next/next/no-img-element
                           <img
-                            src={typeof client.logo === 'string' ? client.logo : ''}
+                            src={getClientLogoSrc(client)}
                             alt={client.name}
                             className="h-8 w-auto object-contain"
                           />
                         ) : (
-                          <span className="text-gray-300 text-xs">Sin logo</span>
+                          <span className="text-gray-300 text-xs">
+                            Sin logo
+                          </span>
                         )}
                       </td>
                       <td className="px-4 py-3">
@@ -208,22 +262,24 @@ export default function ClientesPage() {
                             className="text-[#00A896] hover:underline text-xs flex items-center gap-1"
                           >
                             <Globe size={12} />
-                            {client.website.replace(/^https?:\/\//, '')}
+                            {client.website.replace(/^https?:\/\//, "")}
                           </a>
                         ) : (
                           <span className="text-gray-300 text-xs">—</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-gray-600">{client.order ?? 0}</td>
+                      <td className="px-4 py-3 text-gray-600">
+                        {client.order ?? 0}
+                      </td>
                       <td className="px-4 py-3">
                         <span
                           className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                             client.isActive
-                              ? 'bg-green-50 text-green-700'
-                              : 'bg-gray-100 text-gray-500'
+                              ? "bg-green-50 text-green-700"
+                              : "bg-gray-100 text-gray-500"
                           }`}
                         >
-                          {client.isActive ? 'Activo' : 'Inactivo'}
+                          {client.isActive ? "Activo" : "Inactivo"}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right">
@@ -260,9 +316,13 @@ export default function ClientesPage() {
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{editingClient ? 'Editar cliente' : 'Nuevo cliente'}</DialogTitle>
+            <DialogTitle>
+              {editingClient ? "Editar cliente" : "Nuevo cliente"}
+            </DialogTitle>
             <DialogDescription>
-              {editingClient ? 'Actualiza los datos del cliente.' : 'Completa los datos para crear un nuevo cliente.'}
+              {editingClient
+                ? "Actualiza los datos del cliente."
+                : "Completa los datos para crear un nuevo cliente."}
             </DialogDescription>
           </DialogHeader>
 
@@ -274,7 +334,9 @@ export default function ClientesPage() {
                 id="client-name"
                 placeholder="Nombre del cliente"
                 value={formValues.name}
-                onChange={(e) => setFormValues((prev) => ({ ...prev, name: e.target.value }))}
+                onChange={(e) =>
+                  setFormValues((prev) => ({ ...prev, name: e.target.value }))
+                }
               />
             </div>
 
@@ -284,12 +346,13 @@ export default function ClientesPage() {
               <Input
                 id="client-logo"
                 type="file"
-                accept="image/*"
+                accept="image/*,.svg,image/svg+xml"
                 onChange={handleLogoChange}
                 className="file:mr-2 file:text-xs"
               />
               {logoPreview && (
                 <div className="mt-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={logoPreview}
                     alt="Preview"
@@ -307,7 +370,12 @@ export default function ClientesPage() {
                 type="url"
                 placeholder="https://"
                 value={formValues.website}
-                onChange={(e) => setFormValues((prev) => ({ ...prev, website: e.target.value }))}
+                onChange={(e) =>
+                  setFormValues((prev) => ({
+                    ...prev,
+                    website: e.target.value,
+                  }))
+                }
               />
             </div>
 
@@ -319,7 +387,12 @@ export default function ClientesPage() {
                 type="number"
                 min={0}
                 value={formValues.order}
-                onChange={(e) => setFormValues((prev) => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
+                onChange={(e) =>
+                  setFormValues((prev) => ({
+                    ...prev,
+                    order: parseInt(e.target.value) || 0,
+                  }))
+                }
               />
             </div>
 
@@ -329,7 +402,12 @@ export default function ClientesPage() {
                 id="client-active"
                 type="checkbox"
                 checked={formValues.isActive}
-                onChange={(e) => setFormValues((prev) => ({ ...prev, isActive: e.target.checked }))}
+                onChange={(e) =>
+                  setFormValues((prev) => ({
+                    ...prev,
+                    isActive: e.target.checked,
+                  }))
+                }
                 className="accent-[#00A896] w-4 h-4"
               />
               <Label htmlFor="client-active" className="text-sm cursor-pointer">
@@ -342,20 +420,27 @@ export default function ClientesPage() {
             <Button variant="outline" onClick={() => setFormOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleSave} disabled={saving || !formValues.name.trim()}>
-              {saving ? 'Guardando…' : editingClient ? 'Actualizar' : 'Crear'}
+            <Button
+              onClick={handleSave}
+              disabled={saving || !formValues.name.trim()}
+            >
+              {saving ? "Guardando…" : editingClient ? "Actualizar" : "Crear"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Delete Confirmation Modal */}
-      <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+      <Dialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>Eliminar cliente</DialogTitle>
             <DialogDescription>
-              ¿Estás seguro de eliminar <strong>{deleteTarget?.name}</strong>? Esta acción no se puede deshacer.
+              ¿Estás seguro de eliminar <strong>{deleteTarget?.name}</strong>?
+              Esta acción no se puede deshacer.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -367,7 +452,7 @@ export default function ClientesPage() {
               onClick={handleDelete}
               disabled={deleting}
             >
-              {deleting ? 'Eliminando…' : 'Eliminar'}
+              {deleting ? "Eliminando…" : "Eliminar"}
             </Button>
           </DialogFooter>
         </DialogContent>

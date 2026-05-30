@@ -18,4 +18,28 @@ pb.autoCancellation(false);
 
 export const pbAuth = pb.authStore;
 
+interface PocketBaseFileRecord {
+  id?: string;
+  collectionId?: string;
+  collectionName?: string;
+  [key: string]: unknown;
+}
+
+function isAlreadyResolvableImageSrc(value: string) {
+  return /^(https?:|data:|blob:|\/)/i.test(value);
+}
+
+export function resolvePocketBaseFileUrl(
+  record: object,
+  filenameOrUrl?: unknown,
+) {
+  if (typeof filenameOrUrl !== "string") return "";
+
+  const value = filenameOrUrl.trim();
+  if (!value) return "";
+  if (isAlreadyResolvableImageSrc(value)) return value;
+
+  return pb.files.getURL(record as PocketBaseFileRecord, value);
+}
+
 export default pb;

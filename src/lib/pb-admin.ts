@@ -21,13 +21,21 @@ function resolvePocketBaseUrl() {
 const pb = new PocketBase(resolvePocketBaseUrl());
 pb.autoCancellation(false);
 
+type ClientPayload = object | FormData;
+
 let authPromise: Promise<void> | null = null;
 
 function ensureAuth(): Promise<void> {
   if (pb.authStore.isValid) return Promise.resolve();
   if (!authPromise) {
-    const email = process.env.POCKETBASE_ADMIN_EMAIL || process.env.NEXT_PUBLIC_POCKETBASE_ADMIN_EMAIL || "";
-    const password = process.env.POCKETBASE_ADMIN_PASSWORD || process.env.NEXT_PUBLIC_POCKETBASE_ADMIN_PASSWORD || "";
+    const email =
+      process.env.POCKETBASE_ADMIN_EMAIL ||
+      process.env.NEXT_PUBLIC_POCKETBASE_ADMIN_EMAIL ||
+      "";
+    const password =
+      process.env.POCKETBASE_ADMIN_PASSWORD ||
+      process.env.NEXT_PUBLIC_POCKETBASE_ADMIN_PASSWORD ||
+      "";
     authPromise = pb
       .collection("_superusers")
       .authWithPassword(email, password)
@@ -53,9 +61,9 @@ export async function adminLogin(email: string, password: string) {
 export async function getServices() {
   return pb.collection("services").getFullList({ sort: "order" });
 }
-export async function createService(data: any) {
+export async function createService(data: object) {
   await ensureAuth();
-  const payload = { ...data };
+  const payload: Record<string, unknown> = { ...data };
   if (payload.features && typeof payload.features === "string") {
     try {
       payload.features = JSON.parse(payload.features);
@@ -65,7 +73,7 @@ export async function createService(data: any) {
   }
   return pb.collection("services").create(payload);
 }
-export async function updateService(id: string, data: any) {
+export async function updateService(id: string, data: object) {
   await ensureAuth();
   return pb.collection("services").update(id, data);
 }
@@ -78,9 +86,9 @@ export async function deleteService(id: string) {
 export async function getProjects() {
   return pb.collection("projects").getFullList({ sort: "-year" });
 }
-export async function createProject(data: any) {
+export async function createProject(data: object) {
   await ensureAuth();
-  const payload = { ...data };
+  const payload: Record<string, unknown> = { ...data };
   if (
     payload.servicesProvided &&
     typeof payload.servicesProvided === "string"
@@ -93,7 +101,7 @@ export async function createProject(data: any) {
   }
   return pb.collection("projects").create(payload);
 }
-export async function updateProject(id: string, data: any) {
+export async function updateProject(id: string, data: object) {
   await ensureAuth();
   return pb.collection("projects").update(id, data);
 }
@@ -106,30 +114,12 @@ export async function deleteProject(id: string) {
 export async function getClients() {
   return pb.collection("clients").getFullList({ sort: "order" });
 }
-export async function createClient(data: any) {
+export async function createClient(data: ClientPayload) {
   await ensureAuth();
-  if (data instanceof FormData) {
-    const payload: Record<string, any> = {};
-    data.forEach((value, key) => {
-      if (!(value instanceof File)) {
-        payload[key] = value;
-      }
-    });
-    return pb.collection("clients").create(payload);
-  }
   return pb.collection("clients").create(data);
 }
-export async function updateClient(id: string, data: any) {
+export async function updateClient(id: string, data: ClientPayload) {
   await ensureAuth();
-  if (data instanceof FormData) {
-    const payload: Record<string, any> = {};
-    data.forEach((value, key) => {
-      if (!(value instanceof File)) {
-        payload[key] = value;
-      }
-    });
-    return pb.collection("clients").update(id, payload);
-  }
   return pb.collection("clients").update(id, data);
 }
 export async function deleteClient(id: string) {
@@ -188,8 +178,13 @@ export async function setSiteConfig(key: string, value: string) {
       .collection("siteConfig")
       .getFirstListItem(`key="${key}"`);
     return pb.collection("siteConfig").update(existing.id, { value });
-  } catch (err: any) {
-    if (err?.status === 404) {
+  } catch (err: unknown) {
+    if (
+      typeof err === "object" &&
+      err !== null &&
+      "status" in err &&
+      err.status === 404
+    ) {
       return pb.collection("siteConfig").create({ key, value });
     }
     throw err;

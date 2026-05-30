@@ -161,7 +161,7 @@ COLL_PROJECTS='{
     {"name": "location",         "type": "text",   "required": false, "unique": false, "options": { "min": null, "max": null, "pattern": "" }},
     {"name": "description",      "type": "text",   "required": true,  "unique": false, "options": { "min": null, "max": null, "pattern": "", "textarea": true }},
     {"name": "servicesProvided", "type": "json",   "required": false, "unique": false, "options": { "maxSize": 2000000 }},
-    {"name": "images",           "type": "file",   "required": false, "unique": false, "options": { "maxSelect": 10, "maxSize": 5242880, "mimeTypes": ["image/jpg","image/jpeg","image/png","image/webp"], "thumbs": ["100x100","400x400"], "fingerprint": true }},
+    {"name": "images",           "type": "file",   "required": false, "unique": false, "options": { "maxSelect": 10, "maxSize": 5242880, "mimeTypes": ["image/jpg","image/jpeg","image/png","image/webp","image/svg+xml"], "thumbs": ["100x100","400x400"], "fingerprint": true }},
     {"name": "category",         "type": "select", "required": false, "unique": false, "options": { "maxSelect": 1, "values": ["transmission","distribution","photovoltaic","industrial","residential"] }},
     {"name": "year",             "type": "number", "required": false, "unique": false, "options": { "min": null, "max": null, "noDecimal": false }},
     {"name": "isFeatured",       "type": "bool",   "required": false, "unique": false },

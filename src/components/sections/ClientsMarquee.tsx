@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import ScrollReveal from "../shared/ScrollReveal";
 import ClientLogo from "../shared/ClientLogo";
-import { pb } from "@/lib/pocketbase";
+import { pb, resolvePocketBaseFileUrl } from "@/lib/pocketbase";
 import type { LandingTemplateConfig } from "@/lib/template-config";
 import { getClientLogoUrl, toClientFallback } from "@/lib/company-content";
 
@@ -38,7 +38,9 @@ export default function ClientsMarquee({ content }: ClientsMarqueeProps) {
           const mapped: ClientItem[] = records.map(
             (r: Record<string, unknown>) => ({
               name: (r.name as string) || "",
-              logoUrl: getClientLogoUrl((r.name as string) || ""),
+              logoUrl:
+                resolvePocketBaseFileUrl(r, r.logo) ||
+                getClientLogoUrl((r.name as string) || ""),
               website: (r.website as string) || "",
             }),
           );
