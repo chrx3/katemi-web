@@ -161,6 +161,9 @@ export interface Service {
    */
   unitPrice?: number | null;
   order?: number | null;
+  /**
+   * Si lo desmarcas deja de aparecer en la web, sin borrarlo.
+   */
   isActive?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -229,6 +232,9 @@ export interface Project {
   category?: ('retail' | 'commercial' | 'industrial' | 'services') | null;
   year?: number | null;
   isFeatured?: boolean | null;
+  /**
+   * Si lo desmarcas deja de aparecer en la web, sin borrarlo.
+   */
   isActive?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -243,6 +249,9 @@ export interface Client {
   logo?: (number | null) | Media;
   website?: string | null;
   order?: number | null;
+  /**
+   * Si lo desmarcas deja de aparecer en la web, sin borrarlo.
+   */
   isActive?: boolean | null;
   updatedAt: string;
   createdAt: string;

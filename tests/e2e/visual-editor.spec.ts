@@ -9,6 +9,10 @@ import { ADMIN_PASSWORD, collectPageProblems, loginToAdmin } from "./helpers";
  * guardar, recargar— porque su valor está justamente en que persista, no en
  * que se vea bien.
  */
+/** El botón cambia de texto según el estado; se ubica por sus variantes. */
+const guardarBtn = (page: import("@playwright/test").Page) =>
+  page.getByRole("button", { name: /publicar cambios|publicando|todo publicado/i });
+
 test.describe("Editor visual", () => {
   test.skip(!ADMIN_PASSWORD, "Define E2E_ADMIN_PASSWORD.");
 
@@ -20,7 +24,7 @@ test.describe("Editor visual", () => {
 
   test("el panel enlaza al editor visual", async ({ page }) => {
     await loginToAdmin(page);
-    await expect(page.getByRole("link", { name: /editor visual/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /editar el sitio/i })).toBeVisible();
   });
 
   test("carga la vista previa con el contenido real y sin errores", async ({ page }) => {
@@ -29,7 +33,7 @@ test.describe("Editor visual", () => {
 
     await page.goto("/editor-visual", { waitUntil: "networkidle" });
 
-    await expect(page.getByText("Editor visual").first()).toBeVisible();
+    await expect(page.getByText("Editar el sitio").first()).toBeVisible();
     await expect(page.getByText("Soluciones integrales en")).toBeVisible();
     // Los textos editables son botones con este title.
     expect(await page.locator('[title="Click para editar"]').count()).toBeGreaterThan(5);
@@ -42,7 +46,7 @@ test.describe("Editor visual", () => {
     await loginToAdmin(page);
     await page.goto("/editor-visual", { waitUntil: "networkidle" });
 
-    await page.getByRole("button", { name: "Nosotros", exact: true }).click();
+    await page.getByRole("tab", { name: "Nosotros" }).click();
     await expect(page.getByText(/Nuestra Empresa|Misión/i).first()).toBeVisible();
   });
 
@@ -62,12 +66,10 @@ test.describe("Editor visual", () => {
     await input.fill(edited);
     await input.press("Enter");
 
-    await expect(page.getByText("Sin guardar")).toBeVisible();
+    await expect(guardarBtn(page)).toBeEnabled();
 
-    const guardar = page.getByRole("button", { name: "Guardar" });
-    await expect(guardar).toBeEnabled();
-    await guardar.click();
-    await expect(page.getByText(/guardad/i).first()).toBeVisible();
+    await guardarBtn(page).click();
+    await expect(page.getByText(/publicad/i).first()).toBeVisible();
 
     // Se recarga desde el servidor: si no persistió, vuelve el valor viejo.
     await page.reload({ waitUntil: "networkidle" });
@@ -79,8 +81,8 @@ test.describe("Editor visual", () => {
     const revertInput = page.locator("input:focus");
     await revertInput.fill(original);
     await revertInput.press("Enter");
-    await page.getByRole("button", { name: "Guardar" }).click();
-    await expect(page.getByText(/guardad/i).first()).toBeVisible();
+    await guardarBtn(page).click();
+    await expect(page.getByText(/publicad/i).first()).toBeVisible();
 
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.getByText(original)).toBeVisible();
@@ -98,8 +100,8 @@ test.describe("Editor visual", () => {
     const input = page.locator("input:focus");
     await input.fill(edited);
     await input.press("Enter");
-    await page.getByRole("button", { name: "Guardar" }).click();
-    await expect(page.getByText(/guardad/i).first()).toBeVisible();
+    await guardarBtn(page).click();
+    await expect(page.getByText(/publicad/i).first()).toBeVisible();
 
     // La acción de guardado revalida las rutas públicas, así que el cambio
     // aparece de inmediato en vez de esperar los 60s de revalidate.
@@ -112,7 +114,7 @@ test.describe("Editor visual", () => {
     const revertInput = page.locator("input:focus");
     await revertInput.fill(original);
     await revertInput.press("Enter");
-    await page.getByRole("button", { name: "Guardar" }).click();
-    await expect(page.getByText(/guardad/i).first()).toBeVisible();
+    await guardarBtn(page).click();
+    await expect(page.getByText(/publicad/i).first()).toBeVisible();
   });
 });

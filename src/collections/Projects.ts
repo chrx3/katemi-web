@@ -91,10 +91,14 @@ export const Projects: CollectionConfig = {
     },
     {
       name: "isActive",
-      label: "Activo",
+      label: "Visible en el sitio",
       type: "checkbox",
       defaultValue: true,
-      admin: { position: "sidebar" },
+      admin: {
+        position: "sidebar",
+        description: "Si lo desmarcas deja de aparecer en la web, sin borrarlo.",
+        components: { Cell: "/components/admin/PublishedCell#PublishedCell" },
+      },
     },
   ],
 };

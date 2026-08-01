@@ -1,0 +1,189 @@
+/**
+ * Identidad de KATEMI sobre el panel de Payload.
+ *
+ * Payload deriva todas sus superficies de la rampa --color-base-*, así que
+ * retintarla cambia el panel entero de forma coherente en vez de sobrescribir
+ * componente por componente. Encima de eso van tres intervenciones: la barra
+ * lateral en azul, la tipografía del sitio y el trazo del ítem activo.
+ *
+ * El motivo viene del propio hero: nodos unidos por líneas finas, que es como
+ * se dibuja un unifilar. De ahí sale el indicador de navegación.
+ */
+
+:root {
+  --k-navy: #0b1d3a;
+  --k-slate: #2a3f5f;
+  --k-teal: #00a896;
+  --k-teal-deep: #008f7f;
+  --k-cyan: #00d4ff;
+  --k-paper: #f7f9fa;
+
+  /* Rampa neutra con temperatura azul. 0 es la superficie más clara. */
+  --color-base-0: #ffffff;
+  --color-base-50: #f7f9fa;
+  --color-base-100: #eef2f6;
+  --color-base-150: #e3e9ef;
+  --color-base-200: #d4dde6;
+  --color-base-250: #c3cfdb;
+  --color-base-300: #b0bfcf;
+  --color-base-350: #9bacc0;
+  --color-base-400: #8598ae;
+  --color-base-450: #6f849d;
+  --color-base-500: #5b708c;
+  --color-base-550: #4b5f7b;
+  --color-base-600: #3e516b;
+  --color-base-650: #34455c;
+  --color-base-700: var(--k-slate);
+  --color-base-750: #23364f;
+  --color-base-800: #1b2c42;
+  --color-base-850: #152336;
+  --color-base-900: #101c2c;
+  --color-base-950: #0b1522;
+  --color-base-1000: #060d16;
+
+  /* Las acciones afirmativas del panel toman el verde agua de la marca. */
+  --color-success-500: var(--k-teal);
+  --color-success-550: var(--k-teal-deep);
+  --color-success-600: var(--k-teal-deep);
+
+  --font-body: var(--font-space-grotesk), system-ui, sans-serif;
+}
+
+/* La misma familia que el sitio: mismo producto, no un CMS aparte. */
+html,
+body,
+button,
+input,
+textarea,
+select {
+  font-family: var(--font-body);
+}
+
+/* Cifras alineadas en listados y contadores. */
+table,
+.pill,
+.cell-slug,
+.cell-order,
+.cell-year {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── El tablero ────────────────────────────────────────────────────────── */
+
+.nav {
+  background: var(--k-navy);
+  color: rgba(255, 255, 255, 0.82);
+  /* Ancla el unifilar decorativo del pie. */
+  position: relative;
+  overflow: hidden;
+}
+
+.nav__scroll {
+  position: relative;
+  z-index: 1;
+}
+
+.nav__link,
+.nav-group__toggle {
+  color: rgba(255, 255, 255, 0.82);
+  border-radius: 4px;
+}
+
+.nav__link:hover,
+.nav-group__toggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.nav__label,
+.nav-group__toggle {
+  color: rgba(255, 255, 255, 0.62);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+/* La firma: el ítem activo se marca como un conductor energizado — un trazo
+   cian que entra desde el borde y termina en un nodo. */
+.nav__link--active,
+.nav__link[aria-current='page'] {
+  position: relative;
+  background: rgba(0, 212, 255, 0.09);
+  color: #fff;
+}
+
+.nav__link--active::before,
+.nav__link[aria-current='page']::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 14px;
+  height: 1px;
+  background: var(--k-cyan);
+  transform: translateY(-50%);
+}
+
+.nav__link--active::after,
+.nav__link[aria-current='page']::after {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--k-cyan);
+  transform: translateY(-50%);
+  box-shadow: 0 0 6px rgba(0, 212, 255, 0.8);
+}
+
+.nav__controls,
+.nav__header {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav__log-out svg {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ── El lienzo ─────────────────────────────────────────────────────────── */
+
+.template-default,
+.app-header {
+  background: var(--k-paper);
+}
+
+h1,
+h2,
+h3,
+.list-header__title,
+.step-nav {
+  color: var(--k-navy);
+  letter-spacing: -0.015em;
+}
+
+.btn--style-primary {
+  background: var(--k-teal);
+  border-color: var(--k-teal);
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: var(--k-teal-deep);
+    border-color: var(--k-teal-deep);
+  }
+}
+
+/* Foco visible y consistente para navegación por teclado. */
+:focus-visible {
+  outline: 2px solid var(--k-cyan);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

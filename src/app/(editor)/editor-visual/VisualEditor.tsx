@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
+  ChevronLeft,
   ExternalLink,
   Monitor,
   RotateCcw,
@@ -121,9 +122,15 @@ export default function VisualEditor({
     [markDirty],
   );
 
-  /** Solo los servicios cuyo texto cambió respecto a lo cargado. */
-  const serviceEdits = useMemo(() => {
-    return config.servicesItems
+  /**
+   * Solo los servicios cuyo texto cambió respecto a lo cargado.
+   *
+   * Se calcula al guardar y no en un memo: compararía contra un ref durante el
+   * render, y un ref que cambia no vuelve a renderizar, así que el resultado
+   * podría quedar desfasado.
+   */
+  const collectServiceEdits = () =>
+    config.servicesItems
       .map((item) => {
         const id = serviceIdBySlug[item.slug];
         if (!id) return null;
@@ -144,20 +151,20 @@ export default function VisualEditor({
         };
       })
       .filter((s): s is NonNullable<typeof s> => s !== null);
-  }, [config.servicesItems, serviceIdBySlug]);
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const result = await saveVisualTemplate(config, serviceEdits);
+      const result = await saveVisualTemplate(config, collectServiceEdits());
       if (result.ok) {
         pristine.current = cloneConfig(config);
         setDirty(false);
-        toast.success(
-          result.services > 0
-            ? `Guardado — también se actualizaron ${result.services} servicio(s)`
-            : "Cambios guardados y publicados",
-        );
+        toast.success("Cambios publicados", {
+          description:
+            result.services > 0
+              ? `Ya están en el sitio. También se actualizaron ${result.services} servicio(s).`
+              : "Ya están visibles en el sitio.",
+        });
       } else {
         toast.error(result.error);
       }
@@ -174,33 +181,42 @@ export default function VisualEditor({
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-3 px-4 py-3">
+      {/* Mismo tablero azul que la barra lateral del panel: un solo producto. */}
+      <header className="sticky top-0 z-50 bg-[#0B1D3A] text-white">
+        <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-4 px-4 py-3">
           <div className="flex items-center gap-3">
+            {/* Enlace duro a propósito: el panel vive en otro layout raíz, así
+                que Next haría una navegación completa igual, y con Link se
+                precargaría una página que casi nunca se visita desde aquí. */}
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a
               href="/admin"
-              className="text-sm font-semibold text-[#0B1D3A] hover:text-[#00A896]"
+              className="inline-flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white"
             >
-              ← Panel
+              <ChevronLeft size={16} />
+              Panel
             </a>
-            <span className="text-sm font-bold text-[#0B1D3A]">Editor visual</span>
-            {dirty && (
-              <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800">
-                Sin guardar
-              </span>
-            )}
+            <span className="h-5 w-px bg-white/15" />
+            <span className="text-sm font-bold tracking-tight">Editar el sitio</span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-1">
+          {/* Control segmentado: una sola pieza, no cinco botones sueltos. */}
+          <div
+            role="tablist"
+            aria-label="Página a editar"
+            className="flex items-center rounded-lg bg-white/10 p-0.5"
+          >
             {VIEWS.map((v) => (
               <button
                 key={v.value}
                 type="button"
+                role="tab"
+                aria-selected={view === v.value}
                 onClick={() => setView(v.value)}
-                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
+                className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
                   view === v.value
-                    ? "bg-[#00A896] text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? "bg-white text-[#0B1D3A]"
+                    : "text-white/70 hover:text-white"
                 }`}
               >
                 {v.label}
@@ -208,55 +224,63 @@ export default function VisualEditor({
             ))}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => setShowGuides((g) => !g)}
-              className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              aria-pressed={showGuides}
+              title="Marca qué secciones se pueden editar"
+              className="rounded-md px-2.5 py-2 text-sm text-white/70 transition hover:bg-white/10 hover:text-white"
             >
-              {showGuides ? "Ocultar guías" : "Mostrar guías"}
+              Guías
             </button>
             <button
               type="button"
               onClick={() => setMobileView((v) => !v)}
-              className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              aria-pressed={mobileView}
+              title={mobileView ? "Ver en escritorio" : "Ver en móvil"}
+              className="rounded-md p-2 text-white/70 transition hover:bg-white/10 hover:text-white"
             >
-              {mobileView ? <Monitor size={16} /> : <Smartphone size={16} />}
-              {mobileView ? "Escritorio" : "Móvil"}
-            </button>
-            <button
-              type="button"
-              onClick={handleReset}
-              disabled={!dirty}
-              className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-40"
-            >
-              <RotateCcw size={15} />
-              Descartar
-            </button>
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={saving || !dirty}
-              className="inline-flex items-center gap-2 rounded-lg bg-[#00A896] px-4 py-2 text-sm font-semibold text-white hover:bg-[#008f7f] disabled:opacity-50"
-            >
-              <Save size={15} />
-              {saving ? "Guardando..." : "Guardar"}
+              {mobileView ? <Monitor size={17} /> : <Smartphone size={17} />}
             </button>
             <a
               href="/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#0B1D3A] px-3 py-2 text-sm text-white hover:bg-[#122645]"
+              title="Abrir el sitio publicado"
+              className="rounded-md p-2 text-white/70 transition hover:bg-white/10 hover:text-white"
             >
-              <ExternalLink size={15} />
-              Ver sitio
+              <ExternalLink size={17} />
             </a>
+
+            <span className="mx-1 h-5 w-px bg-white/15" />
+
+            <button
+              type="button"
+              onClick={handleReset}
+              disabled={!dirty}
+              className="rounded-md px-2.5 py-2 text-sm text-white/70 transition hover:bg-white/10 hover:text-white disabled:pointer-events-none disabled:opacity-30"
+            >
+              <RotateCcw size={15} className="mr-1.5 inline" />
+              Descartar
+            </button>
+            {/* La única acción llena de la barra. El estado sin guardar se
+                comunica aquí y no en una etiqueta aparte. */}
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving || !dirty}
+              className="inline-flex items-center gap-2 rounded-md bg-[#00A896] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#008f7f] disabled:bg-white/10 disabled:text-white/40"
+            >
+              <Save size={15} />
+              {saving
+                ? "Publicando…"
+                : dirty
+                  ? "Publicar cambios"
+                  : "Todo publicado"}
+            </button>
           </div>
         </div>
-        <p className="border-t border-gray-100 bg-gray-50 px-4 py-2 text-center text-xs text-gray-500">
-          Haz clic sobre cualquier texto de la vista para editarlo. Las imágenes
-          y los servicios nuevos se gestionan desde el panel.
-        </p>
       </header>
 
       <div className="mx-auto max-w-[1600px] p-4">

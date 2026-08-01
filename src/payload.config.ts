@@ -26,8 +26,13 @@ export default buildConfig({
       titleSuffix: "— KATEMI",
     },
     components: {
-      // Acceso al editor visual desde el menú lateral del panel.
+      // Acceso al editor visual desde el tablero lateral.
       beforeNavLinks: ["/components/admin/VisualEditorLink#VisualEditorLink"],
+      afterNavLinks: ["/components/admin/NavDiagram#NavDiagram"],
+      graphics: {
+        Logo: "/components/admin/Brand#Logo",
+        Icon: "/components/admin/Brand#Icon",
+      },
     },
   },
   collections: [Services, Projects, Clients, Contacts, Media, Users],
