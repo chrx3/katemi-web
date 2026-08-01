@@ -25,6 +25,10 @@ export default buildConfig({
     meta: {
       titleSuffix: "— KATEMI",
     },
+    components: {
+      // Acceso al editor visual desde el menú lateral del panel.
+      beforeNavLinks: ["/components/admin/VisualEditorLink#VisualEditorLink"],
+    },
   },
   collections: [Services, Projects, Clients, Contacts, Media, Users],
   globals: [LandingTemplate],
