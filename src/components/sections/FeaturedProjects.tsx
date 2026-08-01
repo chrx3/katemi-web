@@ -1,16 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import SectionHeader from "../shared/SectionHeader";
 import ProjectCard from "../shared/ProjectCard";
 import ScrollReveal from "../shared/ScrollReveal";
-import { pb } from "@/lib/pocketbase";
 import type { LandingTemplateConfig } from "@/lib/template-config";
 import { toFeaturedProjectFallback } from "@/lib/company-content";
-import { normalizeImageList } from "@/lib/image-placeholders";
 
-interface ProjectFromPB {
+export interface FeaturedProjectItem {
   slug: string;
   title: string;
   clientName: string;
@@ -22,7 +19,7 @@ interface ProjectFromPB {
   images?: string[];
 }
 
-const staticFallback: ProjectFromPB[] = toFeaturedProjectFallback();
+const staticFallback: FeaturedProjectItem[] = toFeaturedProjectFallback();
 
 type FeaturedProjectsContent = Pick<
   LandingTemplateConfig,
@@ -32,38 +29,17 @@ type FeaturedProjectsContent = Pick<
 interface FeaturedProjectsProps {
   content: FeaturedProjectsContent;
   previewMode?: boolean;
+  /** Vienen del servidor. Antes se pedían a PocketBase desde el navegador. */
+  projects?: FeaturedProjectItem[];
 }
 
-export default function FeaturedProjects({ content, previewMode = false }: FeaturedProjectsProps) {
-  const [projects, setProjects] = useState<ProjectFromPB[]>(staticFallback);
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const records = await pb.collection("projects").getFullList({
-          sort: "-year",
-          filter: "isFeatured=true && isActive=true",
-        });
-        if (records.length > 0) {
-          const mapped: ProjectFromPB[] = records.map((r: Record<string, unknown>) => ({
-            slug: r.slug as string,
-            title: r.title as string,
-            clientName: r.clientName as string,
-            location: r.location as string,
-            description: r.description as string,
-            category: r.category as string,
-            year: String(r.year ?? ""),
-            imageUrl: r.imageUrl as string | undefined,
-            images: normalizeImageList(r.images),
-          }));
-          setProjects(mapped);
-        }
-      } catch {
-        // Use static fallback
-      }
-    };
-    fetchProjects();
-  }, []);
+export default function FeaturedProjects({
+  content,
+  previewMode = false,
+  projects: projectsProp,
+}: FeaturedProjectsProps) {
+  const projects =
+    projectsProp && projectsProp.length > 0 ? projectsProp : staticFallback;
 
   return (
     <section className="py-24 bg-[#2A3F5F]">

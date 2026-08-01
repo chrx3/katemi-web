@@ -1,7 +1,4 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import PageHeader from '~/components/shared/PageHeader';
@@ -9,9 +6,12 @@ import ScrollReveal from '~/components/shared/ScrollReveal';
 import ImageWithFallback from '~/components/shared/ImageWithFallback';
 import ProjectCard from '~/components/shared/ProjectCard';
 import * as LucideIcons from 'lucide-react';
-import { pb } from '~/lib/pocketbase';
+import {
+  getProjectsByServiceSlug,
+  getServiceBySlug as getPayloadServiceBySlug,
+  mediaUrl,
+} from '@/lib/content';
 import { companyInfo, getServiceBySlug } from '@/lib/company-content';
-import { normalizeImageList } from '@/lib/image-placeholders';
 
 interface Service {
   id: string;
@@ -52,86 +52,70 @@ function toDetailService(slug: string): Service | null {
   };
 }
 
-export default function ServicioDetailPage() {
-  const params = useParams();
-  const slug = params.slug as string;
-  const [service, setService] = useState<Service | null>(null);
-  const [relatedProjects, setRelatedProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
+export const revalidate = 60;
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const record = await pb
-          .collection('services')
-          .getFirstListItem(`slug="${slug}"`);
-        const s = record as unknown as Record<string, unknown>;
-        setService({
-          id: s.id as string,
-          slug: s.slug as string,
-          title: s.title as string,
-          shortDescription: s.shortDescription as string,
-          description: s.description as string,
-          icon: (s.icon as string) || 'Box',
-          features: s.features as string[] || [],
-          imageUrl: s.imageUrl as string | undefined,
-          images: normalizeImageList(s.images),
-        });
+type Params = { params: Promise<{ slug: string }> };
 
-        // Fetch related projects
-        const projects = await pb
-          .collection('projects')
-          .getFullList({
-            sort: '-year',
-            filter: `isActive=true && servicesProvided~"${slug}"`,
-          });
-        setRelatedProjects(
-          projects.map((p: Record<string, unknown>) => ({
-            id: p.id as string,
-            slug: p.slug as string,
-            title: p.title as string,
-            clientName: p.clientName as string,
-            location: p.location as string,
-            description: p.description as string,
-            category: p.category as string,
-            year: p.year as string,
-            imageUrl: p.imageUrl as string | undefined,
-            images: normalizeImageList(p.images),
-          }))
-        );
-      } catch {
-        const fallback = toDetailService(slug);
-        if (fallback) {
-          setService(fallback);
-        } else {
-          setNotFound(true);
-        }
-      } finally {
-        setLoading(false);
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { slug } = await params;
+  const service = await getPayloadServiceBySlug(slug).catch(() => null);
+  const title = service?.title ?? getServiceBySlug(slug)?.title;
+
+  return title
+    ? {
+        title: `${title} — ${companyInfo.legalName}`,
+        description: service?.shortDescription,
       }
-    }
-    fetchData();
-  }, [slug]);
+    : { title: `Servicio no encontrado — ${companyInfo.legalName}` };
+}
 
-  if (loading) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <PageHeader title="Cargando..." />
-        <section className="py-24 bg-white">
-          <div className="container-max">
-            <div className="animate-pulse space-y-4">
-              <div className="h-8 bg-gray-200 rounded w-1/3" />
-              <div className="h-4 bg-gray-200 rounded w-2/3" />
-              <div className="h-64 bg-gray-200 rounded" />
-            </div>
-          </div>
-        </section>
-      </div>
-    );
+export default async function ServicioDetailPage({ params }: Params) {
+  const { slug } = await params;
+
+  let service: Service | null = null;
+  let relatedProjects: Project[] = [];
+
+  try {
+    const doc = await getPayloadServiceBySlug(slug);
+    if (doc) {
+      service = {
+        id: String(doc.id),
+        slug: doc.slug,
+        title: doc.title,
+        shortDescription: doc.shortDescription,
+        description: doc.fullDescription,
+        icon: doc.icon || 'Box',
+        features: Array.isArray(doc.features)
+          ? doc.features.map((f) => f.text).filter(Boolean)
+          : [],
+        imageUrl: mediaUrl(doc.image) || undefined,
+      };
+
+      relatedProjects = (await getProjectsByServiceSlug(slug)).map((p) => {
+        const images = Array.isArray(p.images)
+          ? p.images.map((img) => mediaUrl(img)).filter(Boolean)
+          : [];
+        return {
+          id: String(p.id),
+          slug: p.slug,
+          title: p.title,
+          clientName: p.clientName,
+          location: p.location ?? '',
+          description: p.description,
+          category: p.category ?? '',
+          year: p.year != null ? String(p.year) : '',
+          imageUrl: images[0],
+          images,
+        };
+      });
+    }
+  } catch (error) {
+    console.error('Error cargando el servicio:', error);
   }
 
-  if (notFound || !service) {
+  if (!service) service = toDetailService(slug);
+
+  if (!service) {
     return (
       <div className="flex flex-col min-h-screen">
         <PageHeader title="Servicio no encontrado" />

@@ -5,8 +5,12 @@ import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/sections/HeroSection";
 import StatsBar from "@/components/sections/StatsBar";
 import ServicesPreview from "@/components/sections/ServicesPreview";
-import FeaturedProjects from "@/components/sections/FeaturedProjects";
-import ClientsMarquee from "@/components/sections/ClientsMarquee";
+import FeaturedProjects, {
+  type FeaturedProjectItem,
+} from "@/components/sections/FeaturedProjects";
+import ClientsMarquee, {
+  type ClientItem,
+} from "@/components/sections/ClientsMarquee";
 import CTABanner from "@/components/sections/CTABanner";
 import InlineEditableText from "@/components/template/InlineEditableText";
 import ImageWithFallback from "@/components/shared/ImageWithFallback";
@@ -23,6 +27,9 @@ type PreviewView = "/" | "/contacto" | "/nosotros" | "/servicios" | "/proyectos"
 
 interface LandingTemplatePreviewProps {
   template: LandingTemplateConfig;
+  /** Cargados en el servidor y pasados hacia abajo, sin fetch en el cliente. */
+  featuredProjects?: FeaturedProjectItem[];
+  clients?: ClientItem[];
   includeChrome?: boolean;
   editable?: boolean;
   showGuides?: boolean;
@@ -115,7 +122,8 @@ function AboutPreview({ template, editable, showGuides, onFieldChange }: { templ
 }
 
 export default function LandingTemplatePreview({
-  template, includeChrome = true, editable = false, showGuides = false, view = "/",
+  template, featuredProjects, clients,
+  includeChrome = true, editable = false, showGuides = false, view = "/",
   onNavigate, onFieldChange, onServiceChange, onStatChange,
   onAddStat, onRemoveStat, onAddService, onRemoveService,
 }: LandingTemplatePreviewProps) {
@@ -147,8 +155,8 @@ export default function LandingTemplatePreview({
               )}
             </SectionFrame>
 
-            <SectionFrame title="Proyectos" mode="crud" show={showGuides}><FeaturedProjects content={template} previewMode={editable} /></SectionFrame>
-            <SectionFrame title="Clientes" mode="crud" show={showGuides}><ClientsMarquee content={template} /></SectionFrame>
+            <SectionFrame title="Proyectos" mode="crud" show={showGuides}><FeaturedProjects content={template} previewMode={editable} projects={featuredProjects} /></SectionFrame>
+            <SectionFrame title="Clientes" mode="crud" show={showGuides}><ClientsMarquee content={template} clients={clients} /></SectionFrame>
             <SectionFrame title="CTA final" mode="editable" show={showGuides}><CTABanner content={template} editable={editable} onFieldChange={onFieldChange as never} /></SectionFrame>
           </>
         )}

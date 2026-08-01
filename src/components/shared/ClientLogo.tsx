@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FALABELLA_LOGO_URL } from "@/lib/company-content";
 
 interface ClientLogoProps {
@@ -21,11 +21,12 @@ export default function ClientLogo({
 }: ClientLogoProps) {
   const falabella = isFalabellaClient(name);
   const resolvedLogoUrl = falabella ? FALABELLA_LOGO_URL : logoUrl;
-  const [showText, setShowText] = useState(!resolvedLogoUrl);
 
-  useEffect(() => {
-    setShowText(!resolvedLogoUrl);
-  }, [resolvedLogoUrl]);
+  // Solo se recuerda qué logo falló al cargar; el resto se deriva en el render.
+  // Con un efecto sincronizando showText, cambiar de cliente dejaba un frame
+  // mostrando el estado del anterior.
+  const [failedLogo, setFailedLogo] = useState<string | null>(null);
+  const showText = !resolvedLogoUrl || failedLogo === resolvedLogoUrl;
 
   const content = (
     <div className="relative group rounded-2xl p-4 bg-white shadow-sm hover:shadow-md transition-all duration-300">
@@ -39,7 +40,7 @@ export default function ClientLogo({
                 ? "h-12 w-full max-w-[220px] object-contain"
                 : "max-h-20 w-auto max-w-full object-contain"
             }
-            onError={() => setShowText(true)}
+            onError={() => setFailedLogo(resolvedLogoUrl)}
           />
         </div>
       ) : (

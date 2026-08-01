@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   PLACEHOLDER_IMAGES,
   type PlaceholderKind,
@@ -25,19 +25,14 @@ export default function ImageWithFallback({
   ...props
 }: ImageWithFallbackProps) {
   const fallback = PLACEHOLDER_IMAGES[fallbackKind];
-  const [currentSrc, setCurrentSrc] = useState(() =>
-    resolveImage(src, fallbackKind),
-  );
+  const resolved = resolveImage(src, fallbackKind);
 
-  useEffect(() => {
-    setCurrentSrc(resolveImage(src, fallbackKind));
-  }, [src, fallbackKind]);
-
-  const handleError = () => {
-    if (currentSrc !== fallback) {
-      setCurrentSrc(fallback);
-    }
-  };
+  // Solo se guarda en estado el hecho de que la imagen falló al cargar. La URL
+  // se deriva durante el render: sincronizarla con un efecto provocaba un
+  // render extra en cada cambio de props y dejaba un frame con la imagen
+  // anterior.
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  const currentSrc = failedSrc === resolved ? fallback : resolved;
 
   return (
     <img
@@ -45,7 +40,9 @@ export default function ImageWithFallback({
       src={currentSrc}
       alt={alt}
       className={className}
-      onError={handleError}
+      onError={() => {
+        if (resolved !== fallback) setFailedSrc(resolved);
+      }}
     />
   );
 }

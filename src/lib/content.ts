@@ -209,6 +209,65 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
   return result.docs[0] ?? null;
 }
 
+/** Proyectos destacados con la forma que espera la sección de la portada. */
+export async function getFeaturedProjectItems() {
+  const payload = await getPayloadClient();
+  const result = await payload.find({
+    collection: "projects",
+    where: { isActive: { equals: true }, isFeatured: { equals: true } },
+    sort: "-year",
+    limit: 12,
+    depth: 1,
+  });
+
+  return result.docs.map((project) => {
+    const images = Array.isArray(project.images)
+      ? project.images.map((img) => mediaUrl(img)).filter(Boolean)
+      : [];
+
+    return {
+      slug: project.slug,
+      title: project.title,
+      clientName: project.clientName,
+      location: project.location ?? "",
+      description: project.description,
+      category: project.category ?? "",
+      year: project.year != null ? String(project.year) : "",
+      imageUrl: images[0],
+      images,
+    };
+  });
+}
+
+/** Clientes con la forma que espera la marquesina de logos. */
+export async function getClientItems() {
+  const clients = await getClients();
+  return clients.map((client) => ({
+    name: client.name,
+    logoUrl: mediaUrl(client.logo),
+    website: client.website ?? "",
+  }));
+}
+
+/** Proyectos que incluyeron un servicio dado, por slug del servicio. */
+export async function getProjectsByServiceSlug(slug: string): Promise<Project[]> {
+  const service = await getServiceBySlug(slug);
+  if (!service) return [];
+
+  const payload = await getPayloadClient();
+  const result = await payload.find({
+    collection: "projects",
+    where: {
+      isActive: { equals: true },
+      servicesProvided: { in: [service.id] },
+    },
+    sort: "-year",
+    limit: 50,
+    depth: 1,
+  });
+  return result.docs;
+}
+
 export async function getClients(): Promise<Client[]> {
   const payload = await getPayloadClient();
   const result = await payload.find({
