@@ -1,54 +1,54 @@
-'use client';
-
-import { useEffect, useState } from 'react';
+import type { Metadata } from 'next';
 import PageHeader from '~/components/shared/PageHeader';
 import ServiceCard from '~/components/shared/ServiceCard';
 import ScrollReveal from '~/components/shared/ScrollReveal';
-import { pb } from '~/lib/pocketbase';
+import { getServices, mediaUrl } from '@/lib/content';
 import { companyDescription, companyInfo, toStaticServiceList } from '@/lib/company-content';
 
-interface Service {
+export const metadata: Metadata = {
+  title: `Servicios — ${companyInfo.legalName}`,
+  description: companyDescription.sectors,
+};
+
+export const revalidate = 60;
+
+interface ServiceCardData {
   id: string;
   slug: string;
   title: string;
   shortDescription: string;
   icon: string;
   imageUrl?: string;
-  order?: number;
 }
 
-const staticServices: Service[] = toStaticServiceList();
+export default async function ServiciosPage() {
+  // Se renderiza en el servidor: antes esto se pedía desde el navegador, así
+  // que los buscadores nunca veían los servicios y se alcanzaba a ver el
+  // contenido de respaldo antes de que llegara el real.
+  let services: ServiceCardData[] = [];
 
-export default function ServiciosPage() {
-  const [services, setServices] = useState<Service[]>(staticServices);
-  const [loading, setLoading] = useState(true);
+  try {
+    services = (await getServices()).map((service) => ({
+      id: String(service.id),
+      slug: service.slug,
+      title: service.title,
+      shortDescription: service.shortDescription,
+      icon: service.icon || 'Box',
+      imageUrl: mediaUrl(service.image) || undefined,
+    }));
+  } catch (error) {
+    console.error('Error cargando servicios:', error);
+  }
 
-  useEffect(() => {
-    async function fetchServices() {
-      try {
-        const records = await pb
-          .collection('services')
-          .getFullList({ sort: 'order', filter: 'isActive=true' });
-        if (records.length > 0) {
-          const mapped: Service[] = records.map((r: Record<string, unknown>) => ({
-            id: r.id as string,
-            slug: r.slug as string,
-            title: r.title as string,
-            shortDescription: r.shortDescription as string,
-            icon: (r.icon as string) || 'Box',
-            imageUrl: r.imageUrl as string | undefined,
-            order: r.order as number | undefined,
-          }));
-          setServices(mapped);
-        }
-      } catch {
-        // Use static fallback
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchServices();
-  }, []);
+  if (services.length === 0) {
+    services = toStaticServiceList().map((service) => ({
+      id: service.id,
+      slug: service.slug,
+      title: service.title,
+      shortDescription: service.shortDescription,
+      icon: service.icon,
+    }));
+  }
 
   return (
     <div className="flex w-full min-w-0 flex-col overflow-x-hidden">
@@ -69,27 +69,19 @@ export default function ServiciosPage() {
             </div>
           </ScrollReveal>
 
-          {loading ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-72 bg-gray-200 rounded-2xl animate-pulse" />
-              ))}
-            </div>
-          ) : (
-            <div className="grid items-stretch gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {services.map((service, i) => (
-                <ScrollReveal key={service.id} delay={i * 0.1} className="h-full">
-                  <ServiceCard
-                    slug={service.slug}
-                    title={service.title}
-                    shortDescription={service.shortDescription}
-                    icon={service.icon}
-                    imageUrl={service.imageUrl}
-                  />
-                </ScrollReveal>
-              ))}
-            </div>
-          )}
+          <div className="grid items-stretch gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {services.map((service, i) => (
+              <ScrollReveal key={service.id} delay={i * 0.1} className="h-full">
+                <ServiceCard
+                  slug={service.slug}
+                  title={service.title}
+                  shortDescription={service.shortDescription}
+                  icon={service.icon}
+                  imageUrl={service.imageUrl}
+                />
+              </ScrollReveal>
+            ))}
+          </div>
         </div>
       </section>
 

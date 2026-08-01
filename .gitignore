@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# logs de desarrollo
+dev.log
+
+# uploads de Payload
+/public/media
