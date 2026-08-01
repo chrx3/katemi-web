@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Header from "@/components/admin/Header";
 import { getContacts } from "@/lib/pb-admin";
-import { pb } from "@/lib/pocketbase";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import {
@@ -50,19 +49,23 @@ export default function ContactosPage() {
     resetUnreadContacts();
   }, []);
 
+  // Refresco periódico. Sustituye a la suscripción realtime de PocketBase, que
+  // requería autenticarse como superusuario desde el navegador.
   useEffect(() => {
     let cancelled = false;
-    if (pb.authStore.isValid) {
-      pb.collection("contacts").subscribe("*", (e: { action: string; record: Record<string, unknown> }) => {
-        if (cancelled) return;
-        if (e.action === "create") {
-          setContacts((prev) => [e.record as unknown as Contact, ...prev]);
-        }
-      }).catch(() => {});
-    }
+
+    const timer = setInterval(async () => {
+      try {
+        const data = await getContacts();
+        if (!cancelled) setContacts(data as unknown as Contact[]);
+      } catch {
+        // Reintentamos en el siguiente ciclo.
+      }
+    }, 30_000);
+
     return () => {
       cancelled = true;
-      try { pb.collection("contacts").unsubscribe(); } catch {}
+      clearInterval(timer);
     };
   }, []);
 

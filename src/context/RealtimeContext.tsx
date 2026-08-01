@@ -1,7 +1,14 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { pb } from "@/lib/pocketbase";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import { getRecentContacts } from "@/lib/pb-admin";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -19,50 +26,66 @@ export function useRealtime() {
   return useContext(RealtimeContext);
 }
 
-async function ensureAuth() {
-  if (pb.authStore.isValid) return;
-  const email = process.env.NEXT_PUBLIC_POCKETBASE_ADMIN_EMAIL || "";
-  const password = process.env.NEXT_PUBLIC_POCKETBASE_ADMIN_PASSWORD || "";
-  if (!email || !password) return;
-  await pb.collection("_superusers").authWithPassword(email, password);
-}
+const POLL_INTERVAL_MS = 30_000;
 
+/**
+ * Avisa de mensajes de contacto nuevos consultando el servidor cada 30s.
+ *
+ * Antes esto abría una suscripción realtime de PocketBase autenticándose como
+ * superusuario desde el navegador, lo que exigía enviar esas credenciales al
+ * cliente. El sondeo pasa por una Server Action y no expone nada.
+ */
 export function RealtimeProvider({ children }: { children: ReactNode }) {
   const [unreadContacts, setUnreadContacts] = useState(0);
   const router = useRouter();
+  const seenIds = useRef<Set<string> | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
-    const setup = async () => {
+    const poll = async () => {
       try {
-        await ensureAuth();
+        const contacts = await getRecentContacts(10);
         if (cancelled) return;
 
-        await pb.collection("contacts").subscribe("*", (e: { action: string; record: Record<string, unknown> }) => {
-          if (cancelled) return;
-          if (e.action === "create") {
-            setUnreadContacts((prev) => prev + 1);
-            const firstName = (e.record.firstName as string) || "";
-            const lastName = (e.record.lastName as string) || "";
-            const name = `${firstName} ${lastName}`.trim() || "Alguien";
-            toast(`${name} envió un mensaje`, {
-              description: (e.record.subject as string) || "Sin asunto",
-              action: { label: "Ver", onClick: () => router.push("/admin/contactos") },
-              duration: 5000,
-            });
-          }
+        // La primera respuesta solo siembra el estado conocido: no avisamos de
+        // mensajes que ya estaban ahí antes de abrir el panel.
+        if (seenIds.current === null) {
+          seenIds.current = new Set(contacts.map((c) => c.id));
+          return;
+        }
+
+        const fresh = contacts.filter((c) => !seenIds.current!.has(c.id));
+        if (fresh.length === 0) return;
+
+        fresh.forEach((contact) => {
+          seenIds.current!.add(contact.id);
+          const name =
+            `${contact.firstName} ${contact.lastName}`.trim() || "Alguien";
+          toast(`${name} envió un mensaje`, {
+            description: contact.subject || "Sin asunto",
+            action: {
+              label: "Ver",
+              onClick: () => router.push("/admin/contactos"),
+            },
+            duration: 5000,
+          });
         });
-      } catch {}
+
+        setUnreadContacts((prev) => prev + fresh.length);
+      } catch {
+        // Sesión expirada o backend caído: reintentamos en el siguiente ciclo.
+      }
     };
 
-    setup();
+    poll();
+    const timer = setInterval(poll, POLL_INTERVAL_MS);
 
     return () => {
       cancelled = true;
-      try { pb.collection("contacts").unsubscribe(); } catch {}
+      clearInterval(timer);
     };
-  }, []);
+  }, [router]);
 
   const resetUnreadContacts = () => setUnreadContacts(0);
 

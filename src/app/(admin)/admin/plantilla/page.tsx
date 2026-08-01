@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { pb } from "@/lib/pocketbase";
 import {
   Monitor,
   Smartphone,
