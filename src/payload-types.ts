@@ -156,6 +156,10 @@ export interface Service {
    * Nombre del icono de lucide-react, por ejemplo: Zap, Wrench, Building2.
    */
   icon?: string | null;
+  /**
+   * Opcional. No se muestra en el sitio público.
+   */
+  unitPrice?: number | null;
   order?: number | null;
   isActive?: boolean | null;
   updatedAt: string;
@@ -393,6 +397,7 @@ export interface ServicesSelect<T extends boolean = true> {
       };
   image?: T;
   icon?: T;
+  unitPrice?: T;
   order?: T;
   isActive?: T;
   updatedAt?: T;
@@ -620,6 +625,7 @@ export interface LandingTemplate {
   contactPhone?: string | null;
   contactEmail?: string | null;
   contactAddress?: string | null;
+  contactCity?: string | null;
   contactHours?: string | null;
   aboutEyebrow?: string | null;
   aboutTitle?: string | null;
@@ -640,7 +646,22 @@ export interface LandingTemplate {
     | null;
   linkedinUrl?: string | null;
   instagramUrl?: string | null;
+  facebookUrl?: string | null;
+  /**
+   * Solo números, con código de país. Ej: 56912345678
+   */
+  whatsapp?: string | null;
   googleMapsUrl?: string | null;
+  companyName?: string | null;
+  companyTagline?: string | null;
+  /**
+   * El que aparece en la pestaña del navegador y en Google.
+   */
+  defaultMetaTitle?: string | null;
+  /**
+   * Lo que Google muestra bajo el título. Máximo 160 caracteres.
+   */
+  defaultMetaDescription?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -694,6 +715,7 @@ export interface LandingTemplateSelect<T extends boolean = true> {
   contactPhone?: T;
   contactEmail?: T;
   contactAddress?: T;
+  contactCity?: T;
   contactHours?: T;
   aboutEyebrow?: T;
   aboutTitle?: T;
@@ -711,7 +733,13 @@ export interface LandingTemplateSelect<T extends boolean = true> {
       };
   linkedinUrl?: T;
   instagramUrl?: T;
+  facebookUrl?: T;
+  whatsapp?: T;
   googleMapsUrl?: T;
+  companyName?: T;
+  companyTagline?: T;
+  defaultMetaTitle?: T;
+  defaultMetaDescription?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

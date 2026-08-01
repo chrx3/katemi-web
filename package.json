@@ -12,7 +12,7 @@
     "seed:pocketbase:dry": "tsx scripts/seed-pocketbase.ts --dry-run",
     "generate:types": "payload generate:types",
     "generate:importmap": "payload generate:importmap",
-    "migrate:pb": "tsx scripts/migrate-pocketbase-to-payload.ts",
+    "migrate:pb": "node --env-file=.env.local --env-file=.env --import tsx scripts/migrate-pocketbase-to-payload.ts",
     "payload": "payload"
   },
   "dependencies": {

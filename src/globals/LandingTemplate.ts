@@ -232,6 +232,7 @@ export const LandingTemplate: GlobalConfig = {
               ],
             },
             { name: "contactAddress", label: "Dirección", type: "text" },
+            { name: "contactCity", label: "Ciudad / comuna", type: "text" },
             { name: "contactHours", label: "Horario", type: "text" },
           ],
         },
@@ -270,7 +271,35 @@ export const LandingTemplate: GlobalConfig = {
           fields: [
             { name: "linkedinUrl", label: "LinkedIn", type: "text" },
             { name: "instagramUrl", label: "Instagram", type: "text" },
+            { name: "facebookUrl", label: "Facebook", type: "text" },
+            {
+              name: "whatsapp",
+              label: "WhatsApp",
+              type: "text",
+              admin: { description: "Solo números, con código de país. Ej: 56912345678" },
+            },
             { name: "googleMapsUrl", label: "Google Maps", type: "text" },
+          ],
+        },
+        {
+          label: "Empresa y SEO",
+          description: "Identidad de la empresa y metadatos para buscadores.",
+          fields: [
+            { name: "companyName", label: "Razón social", type: "text" },
+            { name: "companyTagline", label: "Bajada", type: "text" },
+            {
+              name: "defaultMetaTitle",
+              label: "Título por defecto",
+              type: "text",
+              admin: { description: "El que aparece en la pestaña del navegador y en Google." },
+            },
+            {
+              name: "defaultMetaDescription",
+              label: "Descripción por defecto",
+              type: "textarea",
+              maxLength: 160,
+              admin: { description: "Lo que Google muestra bajo el título. Máximo 160 caracteres." },
+            },
           ],
         },
       ],

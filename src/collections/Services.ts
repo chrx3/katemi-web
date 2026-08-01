@@ -70,6 +70,15 @@ export const Services: CollectionConfig = {
       },
     },
     {
+      name: "unitPrice",
+      label: "Precio referencial",
+      type: "number",
+      admin: {
+        position: "sidebar",
+        description: "Opcional. No se muestra en el sitio público.",
+      },
+    },
+    {
       name: "order",
       label: "Orden",
       type: "number",
