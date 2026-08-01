@@ -4,6 +4,10 @@ import config from "@payload-config";
 import { handleServerFunctions, RootLayout } from "@payloadcms/next/layouts";
 import React from "react";
 
+// RootLayout no trae sus propios estilos: la hoja del panel se expone por este
+// export aparte. Sin esta línea el admin se renderiza completamente sin CSS.
+import "@payloadcms/next/css";
+
 import { importMap } from "./admin/importMap.js";
 
 type Args = {

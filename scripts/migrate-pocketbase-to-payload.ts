@@ -138,7 +138,7 @@ async function main() {
   /** Busca por clave natural para que reejecutar la migración no duplique. */
   async function upsert(
     collection: "services" | "projects" | "clients" | "contacts",
-    where: Record<string, unknown>,
+    where: Record<string, { equals: string }>,
     data: Record<string, unknown>,
   ): Promise<number | undefined> {
     const existing = await payload.find({
