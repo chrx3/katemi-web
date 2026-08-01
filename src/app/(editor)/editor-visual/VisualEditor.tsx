@@ -270,7 +270,7 @@ export default function VisualEditor({
               type="button"
               onClick={handleSave}
               disabled={saving || !dirty}
-              className="inline-flex items-center gap-2 rounded-md bg-[#00A896] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#008f7f] disabled:bg-white/10 disabled:text-white/40"
+              className="inline-flex items-center gap-2 rounded-md bg-[#00796B] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#00655A] disabled:bg-white/10 disabled:text-white/40"
             >
               <Save size={15} />
               {saving

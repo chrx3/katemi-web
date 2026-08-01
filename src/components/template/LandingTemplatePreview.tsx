@@ -50,7 +50,7 @@ function SectionFrame({ title, mode, show, children }: { title: string; mode: "e
   return (
     <div className={`relative ${isEditable ? "ring-2 ring-[#00A896]/35 shadow-[0_0_0_4px_rgba(0,168,150,0.08)]" : "ring-2 ring-[#3b82f6]/25 ring-dashed"} rounded-xl overflow-hidden`}>
       <div className="absolute top-2 left-2 z-30 max-w-[220px]">
-        <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-full truncate ${isEditable ? "bg-[#00A896] text-white" : "bg-[#3b82f6] text-white"}`}>
+        <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-full truncate ${isEditable ? "bg-[#00796B] text-white" : "bg-[#1D4ED8] text-white"}`}>
           {isEditable ? "Editable aquí" : "Desde CRUD"} · {title}
         </span>
       </div>
@@ -141,7 +141,7 @@ export default function LandingTemplatePreview({
               <StatsBar stats={template.statsItems} editable={editable} onStatChange={onStatChange} />
               {editable && onAddStat && onRemoveStat && (
                 <div className="flex items-center gap-2 px-4 pb-4">
-                  <button onClick={onAddStat} className="inline-flex items-center gap-1 text-xs bg-[#00A896] text-white px-3 py-1.5 rounded-lg"><Plus size={12} /> Métrica</button>
+                  <button onClick={onAddStat} className="inline-flex items-center gap-1 text-xs bg-[#00796B] text-white px-3 py-1.5 rounded-lg"><Plus size={12} /> Métrica</button>
                 </div>
               )}
             </SectionFrame>
@@ -150,7 +150,7 @@ export default function LandingTemplatePreview({
               <ServicesPreview content={template} editable={editable} onFieldChange={onFieldChange as never} onServiceChange={onServiceChange} />
               {editable && onAddService && onRemoveService && (
                 <div className="flex items-center gap-2 px-4 pb-4">
-                  <button onClick={onAddService} className="inline-flex items-center gap-1 text-xs bg-[#00A896] text-white px-3 py-1.5 rounded-lg"><Plus size={12} /> Servicio</button>
+                  <button onClick={onAddService} className="inline-flex items-center gap-1 text-xs bg-[#00796B] text-white px-3 py-1.5 rounded-lg"><Plus size={12} /> Servicio</button>
                 </div>
               )}
             </SectionFrame>

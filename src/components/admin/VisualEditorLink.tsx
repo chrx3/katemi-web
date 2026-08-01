@@ -19,7 +19,7 @@ export function VisualEditorLink() {
         margin: "0 0 1.25rem",
         padding: "0.7rem 0.85rem",
         borderRadius: "6px",
-        background: "var(--k-teal, #00a896)",
+        background: "var(--k-teal-ink, #00796b)",
         color: "#fff",
         textDecoration: "none",
         fontWeight: 600,

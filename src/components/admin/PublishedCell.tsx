@@ -20,7 +20,7 @@ export function PublishedCell({ cellData }: { cellData?: unknown }) {
         gap: "0.45rem",
         fontSize: "0.8rem",
         fontWeight: 600,
-        color: published ? "var(--k-teal, #00a896)" : "var(--color-base-500)",
+        color: published ? "var(--k-teal-on-surface, #00796b)" : "var(--k-muted, #4a5d72)",
       }}
     >
       <span

@@ -3,22 +3,30 @@
  *
  * Payload deriva todas sus superficies de la rampa --color-base-*, así que
  * retintarla cambia el panel entero de forma coherente en vez de sobrescribir
- * componente por componente. Encima de eso van tres intervenciones: la barra
- * lateral en azul, la tipografía del sitio y el trazo del ítem activo.
+ * componente por componente.
  *
- * El motivo viene del propio hero: nodos unidos por líneas finas, que es como
- * se dibuja un unifilar. De ahí sale el indicador de navegación.
+ * Regla que hay que respetar aquí: en tema oscuro Payload voltea los
+ * --theme-elevation-*, de modo que 0 pasa a ser el extremo oscuro de la rampa
+ * y 1000 el claro. Cualquier color fijo escrito a mano deja de voltear y
+ * termina en texto del mismo tono que su fondo. Por eso los textos y fondos
+ * salen de tokens de Payload, y lo propio de la marca se limita a los acentos
+ * y a valores declarados por tema.
  */
 
 :root {
-  --k-navy: #0b1d3a;
-  --k-slate: #2a3f5f;
   --k-teal: #00a896;
   --k-teal-deep: #008f7f;
   --k-cyan: #00d4ff;
-  --k-paper: #f7f9fa;
 
-  /* Rampa neutra con temperatura azul. 0 es la superficie más clara. */
+  /* Verde para superficies que llevan texto blanco y para el verde usado como
+     texto sobre fondo claro. El #00a896 de la marca solo alcanza 2.98:1 con
+     blanco encima —muy por debajo del 4.5:1 que exige WCAG AA— así que las
+     piezas con texto usan esta variante más profunda. El verde de marca se
+     mantiene para rellenos grandes, puntos de estado y bordes, donde no hay
+     texto que leer. */
+  --k-teal-ink: #00796b;
+
+  /* Rampa neutra con temperatura azul. 0 es el extremo claro. */
   --color-base-0: #ffffff;
   --color-base-50: #f7f9fa;
   --color-base-100: #eef2f6;
@@ -33,7 +41,7 @@
   --color-base-550: #4b5f7b;
   --color-base-600: #3e516b;
   --color-base-650: #34455c;
-  --color-base-700: var(--k-slate);
+  --color-base-700: #2a3f5f;
   --color-base-750: #23364f;
   --color-base-800: #1b2c42;
   --color-base-850: #152336;
@@ -47,6 +55,35 @@
   --color-success-600: var(--k-teal-deep);
 
   --font-body: var(--font-space-grotesk), system-ui, sans-serif;
+}
+
+/* El tablero lateral se declara por tema: en claro contrasta con el lienzo
+   blanco, y en oscuro tiene que ser más profundo que el lienzo para seguir
+   leyéndose como un panel aparte y no fundirse con el fondo. */
+html[data-theme='light'] {
+  --k-rail-bg: #0b1d3a;
+  --k-rail-text: rgba(255, 255, 255, 0.92);
+  --k-rail-muted: rgba(255, 255, 255, 0.78);
+  --k-rail-border: rgba(255, 255, 255, 0.12);
+  --k-rail-hover: rgba(255, 255, 255, 0.1);
+
+  /* Texto secundario: etiquetas de campo, descripciones y contadores. La
+     rampa retintada dejaba estos tonos en 2.96:1 sobre blanco. */
+  --k-muted: #4a5d72;
+  --k-teal-on-surface: var(--k-teal-ink);
+}
+
+html[data-theme='dark'] {
+  --k-rail-bg: #070f1b;
+  --k-rail-text: rgba(255, 255, 255, 0.92);
+  --k-rail-muted: rgba(255, 255, 255, 0.78);
+  --k-rail-border: rgba(255, 255, 255, 0.14);
+  --k-rail-hover: rgba(255, 255, 255, 0.12);
+
+  /* En oscuro el mismo texto necesita ir hacia el lado claro, no al oscuro. */
+  --k-muted: #a9bacd;
+  /* Sobre fondo oscuro el verde debe aclararse, no oscurecerse. */
+  --k-teal-on-surface: #4fd8c5;
 }
 
 /* La misma familia que el sitio: mismo producto, no un CMS aparte. */
@@ -71,8 +108,9 @@ table,
 /* ── El tablero ────────────────────────────────────────────────────────── */
 
 .nav {
-  background: var(--k-navy);
-  color: rgba(255, 255, 255, 0.82);
+  background: var(--k-rail-bg);
+  color: var(--k-rail-text);
+  border-right: 1px solid var(--k-rail-border);
   /* Ancla el unifilar decorativo del pie. */
   position: relative;
   overflow: hidden;
@@ -85,23 +123,28 @@ table,
 
 .nav__link,
 .nav-group__toggle {
-  color: rgba(255, 255, 255, 0.82);
+  color: var(--k-rail-text);
   border-radius: 4px;
 }
 
 .nav__link:hover,
 .nav-group__toggle:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--k-rail-hover);
   color: #fff;
 }
 
 .nav__label,
 .nav-group__toggle {
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--k-rail-muted);
   letter-spacing: 0.09em;
   text-transform: uppercase;
   font-size: 0.68rem;
   font-weight: 700;
+}
+
+.nav-group__indicator svg,
+.nav__link-indicator svg {
+  color: var(--k-rail-muted);
 }
 
 /* La firma: el ítem activo se marca como un conductor energizado — un trazo
@@ -109,7 +152,7 @@ table,
 .nav__link--active,
 .nav__link[aria-current='page'] {
   position: relative;
-  background: rgba(0, 212, 255, 0.09);
+  background: rgba(0, 212, 255, 0.1);
   color: #fff;
 }
 
@@ -141,38 +184,58 @@ table,
 
 .nav__controls,
 .nav__header {
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--k-rail-border);
 }
 
 .nav__log-out svg {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--k-rail-muted);
 }
 
 /* ── El lienzo ─────────────────────────────────────────────────────────── */
 
-.template-default,
-.app-header {
-  background: var(--k-paper);
-}
-
+/* Los títulos toman el token que Payload ya voltea por tema, en vez de un hex
+   fijo: escrito a mano quedaba azul sobre azul en modo oscuro. */
 h1,
 h2,
 h3,
+h4,
 .list-header__title,
 .step-nav {
-  color: var(--k-navy);
+  color: var(--theme-elevation-800);
   letter-spacing: -0.015em;
 }
 
+/* Texto secundario de Payload. Sus clases se listan explícitamente porque son
+   las que la auditoría de contraste marcó por debajo de 4.5:1. */
+.field-label,
+.field-description,
+.paginator__separator,
+.doc-controls__label,
+.upload__dragAndDropText,
+.upload__dropzoneContent__orText,
+.collection-list__page-info,
+.per-page__label {
+  color: var(--k-muted);
+}
+
 .btn--style-primary {
-  background: var(--k-teal);
-  border-color: var(--k-teal);
+  background: var(--k-teal-ink);
+  border-color: var(--k-teal-ink);
   color: #fff;
 
   &:hover:not(:disabled) {
-    background: var(--k-teal-deep);
-    border-color: var(--k-teal-deep);
+    background: #00655a;
+    border-color: #00655a;
   }
+}
+
+/* El asterisco de campo obligatorio quedaba en 3.91:1 sobre el lienzo claro. */
+.required {
+  color: #c0332f;
+}
+
+html[data-theme='dark'] .required {
+  color: #ff9d97;
 }
 
 /* Foco visible y consistente para navegación por teclado. */
@@ -182,7 +245,9 @@ h3,
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
