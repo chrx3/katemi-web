@@ -26,23 +26,35 @@ function Bolt({ size = 20 }: { size?: number }) {
   );
 }
 
-/** Marca reducida: la que aparece junto a las migas de pan. */
+/**
+ * Marca reducida: la que aparece junto a las migas de pan.
+ *
+ * Payload le da un hueco fijo de 18x18 (16 en pantallas chicas), así que el
+ * fondo redondeado se dibuja dentro del propio viewBox y el svg ocupa el 100%
+ * del espacio disponible. Con un tamaño fijo en píxeles el símbolo se salía
+ * del contenedor y quedaba recortado.
+ */
 export function Icon() {
   return (
-    <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        width: 26,
-        height: 26,
-        borderRadius: 6,
-        background: "var(--k-navy, #0b1d3a)",
-        color: "#fff",
-      }}
+    <svg
+      width="100%"
+      height="100%"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      role="img"
+      aria-label="KATEMI"
+      style={{ display: "block", overflow: "visible" }}
     >
-      <Bolt size={15} />
-    </span>
+      <rect width="24" height="24" rx="5" fill="var(--k-navy, #0b1d3a)" />
+      <path
+        d="M10.6 5.4 6.9 12.3h3.2l-1.1 5.3 4.9-7.2h-3.3z"
+        fill="#fff"
+        stroke="#fff"
+        strokeWidth="0.8"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 
