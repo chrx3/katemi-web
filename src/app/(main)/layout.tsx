@@ -9,6 +9,7 @@ import { Toaster } from '~/components/ui/sonner';
 import { getLandingTemplate } from '@/lib/content';
 import { SITE_URL } from '@/lib/seo';
 import OrganizationJsonLd from '@/components/seo/OrganizationJsonLd';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import { landingTemplateDefaults } from '@/lib/template-config';
 import '../globals.css';
 
@@ -20,6 +21,10 @@ import '../globals.css';
  * global por encima quedaban dos <html> anidados y el panel reventaba con
  * errores de hidratación.
  */
+
+// Medicion de audiencia. Va solo en el sitio publico: el panel y el editor no
+// se miden, no aportan nada y son uso interno.
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -107,6 +112,10 @@ export default async function MainLayout({
           </div>
         </LenisProvider>
         <Toaster position="top-right" richColors />
+        {/* Solo se carga donde la variable esta definida. Sin esa condicion,
+            cada recarga en desarrollo y cada visita a staging contarian como
+            trafico real y ensuciarian los informes. */}
+        {GA_ID ? <GoogleAnalytics gaId={GA_ID} /> : null}
       </body>
     </html>
   );
