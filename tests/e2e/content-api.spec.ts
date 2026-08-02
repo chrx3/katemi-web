@@ -55,6 +55,8 @@ test.describe("API de contenido", () => {
   });
 
   test("el formulario público sí puede enviar un mensaje", async ({ request }) => {
+    test.skip(!ADMIN_PASSWORD, "Se necesita sesión para limpiar el mensaje.");
+
     const res = await request.post("/api/contacts", {
       data: {
         firstName: "Prueba",
@@ -66,6 +68,17 @@ test.describe("API de contenido", () => {
       },
     });
     expect(res.status(), await res.text()).toBeLessThan(400);
+
+    // La prueba borra lo que crea: si no, cada corrida deja un mensaje falso
+    // en la bandeja y el panel termina lleno de ruido.
+    const created = (await res.json())?.doc?.id;
+    expect(created, "no se pudo leer el id del mensaje creado").toBeTruthy();
+
+    await request.post("/api/users/login", {
+      data: { email: ADMIN_EMAIL, password: ADMIN_PASSWORD },
+    });
+    const cleanup = await request.delete(`/api/contacts/${created}`);
+    expect(cleanup.status(), "quedó un mensaje de prueba sin borrar").toBe(200);
   });
 
   test("con sesión sí se leen los mensajes", async ({ request }) => {
