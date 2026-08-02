@@ -5,6 +5,7 @@ import PageHeader from '~/components/shared/PageHeader';
 import ScrollReveal from '~/components/shared/ScrollReveal';
 import ImageWithFallback from '~/components/shared/ImageWithFallback';
 import ProjectCard from '~/components/shared/ProjectCard';
+import Breadcrumbs from '~/components/shared/Breadcrumbs';
 import * as LucideIcons from 'lucide-react';
 import {
   getProjectsByServiceSlug,
@@ -151,26 +152,26 @@ export default async function ServicioDetailPage({ params }: Params) {
         eyebrow="Servicio"
       />
 
+      <Breadcrumbs
+        items={[
+          { label: 'Inicio', href: '/' },
+          { label: 'Servicios', href: '/servicios' },
+          { label: service.title },
+        ]}
+      />
+
       {/* Content */}
       <section className="py-16 md:py-24 bg-white">
         <div className="container-max">
           <div className="grid min-w-0 gap-12 lg:grid-cols-3">
             {/* Main content */}
             <div className="min-w-0 space-y-10 lg:col-span-2">
-              {/* Icon + Intro */}
+              {/* El titulo y el subtitulo ya estan en el encabezado de la
+                  pagina; repetirlos aqui era decir lo mismo dos veces seguidas.
+                  Queda solo el icono como ancla visual de la seccion. */}
               <ScrollReveal>
-                <div className="flex items-start gap-6">
-                  <div className="w-20 h-20 rounded-2xl bg-[#00A896] flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <IconComponent size={36} className="text-white" />
-                  </div>
-                  <div>
-                    <h1 className="text-3xl md:text-4xl font-bold text-[#0B1D3A] uppercase tracking-tight mb-3">
-                      {service.title}
-                    </h1>
-                    <p className="text-gray-500 text-lg leading-relaxed">
-                      {service.shortDescription}
-                    </p>
-                  </div>
+                <div className="flex size-16 items-center justify-center rounded-2xl bg-[#00A896] shadow-lg">
+                  <IconComponent size={30} className="text-white" />
                 </div>
               </ScrollReveal>
 

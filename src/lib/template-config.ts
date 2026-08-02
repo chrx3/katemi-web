@@ -5,6 +5,7 @@ import {
   companyStats,
   companyValues,
   companyVision,
+  seoDefaults,
   toLandingServiceItems,
 } from "@/lib/company-content";
 
@@ -82,7 +83,15 @@ export interface LandingTemplateConfig {
 
   linkedinUrl: string;
   instagramUrl: string;
+  facebookUrl: string;
+  whatsapp: string;
   googleMapsUrl: string;
+
+  contactCity: string;
+  companyName: string;
+  companyTagline: string;
+  defaultMetaTitle: string;
+  defaultMetaDescription: string;
 }
 
 export const landingTemplateDefaults: LandingTemplateConfig = {
@@ -148,7 +157,15 @@ export const landingTemplateDefaults: LandingTemplateConfig = {
 
   linkedinUrl: "https://linkedin.com/company/katemi",
   instagramUrl: "https://instagram.com/katemi",
+  facebookUrl: "",
+  whatsapp: "",
   googleMapsUrl: companyInfo.googleMapsUrl,
+
+  contactCity: "",
+  companyName: companyInfo.legalName,
+  companyTagline: companyInfo.tagline,
+  defaultMetaTitle: seoDefaults.title,
+  defaultMetaDescription: seoDefaults.description,
 };
 
 function parseString(raw: string | undefined, fallback: string): string {

@@ -30,7 +30,7 @@ const contactSchema = z.object({
   phone: z.string().min(6, "Ingresa un número de teléfono válido"),
   company: z.string().optional(),
   email: z.string().email("Ingresa un correo electrónico válido"),
-  subject: z.string().min(1, "Selecciona un assunto"),
+  subject: z.string().min(1, "Selecciona un asunto"),
   message: z
     .string()
     .min(10, "El mensaje debe tener al menos 10 caracteres")
@@ -182,18 +182,23 @@ export default function ContactForm({
                 ))}
               </div>
 
-              {/* Google Maps Embed */}
+              {/* El embed anterior traia coordenadas inventadas (0x0:0x0 y un
+                  timestamp falso), asi que nunca cargaba y dejaba un recuadro
+                  gris. Este se arma con la direccion configurada, sin API key,
+                  y sigue a la direccion si cambia en el panel. */}
               <ScrollReveal delay={0.3}>
                 <div className="rounded-2xl overflow-hidden h-52 bg-gray-100">
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3329.8369663730655!2d-70.642367!3d-33.456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzPCsDI3JzE2LjYiUyA3MMKwMzgnMzUuOCJX!5e0!3m2!1sen!2scl!4v1600000000000!5m2!1sen!2scl"
+                    src={`https://www.google.com/maps?q=${encodeURIComponent(
+                      contactContent.contactAddress.replace(/\n/g, ", "),
+                    )}&output=embed`}
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
                     allowFullScreen
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
-                    title="Katemi Ubicación"
+                    title={`Ubicación de ${companyInfo.legalName}`}
                   />
                 </div>
               </ScrollReveal>
@@ -269,7 +274,9 @@ export default function ContactForm({
                         <Input
                           id="phone"
                           type="tel"
-                          placeholder={companyInfo.phone}
+                          // Antes mostraba el teléfono de la empresa, que se
+                          // lee como un campo ya rellenado.
+                          placeholder="+56 9 1234 5678"
                           {...register("phone")}
                           className={
                             errors.phone
@@ -331,7 +338,7 @@ export default function ContactForm({
                           id="subject"
                           className={errors.subject ? "border-red-400" : ""}
                         >
-                          <SelectValue placeholder="Selecciona un assunto" />
+                          <SelectValue placeholder="Selecciona un asunto" />
                         </SelectTrigger>
                         <SelectContent>
                           {SUBJECTS.map((s) => (

@@ -148,7 +148,15 @@ export async function getLandingTemplate(): Promise<LandingTemplateConfig> {
 
     linkedinUrl: g("linkedinUrl"),
     instagramUrl: g("instagramUrl"),
+    facebookUrl: g("facebookUrl"),
+    whatsapp: g("whatsapp"),
     googleMapsUrl: g("googleMapsUrl"),
+
+    contactCity: g("contactCity"),
+    companyName: g("companyName"),
+    companyTagline: g("companyTagline"),
+    defaultMetaTitle: g("defaultMetaTitle"),
+    defaultMetaDescription: g("defaultMetaDescription"),
   };
 }
 

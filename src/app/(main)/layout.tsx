@@ -3,6 +3,7 @@ import { Space_Grotesk } from 'next/font/google';
 import Navbar from '~/components/layout/Navbar';
 import Footer from '~/components/layout/Footer';
 import ScrollToTop from '~/components/layout/ScrollToTop';
+import WhatsAppButton from '~/components/layout/WhatsAppButton';
 import LenisProvider from '~/components/providers/LenisProvider';
 import { Toaster } from '~/components/ui/sonner';
 import { getLandingTemplate } from '@/lib/content';
@@ -69,6 +70,7 @@ export default async function MainLayout({
               {children}
             </main>
             <Footer template={template} />
+            <WhatsAppButton phone={template.whatsapp} />
             <ScrollToTop />
           </div>
         </LenisProvider>

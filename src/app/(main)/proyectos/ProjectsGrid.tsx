@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import ProjectCard from '~/components/shared/ProjectCard';
 import ScrollReveal from '~/components/shared/ScrollReveal';
+import { PROJECT_CATEGORIES } from '@/lib/project-categories';
 
 export interface ProjectItem {
   id: string;
@@ -24,13 +25,7 @@ export interface ProjectItem {
  * mientras la base guarda los valores en minúscula ("retail"), así que elegir
  * cualquier categoría dejaba la grilla vacía.
  */
-const CATEGORIES = [
-  { label: 'Todos', value: 'all' },
-  { label: 'Retail', value: 'retail' },
-  { label: 'Comercial', value: 'commercial' },
-  { label: 'Industrial', value: 'industrial' },
-  { label: 'Servicios', value: 'services' },
-];
+const CATEGORIES = [{ label: 'Todos', value: 'all' }, ...PROJECT_CATEGORIES];
 
 export default function ProjectsGrid({
   projects,

@@ -3,11 +3,13 @@ import Link from 'next/link';
 import { ChevronLeft, MapPin, Calendar, User, Tag, CheckCircle, Phone, Mail } from 'lucide-react';
 import PageHeader from '~/components/shared/PageHeader';
 import ScrollReveal from '~/components/shared/ScrollReveal';
+import Breadcrumbs from '~/components/shared/Breadcrumbs';
 import * as LucideIcons from 'lucide-react';
 import ImageWithFallback from "~/components/shared/ImageWithFallback";
 import { resolveProjectImage } from "@/lib/image-placeholders";
 import { getProjectBySlug as getPayloadProjectBySlug, mediaUrl } from '@/lib/content';
 import { companyInfo, getProjectBySlug } from '@/lib/company-content';
+import { categoryLabel } from '@/lib/project-categories';
 
 interface Project {
   id: string;
@@ -136,7 +138,7 @@ export default async function ProyectoDetailPage({ params }: Params) {
         <div className="container-max relative z-10 pb-16 pt-32">
           <ScrollReveal>
             <span className="inline-block bg-[#F5A623] text-white text-xs font-bold uppercase px-4 py-1.5 rounded-full mb-4">
-              {project.category}
+              {categoryLabel(project.category)}
             </span>
             <h1 className="max-w-3xl break-words text-4xl font-bold uppercase leading-tight tracking-tight text-white md:text-5xl">
               {project.title}
@@ -144,6 +146,14 @@ export default async function ProyectoDetailPage({ params }: Params) {
           </ScrollReveal>
         </div>
       </section>
+
+      <Breadcrumbs
+        items={[
+          { label: 'Inicio', href: '/' },
+          { label: 'Proyectos', href: '/proyectos' },
+          { label: project.title },
+        ]}
+      />
 
       {/* Info Row */}
       <section className="bg-[#0B1D3A]">
@@ -167,7 +177,7 @@ export default async function ProyectoDetailPage({ params }: Params) {
             <div className="flex items-center gap-2">
               <Tag className="w-4 h-4 text-[#00A896]" />
               <span className="text-white/60 mr-1.5">Categoría:</span>
-              <span className="font-medium">{project.category}</span>
+              <span className="font-medium">{categoryLabel(project.category)}</span>
             </div>
           </div>
         </div>

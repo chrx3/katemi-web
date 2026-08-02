@@ -19,7 +19,11 @@ export default function PageHeader({
 
   return (
     <section
-      className="viewport-below-nav relative flex w-full items-center justify-center overflow-hidden py-12 sm:py-16"
+      /* Antes ocupaba el alto completo del viewport. En páginas internas eso
+         empujaba todo el contenido bajo el pliegue: en Contacto el formulario
+         entero quedaba fuera de la primera pantalla. Un encabezado no necesita
+         una pantalla completa para presentar un título. */
+      className="relative flex min-h-[34svh] w-full items-center justify-center overflow-hidden py-16 sm:min-h-[38svh] sm:py-20"
       style={{ backgroundColor: bgColor }}
     >
       {/* Decorative Dot Grid Pattern */}
