@@ -7,6 +7,8 @@ import WhatsAppButton from '~/components/layout/WhatsAppButton';
 import LenisProvider from '~/components/providers/LenisProvider';
 import { Toaster } from '~/components/ui/sonner';
 import { getLandingTemplate } from '@/lib/content';
+import { SITE_URL } from '@/lib/seo';
+import OrganizationJsonLd from '@/components/seo/OrganizationJsonLd';
 import { landingTemplateDefaults } from '@/lib/template-config';
 import '../globals.css';
 
@@ -26,16 +28,42 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: 'Katemi — Ingeniería y Proyectos Eléctricos',
+  // metadataBase resuelve las URLs relativas de Open Graph y canonical. Sin
+  // esto Next emite rutas relativas, que las redes sociales no saben resolver.
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'KATEMI E.I.R.L. — Ingeniería y Construcción',
+    template: '%s | KATEMI E.I.R.L.',
+  },
   description:
-    'Soluciones integrales en ingeniería eléctrica, instalaciones, automatización y certificaciones para la industria y infraestructura en Chile.',
+    'Desarrollo y ejecución de proyectos de ingeniería, construcción e instalaciones para los sectores comercial, industrial y de servicios en Chile.',
   keywords: [
-    'ingeniería eléctrica',
-    'proyectos industriales',
-    'Chile',
     'instalaciones eléctricas',
-    'automatización',
+    'montaje industrial eléctrico',
+    'declaraciones T1',
+    'mallas a tierra',
+    'climatización',
+    'contratista eléctrico Santiago',
   ],
+  alternates: { canonical: '/' },
+  openGraph: {
+    type: 'website',
+    locale: 'es_CL',
+    siteName: 'KATEMI E.I.R.L.',
+    title: 'KATEMI E.I.R.L. — Ingeniería y Construcción',
+    description:
+      'Proyectos de ingeniería, construcción e instalaciones con foco en calidad, seguridad y cumplimiento técnico.',
+    url: '/',
+    images: [{ url: '/brand/katemi-wordmark.png', width: 770, height: 285, alt: 'KATEMI E.I.R.L.' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'KATEMI E.I.R.L. — Ingeniería y Construcción',
+    description:
+      'Proyectos de ingeniería, construcción e instalaciones en Chile.',
+    images: ['/brand/katemi-wordmark.png'],
+  },
+  robots: { index: true, follow: true },
 };
 
 // El contenido se sirve estático y se refresca cada minuto. Antes la home se
@@ -66,6 +94,7 @@ export default async function MainLayout({
           el position:sticky de la barra de navegacion, que se iba de pantalla
           al bajar. clip recorta igual sin crear ese contenedor. */}
       <body className="antialiased min-h-screen w-full overflow-x-clip">
+        <OrganizationJsonLd template={template} />
         <LenisProvider>
           <div className="flex min-h-screen w-full max-w-[100vw] flex-col overflow-x-clip">
             <Navbar />

@@ -6,6 +6,7 @@ import ScrollReveal from '~/components/shared/ScrollReveal';
 import ImageWithFallback from '~/components/shared/ImageWithFallback';
 import ProjectCard from '~/components/shared/ProjectCard';
 import Breadcrumbs from '~/components/shared/Breadcrumbs';
+import BreadcrumbJsonLd from '@/components/seo/BreadcrumbJsonLd';
 import * as LucideIcons from 'lucide-react';
 import {
   getProjectsByServiceSlug,
@@ -62,12 +63,17 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const service = await getPayloadServiceBySlug(slug).catch(() => null);
   const title = service?.title ?? getServiceBySlug(slug)?.title;
 
-  return title
-    ? {
-        title: `${title} — ${companyInfo.legalName}`,
-        description: service?.shortDescription,
-      }
-    : { title: `Servicio no encontrado — ${companyInfo.legalName}` };
+  if (!title) return { title: 'Servicio no encontrado' };
+
+  const description = service?.shortDescription ?? undefined;
+  const url = `/servicios/${slug}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: { title, description, url, type: 'article' },
+  };
 }
 
 export default async function ServicioDetailPage({ params }: Params) {
@@ -157,6 +163,13 @@ export default async function ServicioDetailPage({ params }: Params) {
           { label: 'Inicio', href: '/' },
           { label: 'Servicios', href: '/servicios' },
           { label: service.title },
+        ]}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Inicio', path: '/' },
+          { name: 'Servicios', path: '/servicios' },
+          { name: service.title, path: `/servicios/${service.slug}` },
         ]}
       />
 

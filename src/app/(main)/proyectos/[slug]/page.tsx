@@ -4,6 +4,7 @@ import { ChevronLeft, MapPin, Calendar, User, Tag, CheckCircle, Phone, Mail } fr
 import PageHeader from '~/components/shared/PageHeader';
 import ScrollReveal from '~/components/shared/ScrollReveal';
 import Breadcrumbs from '~/components/shared/Breadcrumbs';
+import BreadcrumbJsonLd from '@/components/seo/BreadcrumbJsonLd';
 import * as LucideIcons from 'lucide-react';
 import ImageWithFallback from "~/components/shared/ImageWithFallback";
 import { resolveProjectImage } from "@/lib/image-placeholders";
@@ -55,9 +56,17 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const project = await getPayloadProjectBySlug(slug).catch(() => null);
   const title = project?.title ?? getProjectBySlug(slug)?.title;
 
-  return title
-    ? { title: `${title} — ${companyInfo.legalName}`, description: project?.description }
-    : { title: `Proyecto no encontrado — ${companyInfo.legalName}` };
+  if (!title) return { title: 'Proyecto no encontrado' };
+
+  const description = project?.description ?? undefined;
+  const url = `/proyectos/${slug}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: { title, description, url, type: 'article' },
+  };
 }
 
 export default async function ProyectoDetailPage({ params }: Params) {
@@ -152,6 +161,13 @@ export default async function ProyectoDetailPage({ params }: Params) {
           { label: 'Inicio', href: '/' },
           { label: 'Proyectos', href: '/proyectos' },
           { label: project.title },
+        ]}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Inicio', path: '/' },
+          { name: 'Proyectos', path: '/proyectos' },
+          { name: project.title, path: `/proyectos/${project.slug}` },
         ]}
       />
 
