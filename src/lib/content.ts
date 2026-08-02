@@ -152,6 +152,12 @@ export async function getLandingTemplate(): Promise<LandingTemplateConfig> {
     whatsapp: g("whatsapp"),
     googleMapsUrl: g("googleMapsUrl"),
 
+    leadName: g("leadName"),
+    leadRole: g("leadRole"),
+    leadTitle: g("leadTitle"),
+    leadCertification: g("leadCertification"),
+    leadExperience: g("leadExperience"),
+
     contactCity: g("contactCity"),
     companyName: g("companyName"),
     companyTagline: g("companyTagline"),

@@ -661,6 +661,20 @@ export interface LandingTemplate {
    */
   whatsapp?: string | null;
   googleMapsUrl?: string | null;
+  leadName?: string | null;
+  leadRole?: string | null;
+  /**
+   * Ej: Ingeniero Eléctrico en Automatización
+   */
+  leadTitle?: string | null;
+  /**
+   * Ej: Certificado SEC Clase A
+   */
+  leadCertification?: string | null;
+  /**
+   * Ej: Más de 8 años
+   */
+  leadExperience?: string | null;
   companyName?: string | null;
   companyTagline?: string | null;
   /**
@@ -745,6 +759,11 @@ export interface LandingTemplateSelect<T extends boolean = true> {
   facebookUrl?: T;
   whatsapp?: T;
   googleMapsUrl?: T;
+  leadName?: T;
+  leadRole?: T;
+  leadTitle?: T;
+  leadCertification?: T;
+  leadExperience?: T;
   companyName?: T;
   companyTagline?: T;
   defaultMetaTitle?: T;

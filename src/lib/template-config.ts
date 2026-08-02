@@ -87,6 +87,12 @@ export interface LandingTemplateConfig {
   whatsapp: string;
   googleMapsUrl: string;
 
+  leadName: string;
+  leadRole: string;
+  leadTitle: string;
+  leadCertification: string;
+  leadExperience: string;
+
   contactCity: string;
   companyName: string;
   companyTagline: string;
@@ -160,6 +166,12 @@ export const landingTemplateDefaults: LandingTemplateConfig = {
   facebookUrl: "",
   whatsapp: "",
   googleMapsUrl: companyInfo.googleMapsUrl,
+
+  leadName: "",
+  leadRole: "",
+  leadTitle: "",
+  leadCertification: "",
+  leadExperience: "",
 
   contactCity: "",
   companyName: companyInfo.legalName,

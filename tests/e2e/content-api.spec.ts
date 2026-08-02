@@ -10,8 +10,11 @@ import { ADMIN_EMAIL, ADMIN_PASSWORD } from "./helpers";
 
 test.describe("API de contenido", () => {
   test("las colecciones públicas se leen sin autenticación", async ({ request }) => {
+    // 15 y no 18: tres servicios cargados eran de HM INOVA (energía solar,
+    // baterías residenciales) y no figuran en la carta de presentación de
+    // KATEMI, así que se eliminaron.
     const expected: Record<string, number> = {
-      services: 18,
+      services: 15,
       projects: 4,
       clients: 4,
       media: 4,

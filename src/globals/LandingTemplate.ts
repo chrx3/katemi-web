@@ -282,6 +282,43 @@ export const LandingTemplate: GlobalConfig = {
           ],
         },
         {
+          label: "Dirección técnica",
+          description:
+            "La credencial que un cliente corporativo verifica antes de contratar.",
+          fields: [
+            {
+              type: "row",
+              fields: [
+                { name: "leadName", label: "Nombre", type: "text" },
+                { name: "leadRole", label: "Cargo", type: "text" },
+              ],
+            },
+            {
+              name: "leadTitle",
+              label: "Título profesional",
+              type: "text",
+              admin: { description: "Ej: Ingeniero Eléctrico en Automatización" },
+            },
+            {
+              type: "row",
+              fields: [
+                {
+                  name: "leadCertification",
+                  label: "Certificación",
+                  type: "text",
+                  admin: { description: "Ej: Certificado SEC Clase A" },
+                },
+                {
+                  name: "leadExperience",
+                  label: "Experiencia",
+                  type: "text",
+                  admin: { description: "Ej: Más de 8 años" },
+                },
+              ],
+            },
+          ],
+        },
+        {
           label: "Empresa y SEO",
           description: "Identidad de la empresa y metadatos para buscadores.",
           fields: [

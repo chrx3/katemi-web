@@ -12,6 +12,7 @@ import ClientsMarquee, {
   type ClientItem,
 } from "@/components/sections/ClientsMarquee";
 import CTABanner from "@/components/sections/CTABanner";
+import TechnicalLead from "@/components/sections/TechnicalLead";
 import InlineEditableText from "@/components/template/InlineEditableText";
 import ImageWithFallback from "@/components/shared/ImageWithFallback";
 import { resolveAboutImage } from "@/lib/image-placeholders";
@@ -145,6 +146,10 @@ export default function LandingTemplatePreview({
                 </div>
               )}
             </SectionFrame>
+
+            {/* Va justo tras las cifras: primero el número, después quién
+                responde técnicamente por él. */}
+            <TechnicalLead content={template} />
 
             <SectionFrame title="Servicios (presentación)" mode="editable" show={showGuides}>
               <ServicesPreview content={template} editable={editable} onFieldChange={onFieldChange as never} onServiceChange={onServiceChange} />
