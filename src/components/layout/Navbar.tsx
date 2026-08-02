@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Zap } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import BrandLogo from "@/components/shared/BrandLogo";
 import { useLenis } from "@/components/providers/LenisProvider";
 
 const navLinks = [
@@ -69,16 +70,11 @@ export default function Navbar({
         <div className="container-max">
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-[#0B1D3A] group-hover:bg-[#00A896] transition-colors duration-300">
-                <Zap className="w-5 h-5 text-white" strokeWidth={2.5} />
-              </div>
-              <span
-                className="text-xl font-bold tracking-tight"
-                style={{ fontFamily: "var(--font-space-grotesk)" }}
-              >
-                Katemi
-              </span>
+            {/* La barra va en el flujo, no sobre el hero: su fondo es blanco
+                o transparente sobre blanco. En ambos casos corresponde la
+                variante oscura del logotipo. */}
+            <Link href="/" className="flex items-center" aria-label="KATEMI — Inicio">
+              <BrandLogo variant="dark" height={30} priority />
             </Link>
 
             {/* Desktop Nav */}
@@ -182,7 +178,7 @@ export default function Navbar({
             <div className="flex flex-col h-full">
               {/* Mobile Header */}
               <div className="flex items-center justify-between px-6 h-16 border-b">
-                <span className="text-lg font-bold tracking-tight">Katemi</span>
+                <BrandLogo variant="dark" height={24} />
                 <button
                   onClick={() => setMobileOpen(false)}
                   className="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-[#F5F5F5] transition-colors"

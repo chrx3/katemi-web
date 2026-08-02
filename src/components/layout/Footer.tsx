@@ -10,7 +10,8 @@ import {
   REVEAL_DURATION,
   REVEAL_EASE,
 } from "@/lib/motion-viewport";
-import { Zap, Phone, Mail, MapPin, ExternalLink } from "lucide-react";
+import { Phone, Mail, MapPin, ExternalLink } from "lucide-react";
+import BrandLogo from "@/components/shared/BrandLogo";
 import type { LandingTemplateConfig } from "@/lib/template-config";
 import InlineEditableText from "@/components/template/InlineEditableText";
 import { companyDescription, companyInfo, toFooterServiceLinks } from "@/lib/company-content";
@@ -145,15 +146,8 @@ export default function Footer({
           {/* Col 1: Brand */}
           <RevealItem delay={0}>
             <div className="flex flex-col gap-5">
-              {/* Logo */}
-              <div className="flex items-center gap-2.5">
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-[#00A896]">
-                  <Zap className="w-5 h-5 text-white" strokeWidth={2.5} />
-                </div>
-                <span className="text-xl font-bold text-white tracking-tight">
-                  {companyInfo.brandName}
-                </span>
-              </div>
+              {/* El pie siempre va sobre azul, así que usa la variante clara. */}
+              <BrandLogo variant="light" height={34} />
               <p
                 className="text-sm leading-relaxed"
                 style={{ color: "rgba(255,255,255,0.55)" }}

@@ -62,11 +62,14 @@ export default async function MainLayout({
       className={spaceGrotesk.variable}
       data-scroll-behavior="smooth"
     >
-      <body className="antialiased min-h-screen w-full overflow-x-hidden">
+      {/* clip y no hidden: hidden crea un contenedor de scroll y eso anula
+          el position:sticky de la barra de navegacion, que se iba de pantalla
+          al bajar. clip recorta igual sin crear ese contenedor. */}
+      <body className="antialiased min-h-screen w-full overflow-x-clip">
         <LenisProvider>
-          <div className="flex min-h-screen w-full max-w-[100vw] flex-col overflow-x-hidden">
+          <div className="flex min-h-screen w-full max-w-[100vw] flex-col overflow-x-clip">
             <Navbar />
-            <main className="flex-1 w-full min-w-0 overflow-x-hidden">
+            <main className="flex-1 w-full min-w-0 overflow-x-clip">
               {children}
             </main>
             <Footer template={template} />
