@@ -1,17 +1,19 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import PageHeader from '~/components/shared/PageHeader';
 import ScrollReveal from '~/components/shared/ScrollReveal';
 import ImageWithFallback from '~/components/shared/ImageWithFallback';
 import ProjectCard from '~/components/shared/ProjectCard';
+import Breadcrumbs from '~/components/shared/Breadcrumbs';
+import BreadcrumbJsonLd from '@/components/seo/BreadcrumbJsonLd';
 import * as LucideIcons from 'lucide-react';
-import { pb } from '~/lib/pocketbase';
+import {
+  getProjectsByServiceSlug,
+  getServiceBySlug as getPayloadServiceBySlug,
+  mediaUrl,
+} from '@/lib/content';
 import { companyInfo, getServiceBySlug } from '@/lib/company-content';
-import { normalizeImageList } from '@/lib/image-placeholders';
 
 interface Service {
   id: string;
@@ -52,86 +54,75 @@ function toDetailService(slug: string): Service | null {
   };
 }
 
-export default function ServicioDetailPage() {
-  const params = useParams();
-  const slug = params.slug as string;
-  const [service, setService] = useState<Service | null>(null);
-  const [relatedProjects, setRelatedProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
+export const revalidate = 60;
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const record = await pb
-          .collection('services')
-          .getFirstListItem(`slug="${slug}"`);
-        const s = record as unknown as Record<string, unknown>;
-        setService({
-          id: s.id as string,
-          slug: s.slug as string,
-          title: s.title as string,
-          shortDescription: s.shortDescription as string,
-          description: s.description as string,
-          icon: (s.icon as string) || 'Box',
-          features: s.features as string[] || [],
-          imageUrl: s.imageUrl as string | undefined,
-          images: normalizeImageList(s.images),
-        });
+type Params = { params: Promise<{ slug: string }> };
 
-        // Fetch related projects
-        const projects = await pb
-          .collection('projects')
-          .getFullList({
-            sort: '-year',
-            filter: `isActive=true && servicesProvided~"${slug}"`,
-          });
-        setRelatedProjects(
-          projects.map((p: Record<string, unknown>) => ({
-            id: p.id as string,
-            slug: p.slug as string,
-            title: p.title as string,
-            clientName: p.clientName as string,
-            location: p.location as string,
-            description: p.description as string,
-            category: p.category as string,
-            year: p.year as string,
-            imageUrl: p.imageUrl as string | undefined,
-            images: normalizeImageList(p.images),
-          }))
-        );
-      } catch {
-        const fallback = toDetailService(slug);
-        if (fallback) {
-          setService(fallback);
-        } else {
-          setNotFound(true);
-        }
-      } finally {
-        setLoading(false);
-      }
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { slug } = await params;
+  const service = await getPayloadServiceBySlug(slug).catch(() => null);
+  const title = service?.title ?? getServiceBySlug(slug)?.title;
+
+  if (!title) return { title: 'Servicio no encontrado' };
+
+  const description = service?.shortDescription ?? undefined;
+  const url = `/servicios/${slug}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: { title, description, url, type: 'article' },
+  };
+}
+
+export default async function ServicioDetailPage({ params }: Params) {
+  const { slug } = await params;
+
+  let service: Service | null = null;
+  let relatedProjects: Project[] = [];
+
+  try {
+    const doc = await getPayloadServiceBySlug(slug);
+    if (doc) {
+      service = {
+        id: String(doc.id),
+        slug: doc.slug,
+        title: doc.title,
+        shortDescription: doc.shortDescription,
+        description: doc.fullDescription,
+        icon: doc.icon || 'Box',
+        features: Array.isArray(doc.features)
+          ? doc.features.map((f) => f.text).filter(Boolean)
+          : [],
+        imageUrl: mediaUrl(doc.image) || undefined,
+      };
+
+      relatedProjects = (await getProjectsByServiceSlug(slug)).map((p) => {
+        const images = Array.isArray(p.images)
+          ? p.images.map((img) => mediaUrl(img)).filter(Boolean)
+          : [];
+        return {
+          id: String(p.id),
+          slug: p.slug,
+          title: p.title,
+          clientName: p.clientName,
+          location: p.location ?? '',
+          description: p.description,
+          category: p.category ?? '',
+          year: p.year != null ? String(p.year) : '',
+          imageUrl: images[0],
+          images,
+        };
+      });
     }
-    fetchData();
-  }, [slug]);
-
-  if (loading) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <PageHeader title="Cargando..." />
-        <section className="py-24 bg-white">
-          <div className="container-max">
-            <div className="animate-pulse space-y-4">
-              <div className="h-8 bg-gray-200 rounded w-1/3" />
-              <div className="h-4 bg-gray-200 rounded w-2/3" />
-              <div className="h-64 bg-gray-200 rounded" />
-            </div>
-          </div>
-        </section>
-      </div>
-    );
+  } catch (error) {
+    console.error('Error cargando el servicio:', error);
   }
 
-  if (notFound || !service) {
+  if (!service) service = toDetailService(slug);
+
+  if (!service) {
     return (
       <div className="flex flex-col min-h-screen">
         <PageHeader title="Servicio no encontrado" />
@@ -167,26 +158,33 @@ export default function ServicioDetailPage() {
         eyebrow="Servicio"
       />
 
+      <Breadcrumbs
+        items={[
+          { label: 'Inicio', href: '/' },
+          { label: 'Servicios', href: '/servicios' },
+          { label: service.title },
+        ]}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Inicio', path: '/' },
+          { name: 'Servicios', path: '/servicios' },
+          { name: service.title, path: `/servicios/${service.slug}` },
+        ]}
+      />
+
       {/* Content */}
       <section className="py-16 md:py-24 bg-white">
         <div className="container-max">
           <div className="grid min-w-0 gap-12 lg:grid-cols-3">
             {/* Main content */}
             <div className="min-w-0 space-y-10 lg:col-span-2">
-              {/* Icon + Intro */}
+              {/* El titulo y el subtitulo ya estan en el encabezado de la
+                  pagina; repetirlos aqui era decir lo mismo dos veces seguidas.
+                  Queda solo el icono como ancla visual de la seccion. */}
               <ScrollReveal>
-                <div className="flex items-start gap-6">
-                  <div className="w-20 h-20 rounded-2xl bg-[#00A896] flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <IconComponent size={36} className="text-white" />
-                  </div>
-                  <div>
-                    <h1 className="text-3xl md:text-4xl font-bold text-[#0B1D3A] uppercase tracking-tight mb-3">
-                      {service.title}
-                    </h1>
-                    <p className="text-gray-500 text-lg leading-relaxed">
-                      {service.shortDescription}
-                    </p>
-                  </div>
+                <div className="flex size-16 items-center justify-center rounded-2xl bg-[#00A896] shadow-lg">
+                  <IconComponent size={30} className="text-white" />
                 </div>
               </ScrollReveal>
 

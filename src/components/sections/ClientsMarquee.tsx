@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import ScrollReveal from "../shared/ScrollReveal";
 import ClientLogo from "../shared/ClientLogo";
-import { pb, resolvePocketBaseFileUrl } from "@/lib/pocketbase";
 import type { LandingTemplateConfig } from "@/lib/template-config";
-import { getClientLogoUrl, toClientFallback } from "@/lib/company-content";
+import { toClientFallback } from "@/lib/company-content";
 
-interface ClientItem {
+export interface ClientItem {
   name: string;
   logoUrl: string;
   website: string;
@@ -22,36 +20,16 @@ type ClientsContent = Pick<
 
 interface ClientsMarqueeProps {
   content: ClientsContent;
+  /** Vienen del servidor. Antes se pedían a PocketBase desde el navegador. */
+  clients?: ClientItem[];
 }
 
-export default function ClientsMarquee({ content }: ClientsMarqueeProps) {
-  const [clients, setClients] = useState<ClientItem[]>(staticFallback);
-
-  useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const records = await pb.collection("clients").getFullList({
-          sort: "order",
-          filter: "isActive=true",
-        });
-        if (records.length > 0) {
-          const mapped: ClientItem[] = records.map(
-            (r: Record<string, unknown>) => ({
-              name: (r.name as string) || "",
-              logoUrl:
-                resolvePocketBaseFileUrl(r, r.logo) ||
-                getClientLogoUrl((r.name as string) || ""),
-              website: (r.website as string) || "",
-            }),
-          );
-          setClients(mapped);
-        }
-      } catch {
-        // Use static fallback
-      }
-    };
-    fetchClients();
-  }, []);
+export default function ClientsMarquee({
+  content,
+  clients: clientsProp,
+}: ClientsMarqueeProps) {
+  const clients =
+    clientsProp && clientsProp.length > 0 ? clientsProp : staticFallback;
 
   return (
     <section className="py-14 bg-[#F5F5F5]">

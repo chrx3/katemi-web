@@ -1,16 +1,16 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ChevronLeft, MapPin, Calendar, User, Tag, CheckCircle, Phone, Mail } from 'lucide-react';
 import PageHeader from '~/components/shared/PageHeader';
 import ScrollReveal from '~/components/shared/ScrollReveal';
+import Breadcrumbs from '~/components/shared/Breadcrumbs';
+import BreadcrumbJsonLd from '@/components/seo/BreadcrumbJsonLd';
 import * as LucideIcons from 'lucide-react';
-import { pb } from '~/lib/pocketbase';
 import ImageWithFallback from "~/components/shared/ImageWithFallback";
-import { resolveProjectImage, normalizeImageList } from "@/lib/image-placeholders";
+import { resolveProjectImage } from "@/lib/image-placeholders";
+import { getProjectBySlug as getPayloadProjectBySlug, mediaUrl } from '@/lib/content';
 import { companyInfo, getProjectBySlug } from '@/lib/company-content';
+import { categoryLabel } from '@/lib/project-categories';
 
 interface Project {
   id: string;
@@ -47,64 +47,67 @@ function toDetailProject(slug: string): Project | null {
   };
 }
 
-export default function ProyectoDetailPage() {
-  const params = useParams();
-  const slug = params.slug as string;
-  const [project, setProject] = useState<Project | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
+export const revalidate = 60;
 
-  useEffect(() => {
-    async function fetchProject() {
-      try {
-        const record = await pb
-          .collection('projects')
-          .getFirstListItem(`slug="${slug}"`);
-        const p = record as unknown as Record<string, unknown>;
-        setProject({
-          id: p.id as string,
-          slug: p.slug as string,
-          title: p.title as string,
-          clientName: p.clientName as string,
-          location: p.location as string,
-          description: p.description as string,
-          category: p.category as string,
-          year: p.year as string,
-          servicesProvided: p.servicesProvided as string[] | undefined,
-          imageUrl: p.imageUrl as string | undefined,
-          images: normalizeImageList(p.images),
-        });
-      } catch {
-        const fallback = toDetailProject(slug);
-        if (fallback) {
-          setProject(fallback);
-        } else {
-          setNotFound(true);
-        }
-      } finally {
-        setLoading(false);
-      }
+type Params = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { slug } = await params;
+  const project = await getPayloadProjectBySlug(slug).catch(() => null);
+  const title = project?.title ?? getProjectBySlug(slug)?.title;
+
+  if (!title) return { title: 'Proyecto no encontrado' };
+
+  const description = project?.description ?? undefined;
+  const url = `/proyectos/${slug}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: { title, description, url, type: 'article' },
+  };
+}
+
+export default async function ProyectoDetailPage({ params }: Params) {
+  const { slug } = await params;
+
+  let project: Project | null = null;
+
+  try {
+    const doc = await getPayloadProjectBySlug(slug);
+    if (doc) {
+      const images = Array.isArray(doc.images)
+        ? doc.images.map((img) => mediaUrl(img)).filter(Boolean)
+        : [];
+
+      project = {
+        id: String(doc.id),
+        slug: doc.slug,
+        title: doc.title,
+        clientName: doc.clientName,
+        location: doc.location ?? '',
+        description: doc.description,
+        category: doc.category ?? '',
+        year: doc.year != null ? String(doc.year) : '',
+        // La relación viene resuelta con depth 1, así que se muestran los
+        // títulos reales de los servicios en vez de sus slugs.
+        servicesProvided: Array.isArray(doc.servicesProvided)
+          ? doc.servicesProvided
+              .map((s) => (typeof s === 'object' && s !== null ? s.title : ''))
+              .filter(Boolean)
+          : [],
+        imageUrl: images[0],
+        images,
+      };
     }
-    fetchProject();
-  }, [slug]);
-
-  if (loading) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <PageHeader title="Cargando..." />
-        <section className="py-24 bg-white">
-          <div className="container-max">
-            <div className="animate-pulse space-y-4">
-              <div className="h-8 bg-gray-200 rounded w-1/3" />
-              <div className="h-64 bg-gray-200 rounded" />
-            </div>
-          </div>
-        </section>
-      </div>
-    );
+  } catch (error) {
+    console.error('Error cargando el proyecto:', error);
   }
 
-  if (notFound || !project) {
+  if (!project) project = toDetailProject(slug);
+
+  if (!project) {
     return (
       <div className="flex flex-col min-h-screen">
         <PageHeader title="Proyecto no encontrado" />
@@ -144,7 +147,7 @@ export default function ProyectoDetailPage() {
         <div className="container-max relative z-10 pb-16 pt-32">
           <ScrollReveal>
             <span className="inline-block bg-[#F5A623] text-white text-xs font-bold uppercase px-4 py-1.5 rounded-full mb-4">
-              {project.category}
+              {categoryLabel(project.category)}
             </span>
             <h1 className="max-w-3xl break-words text-4xl font-bold uppercase leading-tight tracking-tight text-white md:text-5xl">
               {project.title}
@@ -152,6 +155,21 @@ export default function ProyectoDetailPage() {
           </ScrollReveal>
         </div>
       </section>
+
+      <Breadcrumbs
+        items={[
+          { label: 'Inicio', href: '/' },
+          { label: 'Proyectos', href: '/proyectos' },
+          { label: project.title },
+        ]}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Inicio', path: '/' },
+          { name: 'Proyectos', path: '/proyectos' },
+          { name: project.title, path: `/proyectos/${project.slug}` },
+        ]}
+      />
 
       {/* Info Row */}
       <section className="bg-[#0B1D3A]">
@@ -175,7 +193,7 @@ export default function ProyectoDetailPage() {
             <div className="flex items-center gap-2">
               <Tag className="w-4 h-4 text-[#00A896]" />
               <span className="text-white/60 mr-1.5">Categoría:</span>
-              <span className="font-medium">{project.category}</span>
+              <span className="font-medium">{categoryLabel(project.category)}</span>
             </div>
           </div>
         </div>

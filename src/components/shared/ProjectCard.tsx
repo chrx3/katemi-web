@@ -4,6 +4,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { resolveProjectImage } from "@/lib/image-placeholders";
 
+import { categoryLabel } from "@/lib/project-categories";
+
 interface ProjectCardProps {
   slug: string;
   title: string;
@@ -40,7 +42,7 @@ export default function ProjectCard({
       <div className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105" style={{ backgroundImage: `url(${bgImage})` }} />
       <div className="absolute inset-0 bg-gradient-to-t from-[#0B1D3A]/80 via-[#0B1D3A]/20 to-transparent transition-opacity duration-500 group-hover:opacity-80" />
       <div className="absolute top-4 left-4">
-        <span className="inline-block bg-[#F5A623]/90 text-white text-xs font-bold uppercase px-3 py-1 rounded-full">{category}</span>
+        <span className="inline-block bg-[#F5A623]/90 text-white text-xs font-bold uppercase px-3 py-1 rounded-full">{categoryLabel(category)}</span>
       </div>
       <div className="absolute top-4 right-4">
         <span className="inline-block bg-white/20 backdrop-blur text-white text-xs font-medium px-2 py-1 rounded">{year}</span>

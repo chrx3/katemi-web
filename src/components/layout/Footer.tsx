@@ -10,7 +10,8 @@ import {
   REVEAL_DURATION,
   REVEAL_EASE,
 } from "@/lib/motion-viewport";
-import { Zap, Phone, Mail, MapPin, ExternalLink } from "lucide-react";
+import { Phone, Mail, MapPin, ExternalLink } from "lucide-react";
+import BrandLogo from "@/components/shared/BrandLogo";
 import type { LandingTemplateConfig } from "@/lib/template-config";
 import InlineEditableText from "@/components/template/InlineEditableText";
 import { companyDescription, companyInfo, toFooterServiceLinks } from "@/lib/company-content";
@@ -145,15 +146,8 @@ export default function Footer({
           {/* Col 1: Brand */}
           <RevealItem delay={0}>
             <div className="flex flex-col gap-5">
-              {/* Logo */}
-              <div className="flex items-center gap-2.5">
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-[#00A896]">
-                  <Zap className="w-5 h-5 text-white" strokeWidth={2.5} />
-                </div>
-                <span className="text-xl font-bold text-white tracking-tight">
-                  {companyInfo.brandName}
-                </span>
-              </div>
+              {/* El pie siempre va sobre azul, así que usa la variante clara. */}
+              <BrandLogo variant="light" height={34} />
               <p
                 className="text-sm leading-relaxed"
                 style={{ color: "rgba(255,255,255,0.55)" }}
@@ -232,7 +226,7 @@ export default function Footer({
               <ul className="flex flex-col gap-2">
                 {empresaLinks.map((link) => (
                   <li key={link.href}>
-                    <span className="text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>{link.label}</span>
+                    <span className="text-sm" style={{ color: "rgba(255,255,255,0.72)" }}>{link.label}</span>
                   </li>
                 ))}
               </ul>
@@ -264,7 +258,7 @@ export default function Footer({
               <ul className="flex flex-col gap-2">
                 {serviceLinks.map((link) => (
                   <li key={link.href}>
-                    <span className="text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>{link.label}</span>
+                    <span className="text-sm" style={{ color: "rgba(255,255,255,0.72)" }}>{link.label}</span>
                   </li>
                 ))}
               </ul>
@@ -332,8 +326,8 @@ export default function Footer({
               <div className="flex items-center gap-3 mt-3">
                 {previewMode ? (
                   <>
-                    <span className="flex items-center justify-center w-10 h-10 rounded-lg border border-white/10 text-white/30" aria-label="LinkedIn"><LinkedinIcon className="w-4 h-4" /></span>
-                    <span className="flex items-center justify-center w-10 h-10 rounded-lg border border-white/10 text-white/30" aria-label="Instagram"><InstagramIcon className="w-4 h-4" /></span>
+                    <span className="flex items-center justify-center w-10 h-10 rounded-lg border border-white/10 text-white/70" aria-label="LinkedIn"><LinkedinIcon className="w-4 h-4" /></span>
+                    <span className="flex items-center justify-center w-10 h-10 rounded-lg border border-white/10 text-white/70" aria-label="Instagram"><InstagramIcon className="w-4 h-4" /></span>
                   </>
                 ) : (
                   <>
@@ -359,14 +353,14 @@ export default function Footer({
             className="mt-14 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3"
             style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
           >
-            <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
+            <p className="text-xs" style={{ color: "rgba(255,255,255,0.72)" }}>
               © {currentYear} {companyInfo.legalName} · Todos los derechos reservados
             </p>
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 rounded-full bg-[#00A896]" />
               <span
                 className="text-xs"
-                style={{ color: "rgba(255,255,255,0.3)" }}
+                style={{ color: "rgba(255,255,255,0.72)" }}
               >
                 Hecho en Chile
               </span>

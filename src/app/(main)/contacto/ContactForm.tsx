@@ -1,0 +1,429 @@
+"use client";
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import { Send, Phone, Mail, MapPin, Clock } from "lucide-react";
+import PageHeader from "~/components/shared/PageHeader";
+import ScrollReveal from "~/components/shared/ScrollReveal";
+import { submitContact } from "./actions";
+import { landingTemplateDefaults } from "~/lib/template-config";
+import { companyInfo, contactFormSubjects } from "@/lib/company-content";
+
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Textarea } from "~/components/ui/textarea";
+import { Label } from "~/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
+
+const contactSchema = z.object({
+  firstName: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+  lastName: z.string().min(2, "El apellido debe tener al menos 2 caracteres"),
+  phone: z.string().min(6, "Ingresa un número de teléfono válido"),
+  company: z.string().optional(),
+  email: z.string().email("Ingresa un correo electrónico válido"),
+  subject: z.string().min(1, "Selecciona un asunto"),
+  message: z
+    .string()
+    .min(10, "El mensaje debe tener al menos 10 caracteres")
+    .max(1000, "El mensaje no puede exceder los 1000 caracteres"),
+});
+
+type ContactFormData = z.infer<typeof contactSchema>;
+
+const SUBJECTS = contactFormSubjects;
+
+const defaultContactContent = {
+  contactInfoTitle: landingTemplateDefaults.contactInfoTitle,
+  contactInfoDescription: landingTemplateDefaults.contactInfoDescription,
+  contactPhone: landingTemplateDefaults.contactPhone,
+  contactEmail: landingTemplateDefaults.contactEmail,
+  contactAddress: landingTemplateDefaults.contactAddress,
+  contactHours: landingTemplateDefaults.contactHours,
+};
+
+const contactConfigKeys = new Set(Object.keys(defaultContactContent));
+
+const buildTelHref = (value: string) =>
+  `tel:${value.replace(/\s+/g, "").replace(/[^+\d]/g, "")}`;
+
+const buildMailHref = (value: string) => `mailto:${value.trim()}`;
+
+export type ContactContent = typeof defaultContactContent;
+
+export default function ContactForm({
+  content,
+}: {
+  /** Llega resuelto desde el servidor; antes se pedía a PocketBase al montar. */
+  content?: Partial<ContactContent>;
+}) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const contactContent: ContactContent = {
+    ...defaultContactContent,
+    ...(content ?? {}),
+  };
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactSchema),
+  });
+
+  const onSubmit = async (data: ContactFormData) => {
+    setIsSubmitting(true);
+    try {
+      const result = await submitContact(data);
+      if (result.ok) {
+        toast.success("Mensaje enviado correctamente", {
+          description: "Nos pondremos en contacto contigo a la brevedad.",
+        });
+        reset();
+      } else {
+        toast.error("Error al enviar el mensaje", { description: result.error });
+      }
+    } catch {
+      toast.error("Error al enviar el mensaje", {
+        description: "Por favor intenta nuevamente o contáctanos por teléfono.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="flex w-full min-w-0 flex-col overflow-x-hidden">
+      <PageHeader
+        title="Contacto"
+        subtitle="Estamos listos para ayudarte"
+        eyebrow="Escríbenos"
+      />
+
+      {/* Main Content */}
+      <section className="py-16 md:py-24 bg-white">
+        <div className="container-max">
+          <div className="grid min-w-0 lg:grid-cols-5 gap-12 lg:gap-16">
+            {/* Left: Contact Info */}
+            <div className="min-w-0 space-y-10 lg:col-span-2">
+              <ScrollReveal direction="left">
+                <div>
+                  <h2 className="text-2xl font-bold text-[#0B1D3A] uppercase tracking-tight mb-4">
+                    {contactContent.contactInfoTitle}
+                  </h2>
+                  <p className="text-gray-600 leading-relaxed whitespace-pre-line">
+                    {contactContent.contactInfoDescription}
+                  </p>
+                </div>
+              </ScrollReveal>
+
+              {/* Contact details */}
+              <div className="space-y-6">
+                {[
+                  {
+                    icon: Phone,
+                    label: "Teléfono",
+                    value: contactContent.contactPhone,
+                    href: buildTelHref(contactContent.contactPhone),
+                  },
+                  {
+                    icon: Mail,
+                    label: "Correo electrónico",
+                    value: contactContent.contactEmail,
+                    href: buildMailHref(contactContent.contactEmail),
+                  },
+                  {
+                    icon: MapPin,
+                    label: "Dirección",
+                    value: contactContent.contactAddress,
+                    href: null,
+                  },
+                  {
+                    icon: Clock,
+                    label: "Horario de atención",
+                    value: contactContent.contactHours,
+                    href: null,
+                  },
+                ].map((item, i) => (
+                  <ScrollReveal key={item.label} delay={i * 0.1}>
+                    <div className="flex items-start gap-4">
+                      <div className="w-11 h-11 rounded-xl bg-[#00A896]/10 flex items-center justify-center flex-shrink-0">
+                        <item.icon className="w-5 h-5 text-[#00A896]" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-0.5">
+                          {item.label}
+                        </p>
+                        {item.href ? (
+                          <a
+                            href={item.href}
+                            className="text-[#0B1D3A] font-medium hover:text-[#00A896] transition-colors"
+                          >
+                            {item.value}
+                          </a>
+                        ) : (
+                          <p className="text-[#0B1D3A] font-medium whitespace-pre-line">
+                            {item.value}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </ScrollReveal>
+                ))}
+              </div>
+
+              {/* El embed anterior traia coordenadas inventadas (0x0:0x0 y un
+                  timestamp falso), asi que nunca cargaba y dejaba un recuadro
+                  gris. Este se arma con la direccion configurada, sin API key,
+                  y sigue a la direccion si cambia en el panel. */}
+              <ScrollReveal delay={0.3}>
+                <div className="rounded-2xl overflow-hidden h-52 bg-gray-100">
+                  <iframe
+                    src={`https://www.google.com/maps?q=${encodeURIComponent(
+                      contactContent.contactAddress.replace(/\n/g, ", "),
+                    )}&output=embed`}
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title={`Ubicación de ${companyInfo.legalName}`}
+                  />
+                </div>
+              </ScrollReveal>
+            </div>
+
+            {/* Right: Contact Form */}
+            <div className="min-w-0 lg:col-span-3">
+              <ScrollReveal delay={0.15}>
+                <div className="bg-[#F5F5F5] rounded-2xl p-8 md:p-10">
+                  <h2 className="text-2xl font-bold text-[#0B1D3A] uppercase tracking-tight mb-2">
+                    Envíanos un mensaje
+                  </h2>
+                  <p className="text-gray-500 text-sm mb-8">
+                    Completa el formulario y te responderemos dentro de 24 horas
+                    hábiles.
+                  </p>
+
+                  <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    className="space-y-5"
+                    noValidate
+                  >
+                    {/* Name row */}
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <Label htmlFor="firstName">
+                          Nombre <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          id="firstName"
+                          placeholder="Juan"
+                          {...register("firstName")}
+                          className={
+                            errors.firstName
+                              ? "border-red-400 focus:border-red-400"
+                              : ""
+                          }
+                        />
+                        {errors.firstName && (
+                          <p className="text-xs text-red-500">
+                            {errors.firstName.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="lastName">
+                          Apellido <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          id="lastName"
+                          placeholder="Pérez"
+                          {...register("lastName")}
+                          className={
+                            errors.lastName
+                              ? "border-red-400 focus:border-red-400"
+                              : ""
+                          }
+                        />
+                        {errors.lastName && (
+                          <p className="text-xs text-red-500">
+                            {errors.lastName.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Phone + Company */}
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <Label htmlFor="phone">
+                          Teléfono <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          id="phone"
+                          type="tel"
+                          // Antes mostraba el teléfono de la empresa, que se
+                          // lee como un campo ya rellenado.
+                          placeholder="+56 9 1234 5678"
+                          {...register("phone")}
+                          className={
+                            errors.phone
+                              ? "border-red-400 focus:border-red-400"
+                              : ""
+                          }
+                        />
+                        {errors.phone && (
+                          <p className="text-xs text-red-500">
+                            {errors.phone.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="company">Empresa</Label>
+                        <Input
+                          id="company"
+                          placeholder="Nombre de tu empresa (opcional)"
+                          {...register("company")}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Email */}
+                    <div className="space-y-1.5">
+                      <Label htmlFor="email">
+                        Correo electrónico{" "}
+                        <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="juan@empresa.cl"
+                        {...register("email")}
+                        className={
+                          errors.email
+                            ? "border-red-400 focus:border-red-400"
+                            : ""
+                        }
+                      />
+                      {errors.email && (
+                        <p className="text-xs text-red-500">
+                          {errors.email.message}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Subject */}
+                    <div className="space-y-1.5">
+                      <Label htmlFor="subject">
+                        Asunto <span className="text-red-500">*</span>
+                      </Label>
+                      <Select
+                        onValueChange={(val) =>
+                          setValue("subject", val as string)
+                        }
+                      >
+                        <SelectTrigger
+                          id="subject"
+                          className={errors.subject ? "border-red-400" : ""}
+                        >
+                          <SelectValue placeholder="Selecciona un asunto" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {SUBJECTS.map((s) => (
+                            <SelectItem key={s} value={s}>
+                              {s}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {errors.subject && (
+                        <p className="text-xs text-red-500">
+                          {errors.subject.message}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Message */}
+                    <div className="space-y-1.5">
+                      <Label htmlFor="message">
+                        Mensaje <span className="text-red-500">*</span>
+                      </Label>
+                      <Textarea
+                        id="message"
+                        rows={5}
+                        placeholder="Cuéntanos sobre tu proyecto o consulta..."
+                        {...register("message")}
+                        className={
+                          errors.message
+                            ? "border-red-400 focus:border-red-400 resize-none"
+                            : "resize-none"
+                        }
+                      />
+                      {errors.message && (
+                        <p className="text-xs text-red-500">
+                          {errors.message.message}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Submit */}
+                    <div className="pt-2">
+                      <Button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full sm:w-auto bg-[#00A896] hover:bg-[#008f7f] text-white font-semibold disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <svg
+                              className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              />
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                              />
+                            </svg>
+                            Enviando...
+                          </>
+                        ) : (
+                          <>
+                            <Send className="w-4 h-4 mr-2" />
+                            Enviar mensaje
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </form>
+                </div>
+              </ScrollReveal>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
