@@ -8,6 +8,7 @@ import { companyDescription, companyInfo, toStaticServiceList } from '@/lib/comp
 export const metadata: Metadata = {
   title: `Servicios — ${companyInfo.legalName}`,
   description: companyDescription.sectors,
+  alternates: { canonical: '/servicios' },
 };
 
 export const revalidate = 60;

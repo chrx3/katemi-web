@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import PageHeader from '~/components/shared/PageHeader';
 import ScrollReveal from '~/components/shared/ScrollReveal';
@@ -63,7 +64,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const service = await getPayloadServiceBySlug(slug).catch(() => null);
   const title = service?.title ?? getServiceBySlug(slug)?.title;
 
-  if (!title) return { title: 'Servicio no encontrado' };
+  if (!title) return { title: 'Servicio no encontrado', robots: { index: false } };
 
   const description = service?.shortDescription ?? undefined;
   const url = `/servicios/${slug}`;
@@ -122,27 +123,7 @@ export default async function ServicioDetailPage({ params }: Params) {
 
   if (!service) service = toDetailService(slug);
 
-  if (!service) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <PageHeader title="Servicio no encontrado" />
-        <section className="py-24 bg-white">
-          <div className="container-max text-center">
-            <p className="text-gray-500 mb-6">
-              El servicio que buscas no está disponible.
-            </p>
-            <Link
-              href="/servicios"
-              className="inline-flex items-center text-[#00A896] font-medium hover:underline"
-            >
-              <ChevronLeft className="w-4 h-4 mr-1" />
-              Volver a Servicios
-            </Link>
-          </div>
-        </section>
-      </div>
-    );
-  }
+  if (!service) notFound();
 
   const IconComponent =
     ((LucideIcons as unknown) as Record<string, React.ComponentType<{ size?: number; className?: string }>>)[

@@ -50,7 +50,9 @@ export const metadata: Metadata = {
     'climatización',
     'contratista eléctrico Santiago',
   ],
-  alternates: { canonical: '/' },
+  // La canónica se define en cada página. Si se pone aquí, Next la hereda
+  // en /servicios, /proyectos, etc. y Google las marca como "página alternativa
+  // con etiqueta canónica adecuada" (todas apuntando a la home).
   openGraph: {
     type: 'website',
     locale: 'es_CL',

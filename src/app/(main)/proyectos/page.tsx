@@ -8,6 +8,7 @@ import { companyDescription, companyInfo, toStaticProjectList } from '@/lib/comp
 export const metadata: Metadata = {
   title: `Proyectos — ${companyInfo.legalName}`,
   description: 'Experiencia en proyectos comerciales e industriales en Chile.',
+  alternates: { canonical: '/proyectos' },
 };
 
 export const revalidate = 60;

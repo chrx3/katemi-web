@@ -6,6 +6,7 @@ import { companyInfo } from "@/lib/company-content";
 export const metadata: Metadata = {
   title: `Contacto — ${companyInfo.legalName}`,
   description: "Escríbenos y evaluamos tu proyecto.",
+  alternates: { canonical: "/contacto" },
 };
 
 export const revalidate = 60;

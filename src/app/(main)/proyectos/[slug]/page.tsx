@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { ChevronLeft, MapPin, Calendar, User, Tag, CheckCircle, Phone, Mail } from 'lucide-react';
-import PageHeader from '~/components/shared/PageHeader';
 import ScrollReveal from '~/components/shared/ScrollReveal';
 import Breadcrumbs from '~/components/shared/Breadcrumbs';
 import BreadcrumbJsonLd from '@/components/seo/BreadcrumbJsonLd';
@@ -24,11 +24,6 @@ interface Project {
   servicesProvided?: string[];
   imageUrl?: string;
   images?: string[];
-}
-
-interface AllProjectsResult {
-  id: string;
-  slug: string;
 }
 
 function toDetailProject(slug: string): Project | null {
@@ -56,7 +51,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const project = await getPayloadProjectBySlug(slug).catch(() => null);
   const title = project?.title ?? getProjectBySlug(slug)?.title;
 
-  if (!title) return { title: 'Proyecto no encontrado' };
+  if (!title) return { title: 'Proyecto no encontrado', robots: { index: false } };
 
   const description = project?.description ?? undefined;
   const url = `/proyectos/${slug}`;
@@ -107,27 +102,7 @@ export default async function ProyectoDetailPage({ params }: Params) {
 
   if (!project) project = toDetailProject(slug);
 
-  if (!project) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <PageHeader title="Proyecto no encontrado" />
-        <section className="py-24 bg-white">
-          <div className="container-max text-center">
-            <p className="text-gray-500 mb-6">
-              El proyecto que buscas no está disponible.
-            </p>
-            <Link
-              href="/proyectos"
-              className="inline-flex items-center text-[#00A896] font-medium hover:underline"
-            >
-              <ChevronLeft className="w-4 h-4 mr-1" />
-              Volver a Proyectos
-            </Link>
-          </div>
-        </section>
-      </div>
-    );
-  }
+  if (!project) notFound();
 
   const heroImage = resolveProjectImage(project.imageUrl, project.images);
 

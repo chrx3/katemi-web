@@ -11,6 +11,7 @@ import { seoDefaults } from "@/lib/company-content";
 export const metadata: Metadata = {
   title: seoDefaults.title,
   description: seoDefaults.description,
+  alternates: { canonical: '/' },
 };
 
 export const revalidate = 60;
